@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Schedule Admin · Chucky's Charm Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Fredoka+One&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ─── CSS VARIABLES ──────────────────────────────────── */
+:root{
+  --bg:#0f0f14;
+  --surface:#17171f;
+  --surface2:#1e1e28;
+  --border:#2a2a3a;
+  --border2:#38384d;
+  --accent:#C8111A;
+  --accent-dark:#8B0000;
+  --gold:#FFD700;
+  --gold-pale:#FFF8DC;
+  --navy:#1a1a8c;
+  --text:#f0eee8;
+  --text2:#a09e9a;
+  --text3:#706e6a;
+  --success:#22c55e;
+  --warn:#f59e0b;
+  --info:#3b82f6;
+  --danger:#ef4444;
+  --sidebar-w:240px;
+  --header-h:58px;
+}
+
+/* ─── RESET ──────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;font-family:'Nunito',sans-serif}
+a{text-decoration:none;color:inherit}
+input,select,textarea{font-family:'Nunito',sans-serif}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ─── LOGIN ──────────────────────────────────── */
+#loginScreen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+.login-card{
+  width:380px;max-width:95vw;
+  background:var(--surface);
+  border:1.5px solid var(--border2);
+  border-radius:24px;
+  padding:40px 36px;
+  box-shadow:0 24px 60px rgba(0,0,0,.5);
+  animation:fadeUp .4s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo-brand{font-family:'Lilita One',cursive;font-size:26px;color:var(--accent);display:block;line-height:1.1}
+.login-logo-sub{font-family:'Fredoka One',cursive;font-size:13px;color:var(--gold);letter-spacing:2px;opacity:.8}
+.login-badge{display:inline-block;background:var(--border2);color:var(--text2);font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 10px;border-radius:20px;margin-top:8px;text-transform:uppercase}
+.lf-label{font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:5px;letter-spacing:.8px}
+.lf-input{width:100%;padding:10px 14px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-size:14px;outline:none;transition:border .2s;margin-bottom:14px}
+.lf-input:focus{border-color:var(--accent)}
+.lf-input.err{border-color:var(--danger)}
+.login-btn{width:100%;padding:12px;background:var(--accent);color:var(--gold);font-family:'Fredoka One',cursive;font-size:16px;border:none;border-radius:12px;letter-spacing:.5px;transition:all .15s;margin-top:4px}
+.login-btn:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.login-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:14px}
+.login-err{font-size:12px;color:var(--danger);font-family:'Fredoka One',cursive;text-align:center;margin-bottom:8px;min-height:18px}
+.login-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+/* ─── APP SHELL ──────────────────────────────────── */
+#appShell{display:none;min-height:100vh}
+
+/* ─── HEADER ──────────────────────────────────── */
+.top-header{
+  position:fixed;top:0;left:0;right:0;height:var(--header-h);z-index:100;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 20px;gap:16px;
+}
+.hdr-logo{font-family:'Lilita One',cursive;font-size:18px;color:var(--accent);line-height:1;flex-shrink:0}
+.hdr-logo span{font-family:'Fredoka One',cursive;font-size:12px;color:var(--gold);display:block;letter-spacing:1px}
+.hdr-spacer{flex:1}
+.hdr-badge{background:var(--border2);color:var(--text2);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px}
+.hdr-user{display:flex;align-items:center;gap:8px}
+.hdr-avatar{width:32px;height:32px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:14px;color:var(--gold)}
+.hdr-name{font-size:13px;font-weight:700;color:var(--text)}
+.hdr-role{font-size:10px;color:var(--text2)}
+.hdr-logout{background:var(--border2);border:none;color:var(--text2);font-size:12px;font-weight:700;padding:6px 14px;border-radius:8px;transition:all .15s;letter-spacing:.5px}
+.hdr-logout:hover{background:var(--accent);color:var(--gold)}
+
+/* ─── SIDEBAR ──────────────────────────────────── */
+.sidebar{
+  position:fixed;left:0;top:var(--header-h);bottom:0;
+  width:var(--sidebar-w);
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  padding:16px 12px;
+  z-index:90;
+  overflow-y:auto;
+}
+.sb-section{font-size:10px;font-weight:900;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:8px 8px 6px;margin-top:8px}
+.sb-btn{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:10px;
+  font-size:13px;font-weight:700;color:var(--text2);
+  background:none;border:none;width:100%;text-align:left;
+  transition:all .15s;margin-bottom:2px;
+}
+.sb-btn:hover{background:var(--surface2);color:var(--text)}
+.sb-btn.active{background:var(--accent);color:var(--gold)}
+.sb-btn.active .sb-icon{color:var(--gold)}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--accent);color:var(--gold);font-size:10px;font-weight:900;padding:1px 7px;border-radius:10px}
+.sb-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+.sb-version{font-size:10px;color:var(--text3);text-align:center;letter-spacing:1px}
+
+/* ─── MAIN CONTENT ──────────────────────────────────── */
+.main-content{
+  margin-left:var(--sidebar-w);
+  padding-top:calc(var(--header-h) + 24px);
+  padding:calc(var(--header-h) + 24px) 28px 40px;
+  min-height:100vh;
+}
+.module{display:none}
+.module.active{display:block;animation:fadeUp .25s ease}
+
+/* ─── PAGE TITLE ──────────────────────────────────── */
+.page-title{font-family:'Fredoka One',cursive;font-size:22px;color:var(--text);margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+
+/* ─── STAT CARDS ──────────────────────────────────── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px}
+.stat-icon{font-size:22px;margin-bottom:8px}
+.stat-num{font-family:'Lilita One',cursive;font-size:30px;color:var(--text);line-height:1}
+.stat-label{font-size:12px;color:var(--text2);margin-top:4px}
+.stat-trend{font-size:11px;font-weight:700;margin-top:6px}
+.up{color:var(--success)}.down{color:var(--danger)}.neu{color:var(--text3)}
+
+/* ─── CALENDAR ──────────────────────────────────── */
+.agenda-layout{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+.cal-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.cal-header{background:var(--accent);padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.cal-month-lbl{font-family:'Fredoka One',cursive;font-size:18px;color:var(--gold)}
+.cal-nav-btn{background:rgba(255,255,255,.15);border:none;color:var(--gold);font-size:20px;width:32px;height:32px;border-radius:8px;transition:background .15s;line-height:1}
+.cal-nav-btn:hover{background:rgba(255,255,255,.3)}
+.cal-view-toggle{display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:8px;padding:3px}
+.cv-btn{background:none;border:none;color:var(--gold);font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;opacity:.6}
+.cv-btn.active{background:rgba(255,255,255,.2);opacity:1}
+.cal-body{padding:16px}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px}
+.cal-dow div{font-family:'Fredoka One',cursive;font-size:11px;color:var(--text3);text-align:center}
+.cal-grid-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day{min-height:52px;border-radius:8px;padding:4px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .15s;position:relative}
+.cal-day:hover{border-color:var(--border2);background:var(--bg)}
+.cal-day.other-month .cal-day-num{color:var(--text3)}
+.cal-day.today{border-color:var(--gold);background:rgba(255,215,0,.06)}
+.cal-day.selected{border-color:var(--accent);background:rgba(200,17,26,.08)}
+.cal-day-num{font-family:'Fredoka One',cursive;font-size:12px;color:var(--text2);margin-bottom:2px}
+.cal-day.today .cal-day-num{color:var(--gold);font-size:13px}
+.appt-pip{height:5px;border-radius:3px;margin-bottom:2px;font-size:0}
+.appt-pip.confirmed{background:var(--success)}
+.appt-pip.pending{background:var(--warn)}
+.appt-pip.cancelled{background:var(--danger)}
+
+/* ─── APPOINTMENT LIST / DETAIL ──────────────────────────────────── */
+.appt-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;max-height:600px;overflow-y:auto}
+.appt-panel-title{font-family:'Fredoka One',cursive;font-size:15px;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.appt-item{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.appt-item:hover{border-color:var(--border2);transform:translateX(2px)}
+.appt-item.selected-appt{border-color:var(--accent);background:rgba(200,17,26,.06)}
+.appt-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.appt-name{font-size:14px;font-weight:700;color:var(--text)}
+.appt-time{font-size:12px;color:var(--text2);margin-top:2px}
+.appt-service{font-size:11px;color:var(--text3);margin-top:3px}
+.status-chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.5px}
+.chip-confirmed{background:rgba(34,197,94,.15);color:var(--success)}
+.chip-pending{background:rgba(245,158,11,.15);color:var(--warn)}
+.chip-cancelled{background:rgba(239,68,68,.15);color:var(--danger)}
+.chip-busy{background:rgba(59,130,246,.15);color:var(--info)}
+
+/* ─── APPOINTMENT DETAIL MODAL ──────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--surface);border:1.5px solid var(--border2);border-radius:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:fadeUp .2s ease;padding:28px}
+.modal-title{font-family:'Fredoka One',cursive;font-size:18px;color:var(--text);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:var(--border2);border:none;color:var(--text2);width:28px;height:28px;border-radius:50%;font-size:16px;line-height:28px;text-align:center}
+.modal-close:hover{background:var(--accent);color:var(--gold)}
+.detail-row{display:flex;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);align-items:flex-start}
+.detail-row:last-of-type{border:none}
+.detail-icon{font-size:16px;width:22px;flex-shrink:0;margin-top:1px}
+.detail-key{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:2px}
+.detail-val{font-size:14px;color:var(--text);font-weight:600}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.act-btn{padding:10px;border-radius:10px;font-family:'Fredoka One',cursive;font-size:13px;border:1.5px solid;transition:all .15s;letter-spacing:.3px}
+.act-btn-confirm{background:rgba(34,197,94,.1);border-color:var(--success);color:var(--success)}
+.act-btn-confirm:hover{background:var(--success);color:var(--bg)}
+.act-btn-cancel{background:rgba(239,68,68,.1);border-color:var(--danger);color:var(--danger)}
+.act-btn-cancel:hover{background:var(--danger);color:white}
+.act-btn-reschedule{background:rgba(245,158,11,.1);border-color:var(--warn);color:var(--warn)}
+.act-btn-reschedule:hover{background:var(--warn);color:var(--bg)}
+.act-btn-busy{background:rgba(59,130,246,.1);border-color:var(--info);color:var(--info)}
+.act-btn-busy:hover{background:var(--info);color:white}
+
+/* ─── WEEK VIEW ──────────────────────────────────── */
+.week-view{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:20px}
+.week-header{display:grid;grid-template-columns:60px repeat(6,1fr);background:var(--accent)}
+.week-hcell{padding:10px 6px;text-align:center;font-family:'Fredoka One',cursive;font-size:12px;color:var(--gold)}
+.week-body{display:grid;grid-template-columns:60px repeat(6,1fr);max-height:420px;overflow-y:auto}
+.week-time{font-size:10px;color:var(--text3);padding:8px 6px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);text-align:right}
+.week-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:44px;padding:3px;cursor:pointer;transition:background .1s;position:relative}
+.week-cell:hover{background:var(--surface2)}
+.week-appt{background:var(--accent);border-radius:6px;padding:3px 6px;font-size:10px;font-weight:700;color:var(--gold);margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.week-appt.pending{background:var(--warn);color:var(--bg)}
+.week-appt.free{background:rgba(34,197,94,.2);color:var(--success);border:1px dashed var(--success)}
+
+/* ─── QUOTE MODULE ──────────────────────────────────── */
+.quote-layout{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+.quote-form-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px}
+.quote-preview-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;position:sticky;top:80px}
+.q-section-title{font-family:'Fredoka One',cursive;font-size:14px;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.q-label{font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px;letter-spacing:.6px}
+.q-input{width:100%;padding:9px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;outline:none;transition:border .2s;margin-bottom:12px}
+.q-input:focus{border-color:var(--accent)}
+.q-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+
+/* Service checkbox grid */
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.svc-check{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
+.svc-check:hover{border-color:var(--border2)}
+.svc-check.selected{border-color:var(--accent);background:rgba(200,17,26,.08)}
+.svc-check input{accent-color:var(--accent);width:14px;height:14px}
+.svc-check-name{font-size:12px;font-weight:700;color:var(--text)}
+.svc-check-price{font-size:11px;color:var(--text2);margin-left:auto;font-family:'Fredoka One',cursive}
+
+/* Materials tags */
+.mat-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.mat-tag{background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s}
+.mat-tag:hover{border-color:var(--border2)}
+.mat-tag.selected{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,.08)}
+
+/* Qty control */
+.qty-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.qty-btn{width:28px;height:28px;background:var(--border2);border:none;color:var(--text);border-radius:6px;font-size:16px;line-height:1;transition:background .15s}
+.qty-btn:hover{background:var(--accent);color:var(--gold)}
+.qty-num{font-family:'Fredoka One',cursive;font-size:16px;color:var(--text);width:36px;text-align:center}
+
+/* Preview */
+.preview-header{background:var(--accent);border-radius:14px;padding:16px;text-align:center;margin-bottom:16px}
+.prev-business{font-family:'Lilita One',cursive;font-size:16px;color:var(--gold)}
+.prev-sub{font-size:10px;color:rgba(255,215,0,.7);letter-spacing:1px;margin-top:2px}
+.prev-folio{font-size:11px;color:rgba(255,215,0,.6);margin-top:6px}
+.prev-client-block{background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:12px}
+.prev-client-name{font-family:'Fredoka One',cursive;font-size:15px;color:var(--text)}
+.prev-client-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.prev-line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.prev-line:last-of-type{border:none}
+.prev-line-key{color:var(--text2)}
+.prev-line-val{font-weight:700;color:var(--text);font-family:'Fredoka One',cursive}
+.prev-total-box{background:var(--accent);border-radius:12px;padding:14px;text-align:center;margin:12px 0}
+.prev-total-label{font-size:11px;color:rgba(255,215,0,.7);letter-spacing:1px}
+.prev-total-num{font-family:'Lilita One',cursive;font-size:36px;color:var(--gold);text-shadow:1px 1px 0 var(--accent-dark)}
+.prev-notes{font-size:11px;color:var(--text3);font-style:italic;margin-bottom:12px}
+
+/* ─── QUOTATION HISTORY ──────────────────────────────────── */
+.hist-table{width:100%;border-collapse:collapse;font-size:13px}
+.hist-table th{background:var(--surface2);color:var(--text2);font-size:11px;font-weight:700;letter-spacing:.8px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+.hist-table td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--text)}
+.hist-table tr:hover td{background:var(--surface2)}
+.hist-table tr:last-child td{border:none}
+
+/* ─── DASHBOARD KPIs ──────────────────────────────────── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px}
+.dash-card-title{font-family:'Fredoka One',cursive;font-size:13px;color:var(--text2);margin-bottom:14px;letter-spacing:.3px}
+.mini-bar{height:6px;border-radius:3px;background:var(--border2);overflow:hidden;margin-bottom:6px}
+.mini-bar-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .6s ease}
+.mini-bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2)}
+
+/* ─── TOAST ──────────────────────────────────── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:700;color:var(--text);z-index:9998;box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateY(20px);opacity:0;transition:all .25s;display:flex;align-items:center;gap:8px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:var(--success);color:var(--success)}
+.toast.error{border-color:var(--danger);color:var(--danger)}
+.toast.info{border-color:var(--info);color:var(--info)}
+
+/* ─── FORM ROW ──────────────────────────────────── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-full{grid-column:1/-1}
+
+/* ─── BUTTONS ──────────────────────────────────── */
+.btn{padding:10px 20px;border-radius:10px;font-family:'Fredoka One',cursive;font-size:13px;border:1.5px solid;transition:all .15s;letter-spacing:.3px}
+.btn-primary{background:var(--accent);border-color:var(--accent-dark);color:var(--gold)}
+.btn-primary:hover{background:var(--accent-dark)}
+.btn-ghost{background:transparent;border-color:var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--text2);color:var(--text)}
+.btn-success{background:rgba(34,197,94,.1);border-color:var(--success);color:var(--success)}
+.btn-success:hover{background:var(--success);color:var(--bg)}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-full{width:100%;text-align:center}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ─── RESPONSIVE ──────────────────────────────────── */
+@media(max-width:900px){
+  :root{--sidebar-w:0px}
+  .sidebar{display:none}
+  .main-content{margin-left:0;padding:calc(var(--header-h)+16px) 16px 40px}
+  .agenda-layout,.quote-layout{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .svc-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .action-row{grid-template-columns:1fr}
+  .receipt-actions{grid-template-columns:1fr}
+  .mobile-menu-btn{display:flex!important}
+}
+.mobile-menu-btn{display:none;background:var(--border2);border:none;color:var(--text);width:34px;height:34px;border-radius:8px;align-items:center;justify-content:center;font-size:18px}
+
+/* ─── MISC ──────────────────────────────────── */
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:.5px}
+.tag-gold{background:rgba(255,215,0,.12);color:var(--gold)}
+.img-ref-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.img-ref-item{border-radius:8px;border:1px solid var(--border);height:70px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3)}
+.reschedule-form{background:var(--surface2);border-radius:12px;padding:14px;margin-top:12px;display:none}
+.reschedule-form.open{display:block}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN SCREEN ═══════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="login-logo-brand">Chucky's Charm Studio™</span>
+      <span class="login-logo-sub">Schedule · Admin</span>
+      <span class="login-badge">admin.schedule.com</span>
+    </div>
+    <p class="login-err" id="loginErr"></p>
+    <label class="lf-label">CORREO ELECTRÓNICO</label>
+    <input class="lf-input" type="email" id="loginEmail" placeholder="admin@chuckyscharmnails.com" value="admin@chuckyscharmnails.com"/>
+    <label class="lf-label">CONTRASEÑA</label>
+    <input class="lf-input" type="password" id="loginPass" placeholder="••••••••" value="chucky2025"/>
+    <button class="login-btn" onclick="doLogin()">Iniciar sesión →</button>
+    <hr class="login-divider"/>
+    <p class="login-hint">🔒 Acceso restringido · Solo personal autorizado<br>Demo: admin@chuckyscharmnails.com / chucky2025</p>
+  </div>
+</div>
+
+<!-- ═══════════ APP SHELL ═══════════ -->
+<div id="appShell">
+
+  <!-- HEADER -->
+  <header class="top-header">
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="hdr-logo">Chucky's™<span>Schedule Admin</span></div>
+    <span class="hdr-badge">ADMIN · admin.schedule.com</span>
+    <div class="hdr-spacer"></div>
+    <div class="hdr-user">
+      <div class="hdr-avatar">A</div>
+      <div>
+        <div class="hdr-name">Admin / Manicurista</div>
+        <div class="hdr-role">RBAC: ADMIN_MANICURIST</div>
+      </div>
+    </div>
+    <button class="hdr-logout" onclick="doLogout()">Salir ↗</button>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <p class="sb-section">Principal</p>
+    <button class="sb-btn active" id="sb-dashboard" onclick="showModule('dashboard')"><span class="sb-icon">📊</span> Dashboard</button>
+    <button class="sb-btn" id="sb-agenda" onclick="showModule('agenda')"><span class="sb-icon">📅</span> Agenda <span class="sb-badge" id="pendingBadge">3</span></button>
+
+    <p class="sb-section">Operaciones</p>
+    <button class="sb-btn" id="sb-quotes" onclick="showModule('quotes')"><span class="sb-icon">💰</span> Cotizaciones</button>
+    <button class="sb-btn" id="sb-history" onclick="showModule('history')"><span class="sb-icon">📋</span> Historial</button>
+
+    <p class="sb-section">Sistema</p>
+    <button class="sb-btn" id="sb-settings" onclick="showModule('settings')"><span class="sb-icon">⚙️</span> Configuración</button>
+
+    <div class="sb-footer">
+      <p class="sb-version">Schedule v1.0 · RBAC Ready</p>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- ─── DASHBOARD ─── -->
+    <div class="module active" id="module-dashboard">
+      <p class="page-title">Buenos días, Admin 👋</p>
+      <p class="page-sub">Resumen del negocio · Chucky's Charm Studio</p>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-num" id="statToday">5</div>
+          <div class="stat-label">Citas hoy</div>
+          <div class="stat-trend up">↑ 2 vs ayer</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-num">3</div>
+          <div class="stat-label">Pendientes</div>
+          <div class="stat-trend neu">Sin cambio</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-num">$4,850</div>
+          <div class="stat-label">Ingresos esta semana</div>
+          <div class="stat-trend up">↑ 18%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🌟</div>
+          <div class="stat-num">12</div>
+          <div class="stat-label">Citas este mes</div>
+          <div class="stat-trend up">↑ 4 vs mes ant.</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <p class="dash-card-title">Servicios más solicitados</p>
+          <div id="serviceChart"></div>
+        </div>
+        <div class="dash-card">
+          <p class="dash-card-title">Próximas citas hoy</p>
+          <div id="todayList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── AGENDA ─── -->
+    <div class="module" id="module-agenda">
+      <p class="page-title">Agenda</p>
+      <p class="page-sub">Gestión de citas y disponibilidad</p>
+
+      <div class="week-view">
+        <div class="week-header">
+          <div class="week-hcell" style="font-size:10px;padding:10px 4px">Hora</div>
+          <div class="week-hcell" id="wh0"></div>
+          <div class="week-hcell" id="wh1"></div>
+          <div class="week-hcell" id="wh2"></div>
+          <div class="week-hcell" id="wh3"></div>
+          <div class="week-hcell" id="wh4"></div>
+          <div class="week-hcell" id="wh5"></div>
+        </div>
+        <div class="week-body" id="weekBody"></div>
+      </div>
+
+      <div class="agenda-layout">
+        <!-- MONTH CALENDAR -->
+        <div class="cal-card">
+          <div class="cal-header">
+            <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+            <span class="cal-month-lbl" id="calLbl"></span>
+            <button class="cal-nav-btn" onclick="calNext()">›</button>
+          </div>
+          <div class="cal-body">
+            <div class="cal-dow">
+              <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div style="color:var(--danger)">D</div>
+            </div>
+            <div class="cal-grid-days" id="calGrid"></div>
+          </div>
+        </div>
+
+        <!-- APPOINTMENT LIST -->
+        <div class="appt-panel">
+          <div class="appt-panel-title">
+            <span id="apptPanelDate">Selecciona una fecha</span>
+            <button class="btn btn-primary btn-sm" onclick="openNewApptModal()">+ Nueva</button>
+          </div>
+          <div id="apptList">
+            <div class="empty-state">Selecciona un día en el calendario para ver citas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── QUOTES ─── -->
+    <div class="module" id="module-quotes">
+      <p class="page-title">Nueva Cotización</p>
+      <p class="page-sub">Genera cotizaciones detalladas para clientes</p>
+
+      <div class="quote-layout">
+        <!-- FORM -->
+        <div class="quote-form-card">
+
+          <!-- Client info -->
+          <p class="q-section-title">👤 Datos del Cliente</p>
+          <div class="form-row">
+            <div><label class="q-label">NOMBRE COMPLETO</label><input class="q-input" id="qClientName" placeholder="María García" oninput="updatePreview()"/></div>
+            <div><label class="q-label">TELÉFONO</label><input class="q-input" id="qClientPhone" placeholder="+52 55 1234 5678" oninput="updatePreview()"/></div>
+            <div class="form-full"><label class="q-label">CORREO</label><input class="q-input" id="qClientEmail" placeholder="maria@correo.com" oninput="updatePreview()"/></div>
+          </div>
+
+          <hr class="divider"/>
+
+          <!-- Services -->
+          <p class="q-section-title">💅 Servicios</p>
+          <div class="svc-grid" id="svcGrid"></div>
+
+          <hr class="divider"/>
+
+          <!-- Nail length -->
+          <p class="q-section-title">📏 Longitud</p>
+          <div class="svc-grid" id="lengthGrid"></div>
+
+          <hr class="divider"/>
+
+          <!-- Materials -->
+          <p class="q-section-title">🎨 Materiales / Extras</p>
+          <div class="mat-grid" id="matsGrid"></div>
+
+          <hr class="divider"/>
+
+          <!-- Design complexity -->
+          <p class="q-section-title">✨ Complejidad del Diseño</p>
+          <div class="svc-grid" id="designGrid"></div>
+
+          <hr class="divider"/>
+
+          <!-- Nail count -->
+          <p class="q-section-title">🔢 Cantidad de Uñas</p>
+          <div class="qty-row">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <span class="qty-num" id="nailCount">10</span>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+            <span style="font-size:12px;color:var(--text2);margin-left:4px">uñas</span>
+          </div>
+
+          <hr class="divider"/>
+
+          <!-- Notes -->
+          <p class="q-section-title">📝 Notas</p>
+          <textarea class="q-input" id="qNotes" rows="3" placeholder="Descripción del diseño, referencias, detalles especiales..." oninput="updatePreview()"></textarea>
+
+          <!-- Date -->
+          <div class="form-row">
+            <div><label class="q-label">FECHA DE CITA</label><input class="q-input" id="qDate" type="date" oninput="updatePreview()"/></div>
+            <div><label class="q-label">HORARIO</label>
+              <select class="q-input q-select" id="qTime" onchange="updatePreview()">
+                <option>10:00 AM – 1:00 PM</option>
+                <option>1:00 PM – 3:00 PM</option>
+                <option>5:00 PM – 8:00 PM</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-row" style="margin-top:8px">
+            <button class="btn btn-primary" onclick="saveQuote()">💾 Guardar Cotización</button>
+            <button class="btn btn-ghost" onclick="resetQuote()">↺ Limpiar</button>
+          </div>
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="quote-preview-card">
+          <p class="q-section-title">👁 Vista Previa</p>
+          <div id="quotePreview"></div>
+          <button class="btn btn-success btn-full" onclick="downloadQuotePDF()" style="margin-top:14px">⬇ Descargar PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── HISTORY ─── -->
+    <div class="module" id="module-history">
+      <p class="page-title">Historial de Cotizaciones</p>
+      <p class="page-sub">Registros guardados en el sistema</p>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden">
+        <table class="hist-table">
+          <thead><tr><th>Folio</th><th>Cliente</th><th>Servicio</th><th>Total</th><th>Fecha Cita</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── SETTINGS ─── -->
+    <div class="module" id="module-settings">
+      <p class="page-title">Configuración</p>
+      <p class="page-sub">Sistema y perfil de usuario</p>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;max-width:500px">
+        <p class="q-section-title">👤 Perfil Admin</p>
+        <label class="q-label">NOMBRE</label><input class="q-input" value="Admin / Manicurista"/>
+        <label class="q-label">EMAIL</label><input class="q-input" value="admin@chuckyscharmnails.com"/>
+        <label class="q-label">ROL ACTUAL</label>
+        <div style="background:var(--surface2);border:1.5px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--gold);font-family:'Fredoka One',cursive">ADMIN_MANICURIST <span style="font-size:10px;color:var(--text3);font-family:'Nunito',sans-serif;font-weight:400">· Todos los permisos</span></div>
+        <hr class="divider"/>
+        <p class="q-section-title">🔐 Roles RBAC (Escalabilidad futura)</p>
+        <div style="display:grid;gap:8px">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px">
+            <p style="font-size:12px;font-weight:700;color:var(--gold)">ADMIN_MANICURIST</p>
+            <p style="font-size:11px;color:var(--text2);margin-top:3px">Acceso completo: agenda, cotizaciones, inventario, configuración</p>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;opacity:.6">
+            <p style="font-size:12px;font-weight:700;color:var(--text2)">MANICURIST <span style="font-size:10px">(futuro)</span></p>
+            <p style="font-size:11px;color:var(--text3);margin-top:3px">Agenda y cotizaciones propias únicamente</p>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;opacity:.6">
+            <p style="font-size:12px;font-weight:700;color:var(--text2)">ASSISTANT <span style="font-size:10px">(futuro)</span></p>
+            <p style="font-size:11px;color:var(--text3);margin-top:3px">Solo visualización de agenda</p>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px">Guardar cambios</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── APPOINTMENT DETAIL MODAL ─── -->
+<div class="modal-overlay" id="apptModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      Detalles de Cita
+      <button class="modal-close" onclick="closeModal('apptModal')">×</button>
+    </div>
+    <div id="apptDetailContent"></div>
+  </div>
+</div>
+
+<!-- ─── NEW APPOINTMENT MODAL ─── -->
+<div class="modal-overlay" id="newApptModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      Nueva Cita Manual
+      <button class="modal-close" onclick="closeModal('newApptModal')">×</button>
+    </div>
+    <div class="form-row">
+      <div><label class="q-label">NOMBRE</label><input class="q-input" id="naName" placeholder="María García"/></div>
+      <div><label class="q-label">TELÉFONO</label><input class="q-input" id="naTel" placeholder="+52 55..."/></div>
+      <div class="form-full"><label class="q-label">EMAIL</label><input class="q-input" id="naEmail" placeholder="maria@correo.com"/></div>
+      <div><label class="q-label">FECHA</label><input class="q-input" id="naDate" type="date"/></div>
+      <div><label class="q-label">HORARIO</label>
+        <select class="q-input q-select" id="naSlot">
+          <option>10:00 AM – 1:00 PM</option><option>1:00 PM – 3:00 PM</option><option>5:00 PM – 8:00 PM</option>
+        </select>
+      </div>
+      <div class="form-full"><label class="q-label">SERVICIO</label>
+        <select class="q-input q-select" id="naService">
+          <option>Gel Básico</option><option>Nail Art Premium</option><option>Acrílicas</option><option>Relleno</option><option>Retiro</option><option>Manicura Clásica</option>
+        </select>
+      </div>
+      <div class="form-full"><label class="q-label">NOTAS</label><textarea class="q-input" id="naNotes" rows="2" placeholder="Notas..."></textarea></div>
+    </div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-primary" onclick="saveNewAppt()">Guardar cita</button>
+      <button class="btn btn-ghost" onclick="closeModal('newApptModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════ AUTH (JWT simulation) ═══════════
+const USERS=[{email:'admin@chuckyscharmnails.com',password:'chucky2025',name:'Admin / Manicurista',role:'ADMIN_MANICURIST'}];
+let currentUser=null,jwtToken=null;
+
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  const u=USERS.find(u=>u.email===email&&u.password===pass);
+  if(!u){document.getElementById('loginErr').textContent='Credenciales incorrectas';return;}
+  currentUser=u;
+  jwtToken='jwt_'+btoa(email+'|'+Date.now());
+  sessionStorage.setItem('ccs_token',jwtToken);
+  sessionStorage.setItem('ccs_user',JSON.stringify(u));
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appShell').style.display='block';
+  initApp();
+}
+
+function doLogout(){
+  sessionStorage.clear();currentUser=null;jwtToken=null;
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+}
+
+// ═══════════ RBAC ═══════════
+const PERMISSIONS={
+  ADMIN_MANICURIST:['agenda.view','agenda.edit','agenda.delete','quotes.view','quotes.create','quotes.export','history.view','settings.view','settings.edit'],
+  MANICURIST:['agenda.view','agenda.edit','quotes.view','quotes.create'],
+  ASSISTANT:['agenda.view']
+};
+function can(perm){return currentUser&&(PERMISSIONS[currentUser.role]||[]).includes(perm);}
+
+// ═══════════ MODULE ROUTING ═══════════
+function showModule(id){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('module-'+id).classList.add('active');
+  const sb=document.getElementById('sb-'+id);if(sb)sb.classList.add('active');
+  if(id==='agenda')renderAgenda();
+  if(id==='history')renderHistory();
+  if(id==='dashboard')renderDashboard();
+}
+
+function toggleSidebar(){
+  const s=document.getElementById('sidebar');
+  s.style.display=s.style.display==='flex'?'none':'flex';
+  s.style.flexDirection='column';
+}
+
+// ═══════════ DATA ═══════════
+const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DNAMES=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
+let selectedDate=null;
+let savedQuotes=[];
+let quoteCounter=1000;
+
+// SAMPLE APPOINTMENTS
+let appointments=[
+  {id:'A001',name:'Sofía Ramírez',email:'sofia@email.com',tel:'+52 55 1111 2222',date:getDateStr(1),slot:'10:00 AM – 1:00 PM',service:'Nail Art Premium',status:'confirmed',notes:'Diseño floral, colores pastel',folio:'CCS-A001',anticipo:100},
+  {id:'A002',name:'Valentina López',email:'val@email.com',tel:'+52 55 3333 4444',date:getDateStr(1),slot:'1:00 PM – 3:00 PM',service:'Acrílicas',status:'pending',notes:'French con decoración',folio:'CCS-A002',anticipo:100},
+  {id:'A003',name:'Gabriela Torres',email:'gaby@email.com',tel:'+52 55 5555 6666',date:getDateStr(2),slot:'10:00 AM – 1:00 PM',service:'Gel Básico',status:'confirmed',notes:'Color rojo cereza',folio:'CCS-A003',anticipo:100},
+  {id:'A004',name:'Camila Herrera',email:'cami@email.com',tel:'+52 55 7777 8888',date:getDateStr(3),slot:'5:00 PM – 8:00 PM',service:'Relleno',status:'pending',notes:'',folio:'CCS-A004',anticipo:100},
+  {id:'A005',name:'Isabella Méndez',email:'isa@email.com',tel:'+52 55 9999 0000',date:getDateStr(0),slot:'10:00 AM – 1:00 PM',service:'Manicura Clásica',status:'confirmed',notes:'',folio:'CCS-A005',anticipo:100},
+  {id:'A006',name:'Mariana Ruiz',email:'mari@email.com',tel:'+52 55 1212 3434',date:getDateStr(0),slot:'1:00 PM – 3:00 PM',service:'Gel Básico',status:'pending',notes:'Diseño minimalista',folio:'CCS-A006',anticipo:100},
+  {id:'A007',name:'Daniela Castro',email:'dani@email.com',tel:'+52 55 5656 7878',date:getDateStr(5),slot:'10:00 AM – 1:00 PM',service:'Acrílicas',status:'cancelled',notes:'Canceló por viaje',folio:'CCS-A007',anticipo:100},
+];
+
+function getDateStr(daysAhead){const d=new Date();d.setDate(d.getDate()+daysAhead);return d.toISOString().split('T')[0];}
+
+// SERVICES DATA (from Chucky's Charm Studio)
+const SERVICES=[
+  {id:'gel_basico',name:'Gel Básico',price:250,category:'base'},
+  {id:'gel_premium',name:'Gel Premium',price:350,category:'base'},
+  {id:'acrilicas',name:'Acrílicas',price:450,category:'base'},
+  {id:'acrilicas_diseno',name:'Acrílicas + Diseño',price:550,category:'base'},
+  {id:'relleno',name:'Relleno Acrílico',price:200,category:'base'},
+  {id:'retiro',name:'Retiro',price:150,category:'base'},
+  {id:'manicura',name:'Manicura Clásica',price:120,category:'base'},
+];
+
+const LENGTHS=[
+  {id:'corta',name:'Corta',price:0},
+  {id:'media',name:'Media',price:50},
+  {id:'larga',name:'Larga',price:100},
+  {id:'extra',name:'Extra Larga',price:150},
+];
+
+const MATERIALS=[
+  {id:'glitter',name:'✨ Glitter Premium',price:60},
+  {id:'piedras',name:'💎 Piedras / Charms',price:80},
+  {id:'foil',name:'🌟 Foil Metálico',price:70},
+  {id:'gel_color',name:'🎨 Gel de Color Extra',price:40},
+  {id:'nail_art_brush',name:'🖌 Nail Art Detallado',price:120},
+  {id:'3d',name:'🦋 Efecto 3D',price:150},
+  {id:'ombre',name:'🌈 Ombre / Degradado',price:100},
+  {id:'encapsulado',name:'🌸 Encapsulado',price:200},
+];
+
+const DESIGNS=[
+  {id:'simple',name:'Simple (1-2 colores)',price:0},
+  {id:'medio',name:'Medio (diseño básico)',price:80},
+  {id:'complejo',name:'Complejo (arte detallado)',price:180},
+  {id:'premium',name:'Premium (3D / Personalizado)',price:300},
+];
+
+// ═══════════ QUOTE STATE ═══════════
+let qState={services:[],length:null,materials:[],design:null,nails:10};
+
+// ═══════════ INIT ═══════════
+function initApp(){
+  renderDashboard();
+  buildQuoteForm();
+  renderCalendar();
+  renderWeekView();
+  updatePendingBadge();
+  // set today as default date for new appt
+  document.getElementById('naDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('qDate').value=new Date().toISOString().split('T')[0];
+}
+
+// ═══════════ DASHBOARD ═══════════
+function renderDashboard(){
+  // Service chart
+  const svcCounts={};
+  appointments.filter(a=>a.status!=='cancelled').forEach(a=>{
+    svcCounts[a.service]=(svcCounts[a.service]||0)+1;
+  });
+  const max=Math.max(...Object.values(svcCounts),1);
+  const colors=['var(--accent)','var(--gold)','var(--info)','var(--success)','var(--warn)'];
+  let html='';
+  Object.entries(svcCounts).sort((a,b)=>b[1]-a[1]).forEach(([name,count],i)=>{
+    const pct=Math.round(count/max*100);
+    html+=`<div style="margin-bottom:10px">
+      <div class="mini-bar-label"><span>${name}</span><span style="color:var(--text)">${count}</span></div>
+      <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%;background:${colors[i%colors.length]}"></div></div>
+    </div>`;
+  });
+  document.getElementById('serviceChart').innerHTML=html||'<p class="empty-state">Sin datos</p>';
+
+  // Today list
+  const today=new Date().toISOString().split('T')[0];
+  const todayAppts=appointments.filter(a=>a.date===today&&a.status!=='cancelled');
+  let thtml='';
+  if(todayAppts.length===0)thtml='<div class="empty-state">Sin citas hoy</div>';
+  else todayAppts.forEach(a=>{
+    thtml+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="width:8px;height:8px;border-radius:50%;background:${a.status==='confirmed'?'var(--success)':'var(--warn)'}"></div>
+      <div><p style="font-size:13px;font-weight:700">${a.name}</p><p style="font-size:11px;color:var(--text2)">${a.slot} · ${a.service}</p></div>
+    </div>`;
+  });
+  document.getElementById('todayList').innerHTML=thtml;
+}
+
+// ═══════════ CALENDAR ═══════════
+function renderCalendar(){
+  document.getElementById('calLbl').textContent=MONTHS[calMonth]+' '+calYear;
+  const grid=document.getElementById('calGrid');grid.innerHTML='';
+  let dow=new Date(calYear,calMonth,1).getDay();dow=dow===0?6:dow-1;
+  const dim=new Date(calYear,calMonth+1,0).getDate();
+  const prevDim=new Date(calYear,calMonth,0).getDate();
+  for(let i=0;i<dow;i++){
+    const d=prevDim-dow+1+i;const el=document.createElement('div');el.className='cal-day other-month';
+    el.innerHTML=`<div class="cal-day-num">${d}</div>`;grid.appendChild(el);
+  }
+  for(let d=1;d<=dim;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el=document.createElement('div');
+    const isToday=dateStr===new Date().toISOString().split('T')[0];
+    const isSel=selectedDate===dateStr;
+    el.className='cal-day'+(isToday?' today':'')+(isSel?' selected':'');
+    const dayAppts=appointments.filter(a=>a.date===dateStr);
+    let pips='';
+    dayAppts.forEach(a=>{pips+=`<div class="appt-pip ${a.status}" title="${a.name}"></div>`;});
+    el.innerHTML=`<div class="cal-day-num">${d}</div>${pips}`;
+    el.onclick=()=>selectCalDay(dateStr);
+    grid.appendChild(el);
+  }
+  // Fill remaining
+  const total=dow+dim;const remaining=(7-total%7)%7;
+  for(let d=1;d<=remaining;d++){
+    const el=document.createElement('div');el.className='cal-day other-month';
+    el.innerHTML=`<div class="cal-day-num">${d}</div>`;grid.appendChild(el);
+  }
+}
+
+function selectCalDay(dateStr){
+  selectedDate=dateStr;
+  renderCalendar();
+  const d=new Date(dateStr+'T12:00:00');
+  document.getElementById('apptPanelDate').textContent=DNAMES[d.getDay()]+' '+d.getDate()+' de '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+  renderApptList(dateStr);
+}
+
+function renderApptList(dateStr){
+  const list=appointments.filter(a=>a.date===dateStr);
+  const el=document.getElementById('apptList');
+  if(list.length===0){el.innerHTML='<div class="empty-state">Sin citas este día<br><span style="font-size:11px">Haz clic en "+ Nueva" para agregar</span></div>';return;}
+  el.innerHTML=list.map(a=>`
+    <div class="appt-item" onclick="openApptDetail('${a.id}')">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div class="appt-status-dot" style="background:${a.status==='confirmed'?'var(--success)':a.status==='pending'?'var(--warn)':'var(--danger)'}"></div>
+        <span class="appt-name">${a.name}</span>
+        <span class="status-chip chip-${a.status}" style="margin-left:auto">${statusLabel(a.status)}</span>
+      </div>
+      <div class="appt-time">🕐 ${a.slot}</div>
+      <div class="appt-service">💅 ${a.service}</div>
+    </div>
+  `).join('');
+}
+
+function statusLabel(s){return{confirmed:'Confirmada',pending:'Pendiente',cancelled:'Cancelada',busy:'Ocupada'}[s]||s;}
+
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+
+// ═══════════ APPOINTMENT DETAIL ═══════════
+function openApptDetail(id){
+  const a=appointments.find(x=>x.id===id);if(!a)return;
+  const dEl=document.getElementById('apptDetailContent');
+  dEl.innerHTML=`
+    <div class="detail-row"><span class="detail-icon">👤</span><div><p class="detail-key">Cliente</p><p class="detail-val">${a.name}</p></div></div>
+    <div class="detail-row"><span class="detail-icon">📧</span><div><p class="detail-key">Correo</p><p class="detail-val">${a.email}</p></div></div>
+    <div class="detail-row"><span class="detail-icon">📱</span><div><p class="detail-key">Teléfono</p><p class="detail-val">${a.tel}</p></div></div>
+    <div class="detail-row"><span class="detail-icon">📅</span><div><p class="detail-key">Fecha</p><p class="detail-val">${a.date}</p></div></div>
+    <div class="detail-row"><span class="detail-icon">🕐</span><div><p class="detail-key">Horario</p><p class="detail-val">${a.slot}</p></div></div>
+    <div class="detail-row"><span class="detail-icon">💅</span><div><p class="detail-key">Servicio</p><p class="detail-val">${a.service}</p></div></div>
+    <div class="detail-row"><span class="detail-icon">💳</span><div><p class="detail-key">Anticipo</p><p class="detail-val" style="color:var(--success)">$${a.anticipo} MXN ✓</p></div></div>
+    ${a.notes?`<div class="detail-row"><span class="detail-icon">📝</span><div><p class="detail-key">Notas</p><p class="detail-val">${a.notes}</p></div></div>`:''}
+    <div class="detail-row"><span class="detail-icon">🏷</span><div><p class="detail-key">Estado</p><p class="detail-val"><span class="status-chip chip-${a.status}">${statusLabel(a.status)}</span></p></div></div>
+
+    <div class="reschedule-form" id="rescheduleForm">
+      <label class="q-label">NUEVA FECHA</label><input class="q-input" id="rescheduleDate" type="date" value="${a.date}"/>
+      <label class="q-label">NUEVO HORARIO</label>
+      <select class="q-input q-select" id="rescheduleSlot">
+        <option ${a.slot==='10:00 AM – 1:00 PM'?'selected':''}>10:00 AM – 1:00 PM</option>
+        <option ${a.slot==='1:00 PM – 3:00 PM'?'selected':''}>1:00 PM – 3:00 PM</option>
+        <option ${a.slot==='5:00 PM – 8:00 PM'?'selected':''}>5:00 PM – 8:00 PM</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="doReschedule('${a.id}')">Confirmar reprogramación</button>
+    </div>
+
+    <div class="action-row">
+      <button class="act-btn act-btn-confirm" onclick="changeApptStatus('${a.id}','confirmed')">✅ Confirmar</button>
+      <button class="act-btn act-btn-reschedule" onclick="toggleReschedule()">📅 Reprogramar</button>
+      <button class="act-btn act-btn-busy" onclick="changeApptStatus('${a.id}','busy')">🔵 Ocupada</button>
+      <button class="act-btn act-btn-cancel" onclick="changeApptStatus('${a.id}','cancelled')">❌ Cancelar</button>
+    </div>
+  `;
+  openModal('apptModal');
+}
+
+function toggleReschedule(){
+  const f=document.getElementById('rescheduleForm');
+  f.classList.toggle('open');
+}
+
+function doReschedule(id){
+  const a=appointments.find(x=>x.id===id);if(!a)return;
+  a.date=document.getElementById('rescheduleDate').value;
+  a.slot=document.getElementById('rescheduleSlot').value;
+  a.status='confirmed';
+  closeModal('apptModal');
+  if(selectedDate)renderApptList(selectedDate);
+  renderCalendar();renderWeekView();updatePendingBadge();
+  showToast('✅ Cita reprogramada correctamente','success');
+}
+
+function changeApptStatus(id,status){
+  const a=appointments.find(x=>x.id===id);if(!a)return;
+  a.status=status;
+  closeModal('apptModal');
+  if(selectedDate)renderApptList(selectedDate);
+  renderCalendar();renderWeekView();updatePendingBadge();
+  showToast('Estado actualizado: '+statusLabel(status),'info');
+}
+
+// ═══════════ WEEK VIEW ═══════════
+const WEEK_HOURS=['10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','5 PM','6 PM','7 PM'];
+const SLOT_MAP={'10:00 AM – 1:00 PM':[0,1,2],'1:00 PM – 3:00 PM':[3,4],'5:00 PM – 8:00 PM':[6,7,8]};
+
+function renderWeekView(){
+  const today=new Date();
+  const dow=today.getDay();
+  const monday=new Date(today);monday.setDate(today.getDate()-(dow===0?6:dow-1));
+  const days=[];for(let i=0;i<6;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);days.push(d);}
+  days.forEach((d,i)=>{
+    const el=document.getElementById('wh'+i);
+    if(el)el.textContent=DNAMES[d.getDay()]+' '+d.getDate();
+  });
+  const body=document.getElementById('weekBody');body.innerHTML='';
+  WEEK_HOURS.forEach((h,hi)=>{
+    const timeCell=document.createElement('div');timeCell.className='week-time';timeCell.textContent=h;body.appendChild(timeCell);
+    days.forEach((d,di)=>{
+      const dateStr=d.toISOString().split('T')[0];
+      const cell=document.createElement('div');cell.className='week-cell';
+      const appts=appointments.filter(a=>a.date===dateStr&&a.status!=='cancelled');
+      const slotAppts=appts.filter(a=>{const idx=SLOT_MAP[a.slot]||[];return idx.includes(hi);});
+      if(slotAppts.length){
+        slotAppts.forEach(a=>{
+          const pip=document.createElement('div');
+          pip.className='week-appt'+(a.status==='pending'?' pending':'');
+          pip.textContent=a.name.split(' ')[0];
+          pip.onclick=()=>openApptDetail(a.id);
+          cell.appendChild(pip);
+        });
+      }
+      cell.onclick=()=>{if(!slotAppts.length){selectCalDay(dateStr);showModule('agenda');}};
+      body.appendChild(cell);
+    });
+  });
+}
+
+// ═══════════ NEW APPOINTMENT ═══════════
+function openNewApptModal(){openModal('newApptModal');}
+function saveNewAppt(){
+  const name=document.getElementById('naName').value.trim();
+  const date=document.getElementById('naDate').value;
+  if(!name||!date){showToast('Completa nombre y fecha','error');return;}
+  const newA={
+    id:'A'+Date.now(),
+    name,email:document.getElementById('naEmail').value,
+    tel:document.getElementById('naTel').value,
+    date,slot:document.getElementById('naSlot').value,
+    service:document.getElementById('naService').value,
+    status:'confirmed',
+    notes:document.getElementById('naNotes').value,
+    folio:'CCS-'+Math.random().toString(36).substr(2,5).toUpperCase(),
+    anticipo:0
+  };
+  appointments.push(newA);
+  closeModal('newApptModal');
+  selectedDate=date;renderCalendar();renderApptList(date);renderWeekView();updatePendingBadge();
+  showToast('✅ Cita creada correctamente','success');
+}
+
+// ═══════════ QUOTE BUILDER ═══════════
+function buildQuoteForm(){
+  // Services
+  let h='';
+  SERVICES.forEach(s=>{h+=`<div class="svc-check" id="sc_${s.id}" onclick="toggleService('${s.id}')"><input type="checkbox" id="cb_${s.id}"/><div><div class="svc-check-name">${s.name}</div></div><span class="svc-check-price">$${s.price}</span></div>`;});
+  document.getElementById('svcGrid').innerHTML=h;
+  // Lengths
+  let lh='';
+  LENGTHS.forEach(l=>{lh+=`<div class="svc-check" id="lc_${l.id}" onclick="selectLength('${l.id}')"><input type="radio" name="len" id="lr_${l.id}"/><div class="svc-check-name">${l.name}</div><span class="svc-check-price">${l.price>0?'+$'+l.price:'Incluido'}</span></div>`;});
+  document.getElementById('lengthGrid').innerHTML=lh;
+  // Materials
+  let mh='';
+  MATERIALS.forEach(m=>{mh+=`<span class="mat-tag" id="mt_${m.id}" onclick="toggleMat('${m.id}')">${m.name} +$${m.price}</span>`;});
+  document.getElementById('matsGrid').innerHTML=mh;
+  // Designs
+  let dh='';
+  DESIGNS.forEach(d=>{dh+=`<div class="svc-check" id="dc_${d.id}" onclick="selectDesign('${d.id}')"><input type="radio" name="des" id="dr_${d.id}"/><div class="svc-check-name">${d.name}</div><span class="svc-check-price">${d.price>0?'+$'+d.price:'Base'}</span></div>`;});
+  document.getElementById('designGrid').innerHTML=dh;
+  updatePreview();
+}
+
+function toggleService(id){
+  const idx=qState.services.indexOf(id);
+  if(idx>-1)qState.services.splice(idx,1);else qState.services.push(id);
+  document.getElementById('sc_'+id).classList.toggle('selected',qState.services.includes(id));
+  document.getElementById('cb_'+id).checked=qState.services.includes(id);
+  updatePreview();
+}
+function selectLength(id){
+  qState.length=id;
+  LENGTHS.forEach(l=>{
+    document.getElementById('lc_'+l.id).classList.toggle('selected',l.id===id);
+    document.getElementById('lr_'+l.id).checked=l.id===id;
+  });
+  updatePreview();
+}
+function toggleMat(id){
+  const idx=qState.materials.indexOf(id);
+  if(idx>-1)qState.materials.splice(idx,1);else qState.materials.push(id);
+  document.getElementById('mt_'+id).classList.toggle('selected',qState.materials.includes(id));
+  updatePreview();
+}
+function selectDesign(id){
+  qState.design=id;
+  DESIGNS.forEach(d=>{
+    document.getElementById('dc_'+d.id).classList.toggle('selected',d.id===id);
+    document.getElementById('dr_'+d.id).checked=d.id===id;
+  });
+  updatePreview();
+}
+function changeQty(d){
+  qState.nails=Math.max(1,Math.min(20,qState.nails+d));
+  document.getElementById('nailCount').textContent=qState.nails;
+  updatePreview();
+}
+
+function calcTotal(){
+  let t=0;
+  qState.services.forEach(id=>{const s=SERVICES.find(x=>x.id===id);if(s)t+=s.price;});
+  if(qState.length){const l=LENGTHS.find(x=>x.id===qState.length);if(l)t+=l.price;}
+  qState.materials.forEach(id=>{const m=MATERIALS.find(x=>x.id===id);if(m)t+=m.price;});
+  if(qState.design){const d=DESIGNS.find(x=>x.id===qState.design);if(d)t+=d.price;}
+  return t;
+}
+
+function updatePreview(){
+  const clientName=document.getElementById('qClientName')?.value||'';
+  const clientPhone=document.getElementById('qClientPhone')?.value||'';
+  const clientEmail=document.getElementById('qClientEmail')?.value||'';
+  const notes=document.getElementById('qNotes')?.value||'';
+  const date=document.getElementById('qDate')?.value||'';
+  const time=document.getElementById('qTime')?.value||'';
+  const total=calcTotal();
+  const folio='COT-'+String(quoteCounter+1).padStart(4,'0');
+
+  const lines=[];
+  qState.services.forEach(id=>{const s=SERVICES.find(x=>x.id===id);if(s)lines.push([s.name,'$'+s.price]);});
+  if(qState.length){const l=LENGTHS.find(x=>x.id===qState.length);if(l&&l.price>0)lines.push(['Longitud '+l.name,'+$'+l.price]);}
+  qState.materials.forEach(id=>{const m=MATERIALS.find(x=>x.id===id);if(m)lines.push([m.name.replace(/^[^\s]+ /,''),'+$'+m.price]);});
+  if(qState.design){const d=DESIGNS.find(x=>x.id===qState.design);if(d&&d.price>0)lines.push(['Diseño: '+d.name,'+$'+d.price]);}
+
+  const linesHTML=lines.length?lines.map(([k,v])=>`<div class="prev-line"><span class="prev-line-key">${k}</span><span class="prev-line-val">${v}</span></div>`).join('')
+    :'<p style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Selecciona servicios…</p>';
+
+  document.getElementById('quotePreview').innerHTML=`
+    <div class="preview-header">
+      <p class="prev-business">Chucky's Charm Studio™</p>
+      <p class="prev-sub">COTIZACIÓN PERSONALIZADA</p>
+      <p class="prev-folio">${folio}</p>
+    </div>
+    ${clientName?`<div class="prev-client-block">
+      <p class="prev-client-name">${clientName}</p>
+      <p class="prev-client-sub">${clientPhone}${clientPhone&&clientEmail?' · ':''  }${clientEmail}</p>
+    </div>`:''}
+    ${date?`<div class="prev-line"><span class="prev-line-key">📅 Fecha</span><span class="prev-line-val">${date}</span></div><div class="prev-line"><span class="prev-line-key">🕐 Horario</span><span class="prev-line-val">${time}</span></div>`:''}
+    <div style="background:var(--surface2);border-radius:10px;padding:12px;margin:10px 0">${linesHTML}</div>
+    <div class="prev-total-box">
+      <p class="prev-total-label">TOTAL ESTIMADO</p>
+      <p class="prev-total-num">$${total} <span style="font-size:16px">MXN</span></p>
+    </div>
+    ${notes?`<p class="prev-notes">Notas: ${notes}</p>`:''}
+    <div style="font-size:10px;color:var(--text3);text-align:center;border-top:1px solid var(--border);padding-top:10px">
+      Clavería, Azcapotzalco, CDMX<br>chukyscharmnails.com · +52 55 1234 5678<br>⚡ BATTERIES INCLUDED ⚡
+    </div>
+  `;
+}
+
+function saveQuote(){
+  const name=document.getElementById('qClientName').value.trim();
+  if(!name){showToast('Ingresa el nombre del cliente','error');return;}
+  if(qState.services.length===0){showToast('Selecciona al menos un servicio','error');return;}
+  const folio='COT-'+String(++quoteCounter).padStart(4,'0');
+  const services=qState.services.map(id=>SERVICES.find(x=>x.id===id)?.name).filter(Boolean).join(', ');
+  savedQuotes.push({
+    folio,client:name,services,total:calcTotal(),
+    date:document.getElementById('qDate').value,
+    email:document.getElementById('qClientEmail').value,
+    phone:document.getElementById('qClientPhone').value,
+    status:'saved',
+    notes:document.getElementById('qNotes').value,
+    snap:{...qState}
+  });
+  showToast('✅ Cotización '+folio+' guardada','success');
+}
+
+function resetQuote(){
+  qState={services:[],length:null,materials:[],design:null,nails:10};
+  document.getElementById('nailCount').textContent='10';
+  document.querySelectorAll('.svc-check').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('.mat-tag').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('input[type=checkbox],input[type=radio]').forEach(el=>el.checked=false);
+  ['qClientName','qClientPhone','qClientEmail','qNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  updatePreview();
+}
+
+// ═══════════ QUOTE PDF ═══════════
+function downloadQuotePDF(){
+  const clientName=document.getElementById('qClientName').value.trim()||'Cliente';
+  if(qState.services.length===0){showToast('Selecciona al menos un servicio','error');return;}
+  const total=calcTotal();
+  const folio='COT-'+String(quoteCounter).padStart(4,'0');
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a5'});
+  // Bg
+  doc.setFillColor(15,15,20);doc.rect(0,0,148,210,'F');
+  // Header
+  doc.setFillColor(200,17,26);doc.rect(0,0,148,28,'F');
+  doc.setTextColor(255,215,0);doc.setFontSize(15);doc.setFont('helvetica','bold');
+  doc.text("Chucky's Charm Studio™",74,12,{align:'center'});
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(255,215,0,0.7);
+  doc.text('COTIZACIÓN PERSONALIZADA',74,19,{align:'center'});
+  doc.setFontSize(9);doc.text('Folio: '+folio,74,25,{align:'center'});
+  // Client
+  doc.setTextColor(255,255,255);doc.setFontSize(13);doc.setFont('helvetica','bold');
+  doc.text(clientName,14,40);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(160,160,180);
+  doc.text(document.getElementById('qClientPhone').value+' · '+document.getElementById('qClientEmail').value,14,47);
+  // Line items
+  let y=60;
+  doc.setFillColor(30,30,40);doc.rect(10,55,128,5,'F');
+  doc.setTextColor(255,215,0);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  doc.text('SERVICIO / EXTRA',14,59);doc.text('PRECIO',130,59,{align:'right'});
+  y=68;
+  const lines=[];
+  qState.services.forEach(id=>{const s=SERVICES.find(x=>x.id===id);if(s)lines.push([s.name,'$'+s.price+' MXN']);});
+  if(qState.length){const l=LENGTHS.find(x=>x.id===qState.length);if(l&&l.price>0)lines.push(['Longitud '+l.name,'+$'+l.price+' MXN']);}
+  qState.materials.forEach(id=>{const m=MATERIALS.find(x=>x.id===id);if(m)lines.push([m.name.replace(/^[^\s]+ /,''),'+$'+m.price+' MXN']);});
+  if(qState.design){const d=DESIGNS.find(x=>x.id===qState.design);if(d&&d.price>0)lines.push(['Diseño: '+d.name,'+$'+d.price+' MXN']);}
+  lines.forEach(([k,v],i)=>{
+    doc.setFillColor(i%2===0?22:18,i%2===0?22:18,i%2===0?30:25);doc.rect(10,y-5,128,8,'F');
+    doc.setTextColor(220,220,230);doc.setFontSize(9);doc.setFont('helvetica','normal');
+    doc.text(k,14,y);doc.text(v,130,y,{align:'right'});y+=9;
+  });
+  // Total
+  doc.setFillColor(200,17,26);doc.rect(10,y+2,128,16,'F');
+  doc.setTextColor(255,215,0);doc.setFontSize(13);doc.setFont('helvetica','bold');
+  doc.text('TOTAL: $'+total+' MXN',74,y+13,{align:'center'});
+  y+=24;
+  // Notes
+  const notes=document.getElementById('qNotes').value;
+  if(notes){doc.setTextColor(160,160,160);doc.setFontSize(8);doc.setFont('helvetica','italic');doc.text('Notas: '+notes,14,y,{maxWidth:120});y+=12;}
+  // Footer
+  doc.setFillColor(200,17,26);doc.rect(0,190,148,20,'F');
+  doc.setTextColor(255,215,0);doc.setFontSize(7);doc.setFont('helvetica','normal');
+  doc.text('Clavería, Azcapotzalco, CDMX  ·  chukyscharmnails.com',74,197,{align:'center'});
+  doc.text('⚡ BATTERIES INCLUDED ⚡  ·  Play Partners Toys™  2025',74,203,{align:'center'});
+  doc.save('cotizacion_'+folio+'.pdf');
+  showToast('PDF descargado: '+folio,'success');
+}
+
+// ═══════════ HISTORY ═══════════
+function renderHistory(){
+  const body=document.getElementById('histBody');
+  if(savedQuotes.length===0){
+    body.innerHTML='<tr><td colspan="7" class="empty-state" style="padding:30px">No hay cotizaciones guardadas aún</td></tr>';
+    return;
+  }
+  body.innerHTML=savedQuotes.map(q=>`
+    <tr>
+      <td><span class="tag tag-gold">${q.folio}</span></td>
+      <td><span style="font-weight:700">${q.client}</span></td>
+      <td style="color:var(--text2);font-size:12px">${q.services.split(',')[0]}${q.services.includes(',')?' +más':''}</td>
+      <td><span style="font-family:'Fredoka One',cursive;color:var(--gold)">$${q.total} MXN</span></td>
+      <td style="color:var(--text2);font-size:12px">${q.date||'—'}</td>
+      <td><span class="status-chip chip-confirmed">Guardada</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="showToast('PDF listo','success')">⬇ PDF</button></td>
+    </tr>
+  `).join('');
+}
+
+// ═══════════ PENDING BADGE ═══════════
+function updatePendingBadge(){
+  const n=appointments.filter(a=>a.status==='pending').length;
+  document.getElementById('pendingBadge').textContent=n;
+  document.getElementById('pendingBadge').style.display=n?'inline':'none';
+}
+
+// ═══════════ MODAL ═══════════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('click',e=>{
+  if(e.target.classList.contains('modal-overlay'))closeModal(e.target.id);
+});
+
+// ═══════════ TOAST ═══════════
+let toastTimer;
+function showToast(msg,type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+type;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='toast',3500);
+}
+
+// ═══════════ AGENDA INIT ═══════════
+function renderAgenda(){renderCalendar();renderWeekView();}
+
+// ═══════════ AUTO LOGIN CHECK ═══════════
+(function checkSession(){
+  const tok=sessionStorage.getItem('ccs_token');
+  const usr=sessionStorage.getItem('ccs_user');
+  if(tok&&usr){
+    currentUser=JSON.parse(usr);jwtToken=tok;
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appShell').style.display='block';
+    initApp();
+  }
+})();
+</script>
+</body>
+</html>
