@@ -218,43 +218,57 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Imagen decorativa en la esquina superior */
+/* ─────────────────────────────────────────────────────────────
+   IMAGEN DECORATIVA EN CARDS
+   ─ Aparece SOLO en cards de Servicios (no en Políticas).
+   ─ Posición: esquina INFERIOR derecha (bottom:10px, right:10px).
+   ─ Se activa con hover en desktop y :active en móvil.
+   ─ pointer-events:none asegura que no interfiera con clics.
+   ───────────────────────────────────────────────────────────── */
 .card::after {
   content: "";
   position: absolute;
 
-  /* Posición en esquina superior derecha */
-  top: 10px;
+  /* ✅ CORREGIDO: esquina inferior derecha (antes era top:10px) */
+  bottom: 10px;
   right: 10px;
+  top: auto;             /* anula cualquier top heredado */
 
-  /* Tamaño adaptable */
   width: clamp(40px, 10vw, 70px);
   height: clamp(40px, 10vw, 70px);
 
-  /* Imagen que tú defines */
-  background-image: url("Chucky.png"); /* ← CAMBIA ESTO */
+  background-image: url("Chucky.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 
-  opacity: 0; /* Oculta por defecto */
+  opacity: 0;                          /* oculto por defecto */
   transform: scale(0.6) rotate(10deg);
-
   transition: all 0.3s ease;
-  z-index: 3; /* Encima del contenido */
-  pointer-events: none; /* No interfiere con clics */
+  z-index: 3;
+  pointer-events: none;
 }
 
-/* Aparece en desktop (hover) */
+/* Aparece al hacer hover (desktop) */
 .card:hover::after {
   opacity: 1;
   transform: scale(1) rotate(0deg);
 }
 
-/* Aparece en móvil (cuando el usuario toca la card) */
+/* Aparece al tocar (mobile) */
 .card:active::after {
   opacity: 1;
   transform: scale(1) rotate(0deg);
+}
+
+/* ✅ CORRECCIÓN: ocultar imagen decorativa en cards de POLÍTICAS
+   Se aplica tanto via clase .pol-card como cuando están dentro
+   del contenedor grid .card-container — doble cobertura. */
+.pol-card::after,
+.card-container .card::after,
+.lp-policy-track .card::after {
+  display: none !important;
+  content: none !important;
 }
 
 /* Contenido con Espaciado Proporcional */
@@ -540,7 +554,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   display:flex;align-items:center;justify-content:space-between;gap:12px;
 }
 .sticky-brand{display:flex;align-items:center;gap:10px}
-.sticky-chucky{width:34px;height:auto;filter:drop-shadow(0 2px 6px rgba(200,17,26,.25))}
+/* ✅ FIX #4: sin drop-shadow, conserva transparencia PNG */
+.sticky-chucky{width:34px;height:auto;}
 .sticky-brand-name{font-family:'Lilita One',cursive;font-size:18px;color:var(--accent);line-height:1;white-space:nowrap}
 .sticky-tm{font-size:9px;vertical-align:super;font-weight:700;color:#666}
 .sticky-studio-word{color:var(--accent-navy);font-size:15px}
@@ -614,9 +629,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   border-radius:50%;animation:blobPulse 5s ease-in-out infinite;
 }
 @keyframes blobPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+/* ─────────────────────────────────────────────────────────────
+   IMAGEN HERO (Chucky_Body.png)
+   ✅ FIX #4: se eliminó filter:drop-shadow — causaba un halo
+   de color que degradaba la apariencia con fondos transparentes.
+   La animación de flotado se conserva íntegra.
+   ───────────────────────────────────────────────────────────── */
 .lp-hero-img{
   width:clamp(170px,36vw,300px);height:auto;
-  filter:drop-shadow(0 20px 40px rgba(200,17,26,.26));
+  /* Sin filtro — preserva transparencia PNG sin sombra */
   animation:floatBody 4s ease-in-out infinite;
   position:relative;z-index:1;
 }
@@ -746,27 +767,77 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .lp-arrow-light:hover,.lp-arrow-light:focus{background:rgba(255,255,255,.22);color:var(--white)}
 @media(max-width:500px){.lp-arrow{width:32px;height:32px;font-size:18px}}
 
-/* ── Fase 4: Políticas ─────────────────────────────── */
-.lp-policies{background:var(--accent-navy);padding:80px 0 60px}
+/* ─────────────────────────────────────────────────────────────
+   TRACK DE SCROLL HORIZONTAL — POLÍTICAS
+   ─ Problema raíz: .card tiene overflow:hidden + transform en hover,
+     lo que interfería con el scroll container.
+   ─ Solución: contenedor dedicado .pol-track que es completamente
+     independiente del .lp-cards-track usado en Servicios.
+   ─ overscroll-behavior-x:contain evita que el scroll de la página
+     "robe" el gesto horizontal.
+   ─ -webkit-overflow-scrolling:touch activa inercia en iOS Safari.
+   ─ touch-action:pan-x indica al navegador que este eje es del track.
+   ───────────────────────────────────────────────────────────── */
 
-/* Policy cards: correct sizing + tap-to-reveal on mobile */
-.pol-card{
-  width:clamp(260px,78vw,340px) !important;
-  height:clamp(180px,26vw,230px) !important;
-  flex-shrink:0 !important;
-  scroll-snap-align:center !important;
-  /* Prevent height collapse on mobile */
-  min-height:180px;
+/* Wrapper: posición relativa para que las flechas se anclen aquí */
+.lp-pol-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
 }
-.pol-card .card__front-text{
-  font-size:clamp(20px,4.5vw,34px) !important;
-  padding:0 12px !important;
-  word-break:break-word;
+
+/* El track de scroll propiamente dicho */
+.pol-track {
+  display: flex;
+  flex-direction: row;
+  gap: clamp(12px, 3vw, 20px);
+
+  /* ── Scroll horizontal con snap ── */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;    /* snap duro por carta */
+  -webkit-overflow-scrolling: touch; /* inercia iOS */
+  overscroll-behavior-x: contain;   /* no propaga al body */
+  scroll-behavior: smooth;          /* animación suave con JS */
+  touch-action: pan-x;              /* optimiza gesto táctil */
+
+  /* Padding lateral para que se vea el borde de la siguiente carta */
+  padding: 20px clamp(14px, 6vw, 56px);
+
+  /* Ocultar scrollbar visual */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  width: 100%;
+  box-sizing: border-box;
 }
-/* Tap-to-reveal via .touched class (set by JS on mobile) */
-.pol-card.touched .card__content{
-  transform:translate(-50%,-50%) rotate(0deg) !important;
-  opacity:1 !important;
+.pol-track::-webkit-scrollbar { display: none; }
+
+/* Cada carta hace snap al centro del viewport del track */
+.pol-track > .pol-card {
+  scroll-snap-align: center;
+  flex-shrink: 0;
+}
+
+/* ── Policy cards: tamaño correcto ── */
+.pol-card {
+  width: clamp(260px, 78vw, 340px) !important;
+  height: clamp(180px, 26vw, 230px) !important;
+  min-height: 180px;
+  flex-shrink: 0 !important;
+}
+
+.pol-card .card__front-text {
+  font-size: clamp(20px, 4.5vw, 34px) !important;
+  padding: 0 12px !important;
+  word-break: break-word;
+}
+
+/* Tap-to-reveal (JS añade .touched al tocar en móvil) */
+.pol-card.touched .card__content {
+  transform: translate(-50%, -50%) rotate(0deg) !important;
+  opacity: 1 !important;
 }
 /* Dot indicators */
 .lp-scroll-dots{
@@ -781,7 +852,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 }
 .lp-dot.active{background:var(--gold);transform:scale(1.35)}
 
-/* ── Fase 5 (footer-phase) — eliminada del scrubbing ─── */
+/* ── Fase 4: Políticas (fondo y padding de sección) ── */
+.lp-policies { background: var(--accent-navy); padding: 80px 0 60px; }
 /* El footer ahora vive fuera del scrubbing como sección estática */
 .lp-footer-phase{display:none !important}
 
@@ -884,16 +956,29 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   <a class="lp-cta-btn lp-cta-outline reveal-up" href="#agenda" style="margin-top:32px">Reservar ahora →</a>
 </section>
 
-<!-- ── FASE 4: POLÍTICAS (cards originales reutilizados) ─────── -->
+<!-- ── FASE 4: POLÍTICAS ─────────────────────────────────────
+     Cards originales reutilizados dentro de un nuevo contenedor
+     .pol-track (scroll horizontal nativo, independiente del track
+     de servicios para evitar conflictos con las transformaciones
+     de .card en hover).
+   ─────────────────────────────────────────────────────────── -->
 <section class="lp-phase lp-policies" id="lpPolicies">
   <div class="lp-section-header reveal-up">
     <p class="lp-eyebrow" style="color:rgba(255,215,0,.7)">Reglas del Estudio</p>
     <h2 class="lp-section-title" style="color:var(--gold)">Políticas del Negocio</h2>
   </div>
-  <!-- Cards originales de políticas reutilizados -->
-  <div class="lp-policy-track-wrap">
-    <button class="lp-arrow lp-arrow-left lp-arrow-light" id="polArrowL" onclick="scrollPolicies(-1)" aria-label="Anterior">&#8249;</button>
-    <div class="lp-cards-track lp-policy-track" id="polTrack">
+
+  <!-- Wrapper con flechas ancladas -->
+  <div class="lp-pol-wrap">
+    <!-- Flecha Izquierda -->
+    <button class="lp-arrow lp-arrow-left lp-arrow-light"
+            onclick="scrollPolicies(-1)"
+            aria-label="Política anterior">&#8249;</button>
+
+    <!-- Track de scroll horizontal -->
+    <div class="pol-track" id="polTrack">
+
+      <!-- Card 1: Cancelaciones -->
       <div class="card pol-card">
         <span class="card__front-text">CANCELACIONES</span>
         <div class="card__content">
@@ -904,6 +989,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
           <img src="Kiupie_1.png" alt="" class="card__image" onerror="this.style.display='none'">
         </div>
       </div>
+
+      <!-- Card 2: Anticipos -->
       <div class="card pol-card">
         <span class="card__front-text">ANTICIPOS</span>
         <div class="card__content">
@@ -914,6 +1001,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
           <img src="Kiupie_2.png" alt="" class="card__image" onerror="this.style.display='none'">
         </div>
       </div>
+
+      <!-- Card 3: Puntualidad -->
       <div class="card pol-card">
         <span class="card__front-text">PUNTUALIDAD</span>
         <div class="card__content">
@@ -924,9 +1013,16 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
           <img src="Kiupie_3.png" alt="" class="card__image" onerror="this.style.display='none'">
         </div>
       </div>
-    </div>
-    <button class="lp-arrow lp-arrow-right lp-arrow-light" onclick="scrollPolicies(1)" aria-label="Siguiente">&#8250;</button>
-  </div>
+
+    </div><!-- /pol-track -->
+
+    <!-- Flecha Derecha -->
+    <button class="lp-arrow lp-arrow-right lp-arrow-light"
+            onclick="scrollPolicies(1)"
+            aria-label="Política siguiente">&#8250;</button>
+  </div><!-- /lp-pol-wrap -->
+
+  <!-- Dots indicadores sincronizados con el scroll -->
   <div class="lp-scroll-dots" id="polDots" role="tablist" aria-label="Políticas">
     <button class="lp-dot active" onclick="goToPolicy(0)" aria-label="Cancelaciones"></button>
     <button class="lp-dot"        onclick="goToPolicy(1)" aria-label="Anticipos"></button>
@@ -939,21 +1035,22 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 <!-- ═══════════════ AGENDA — separación landing / sistema ═══════════════ -->
 <div id="agenda"></div>
 
-<!-- ═══════════════ BOOKING HEADER ═══════════════ -->
+<!-- ═══════════════ BOOKING HEADER ═══════════════
+     ✅ SOLO muestra nombre de marca e imagen.
+     ❌ Se eliminaron: subtítulo "Home Studio · Personalize Your Nails!"
+        y el link de ubicación — aplica solo en esta sección del calendario.
+        El resto del sitio (landing, footer) los conserva íntegros.
+  ═══════════════════════════════════════════════════════════ -->
 <header class="site-header">
   <div class="header-inner">
     <div style="display:flex;align-items:center;gap:14px">
-      <img src="Chucky.png" alt="Chucky" style="width:44px;height:auto;filter:drop-shadow(0 2px 8px rgba(200,17,26,.3))" onerror="this.style.display='none'"/>
+      <!-- Chucky.png sin filtro de sombra (fix #4) -->
+      <img src="Chucky.png" alt="Chucky" style="width:44px;height:auto;" onerror="this.style.display='none'"/>
       <div>
         <span class="brand-good">Chucky's<span class="brand-tm">™</span></span>
         <span class="brand-good" style="font-size:28px;color:var(--accent-navy);text-shadow:none;transform:rotate(-1deg)">Charm Studio</span>
       </div>
     </div>
-    <span class="brand-studio">Home Studio · Personalize Your Nails!</span>
-    <a class="location-link" href="https://maps.app.goo.gl/kY3HEH1GBgSb6YNY6?g_st=aw" target="_blank">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="var(--accent-navy)" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="var(--accent-navy)" stroke-width="1.5" fill="none"/></svg>
-      Clavería, Azcapotzalco, CDMX · Ver en Google Maps
-    </a>
   </div>
 </header>
 
@@ -1193,8 +1290,37 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     Play Partners Toys™ · Chucky's Charm Studio · Todos los derechos reservados 2025
     <br><span style="font-size:10px;opacity:.7">Área administrativa disponible únicamente para el equipo · Solo clientas en esta vista</span>
   </div>
+  <!-- ════════════════════════════════════════════════════════
+       CHUCKY RUNNER — Video animado con transparencia
+       ────────────────────────────────────────────────────────
+       ¿POR QUÉ .webm CON TRANSPARENCIA FALLA EN iOS?
+
+       WebM/VP9 con canal alpha (transparencia) NO es compatible
+       con Safari/iOS porque Apple nunca implementó VP9 alpha en
+       sus decodificadores de hardware (solo decodifican H.264/H.265).
+
+       En Android (Chrome/Firefox) sí funciona porque Chromium incluye
+       el decodificador de software de VP9 que sí entiende el canal alpha.
+
+       En iOS, el video se decodifica sin el canal alpha → el fondo
+       queda negro sólido en lugar de transparente.
+
+       SOLUCIÓN:
+       Se usan dos <source> ordenados por prioridad:
+         1. HEVC con alpha (.mp4) → para Safari iOS 14+ / macOS Safari
+            (exportar con codec hvc1 + modo alpha desde After Effects
+            o usando ffmpeg: ffmpeg -i input.mov -c:v libx265 -tag:v hvc1
+            -pix_fmt yuva420p output_alpha.mp4)
+         2. WebM/VP9 con alpha (.webm) → para Chrome/Android/Firefox
+
+       Si no existe el .mp4, iOS simplemente no muestra el video
+       (degradación elegante, no rompe nada).
+       ════════════════════════════════════════════════════════ -->
   <div class="chucky-runner-wrap" id="chuckyRunnerWrap">
     <video class="chucky-runner" id="chuckyVideo" muted playsinline loop preload="none">
+      <!-- Fuente 1: HEVC + alpha para Safari iOS 14+ y macOS Safari -->
+      <source src="Chuky_Footpage_alpha.mp4" type='video/mp4; codecs="hvc1"'/>
+      <!-- Fuente 2: WebM VP9 + alpha para Chrome, Firefox, Android -->
       <source src="Chuky_Footpage.webm" type="video/webm"/>
     </video>
   </div>
@@ -1279,7 +1405,27 @@ function nextMonth(){
 }
 
 // ═══════════════ STEP NAVIGATION ═══════════════
+/**
+ * goStep(n) — Cambia el panel activo del flujo de agendamiento.
+ *
+ * ✅ FIX #6 — PROBLEMA DE SCROLL AL PULSAR "CONTINUAR":
+ * El comportamiento original usaba window.scrollTo({top:0}), lo que
+ * forzaba a la página a subir hasta el inicio absoluto (landing page).
+ * Esto rompía la experiencia porque el usuario perdía el contexto del
+ * formulario y tenía que hacer scroll manual para regresar.
+ *
+ * SOLUCIÓN:
+ * ─ Se reemplaza window.scrollTo(0,0) por un scroll suave hacia el
+ *   elemento #agenda (el div ancla que separa landing del sistema).
+ * ─ Esto mantiene al usuario dentro de la sección de agendamiento
+ *   sin saltar al inicio de la página.
+ * ─ Se usa scrollIntoView con block:'start' para que el encabezado
+ *   del formulario sea lo primero visible.
+ *
+ * @param {number} n - Número del paso al que navegar (1-4)
+ */
 function goStep(n){
+  /* Actualiza clases de paneles y steps bar */
   for(let i=1;i<=4;i++){
     document.getElementById('panel'+i).classList.toggle('active',i===n);
     const si=document.getElementById('stepItem'+i);
@@ -1287,7 +1433,17 @@ function goStep(n){
     if(i===n)si.classList.add('active');
     else if(i<n)si.classList.add('done');
   }
-  window.scrollTo({top:0,behavior:'smooth'});
+
+  /*
+   * ✅ Scroll controlado: en lugar de ir al top de la página,
+   * el scroll va hasta el ancla #agenda (inicio del sistema de
+   * agendamiento), que está justo antes del header del formulario.
+   * Esto preserva la separación visual landing / sistema.
+   */
+  const anchor = document.getElementById('agenda');
+  if(anchor){
+    anchor.scrollIntoView({behavior:'smooth', block:'start'});
+  }
 }
 
 function goStepSafe(n){
@@ -1637,82 +1793,165 @@ function resetAll(){
 
 // ═══════════════ LANDING PAGE JS ═══════════════
 
-// ── Sticky header: aparece cuando el hero sale del viewport ──
-(function(){
+/**
+ * initStickyHeader — Muestra/oculta el header fijo (sticky).
+ *
+ * El header sticky (#stickyHeader) se mantiene invisible mientras la
+ * Fase A (hero) está en el viewport. Al salir del hero, el header
+ * aparece con una transición CSS suave (translateY).
+ *
+ * Se usa IntersectionObserver en lugar de un listener de scroll
+ * para evitar recalcular en cada frame → mejor performance.
+ */
+(function initStickyHeader(){
   const header = document.getElementById('stickyHeader');
   const hero   = document.getElementById('lpHeroA');
   if(!header || !hero) return;
+
   new IntersectionObserver(
-    ([e]) => header.classList.toggle('visible', !e.isIntersecting),
-    { threshold: 0.08 }
+    /* Cuando el hero deja de ser visible (isIntersecting=false)
+       se añade la clase .visible que activa el translateY(0) en CSS */
+    ([entry]) => header.classList.toggle('visible', !entry.isIntersecting),
+    { threshold: 0.08 } // activa cuando queda < 8% del hero visible
   ).observe(hero);
 })();
 
-// ── Reveal-up: anima elementos al entrar al viewport ──
-(function(){
+/**
+ * initReveal — Anima elementos con clase .reveal-up al entrar al viewport.
+ *
+ * Los elementos comienzan en opacity:0 + translateY(32px).
+ * Al entrar al viewport (con un margen de 28px antes del borde inferior),
+ * se añade la clase .visible que dispara la transición CSS.
+ *
+ * Se usa un único IntersectionObserver para todos los targets
+ * (más eficiente que uno por elemento).
+ */
+(function initReveal(){
   const obs = new IntersectionObserver(
-    entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }),
+    entries => entries.forEach(e => {
+      if(e.isIntersecting) e.target.classList.add('visible');
+    }),
     { threshold: 0.1, rootMargin: '0px 0px -28px 0px' }
   );
   document.querySelectorAll('.reveal-up').forEach(t => obs.observe(t));
 })();
 
-// ── Scroll horizontal: servicios ──
+/**
+ * scrollCards(dir) — Desplaza el track de Servicios (#srvTrack).
+ *
+ * @param {number} dir - Dirección: -1 = izquierda, +1 = derecha.
+ *
+ * Calcula el paso como (ancho de carta + gap) para hacer snap carta a carta.
+ * scrollBy con behavior:'smooth' activa la transición CSS del scroll.
+ */
 function scrollCards(dir){
   const track = document.getElementById('srvTrack');
   if(!track) return;
   const card = track.querySelector('.card');
+  /* Obtiene el gap real del track para calcular el paso exacto */
   const gap  = parseFloat(getComputedStyle(track).gap) || 20;
   track.scrollBy({ left: dir * ((card ? card.offsetWidth : 280) + gap), behavior:'smooth' });
 }
 
-// ── Scroll horizontal: políticas ──
+/**
+ * scrollPolicies(dir) — Desplaza el track de Políticas (#polTrack).
+ *
+ * ✅ FIX #2 — SCROLL HORIZONTAL DE POLÍTICAS:
+ * El problema era que el track anterior (.lp-cards-track) compartía
+ * estilos con el track de Servicios, y las transformaciones CSS de
+ * .card en hover (rotate + scale) interferían con el layout del flex
+ * container, haciendo que scrollBy no tuviera efecto visual.
+ *
+ * La solución fue un contenedor dedicado (.pol-track) con su propio
+ * CSS aislado (touch-action:pan-x, overscroll-behavior-x:contain,
+ * -webkit-overflow-scrolling:touch para inercia en iOS).
+ *
+ * @param {number} dir - Dirección: -1 = izquierda, +1 = derecha.
+ */
 function scrollPolicies(dir){
   const track = document.getElementById('polTrack');
   if(!track) return;
-  const card = track.querySelector('.card');
-  const gap  = parseFloat(getComputedStyle(track).gap) || 20;
+  const card = track.querySelector('.pol-card');
+  const gap  = parseFloat(getComputedStyle(track).gap) || 16;
   track.scrollBy({ left: dir * ((card ? card.offsetWidth : 300) + gap), behavior:'smooth' });
 }
 
-// ── Ir a card específica (dots) ──
+/**
+ * goToPolicy(idx) — Lleva el track de Políticas a una carta específica.
+ *
+ * Usado por los dots indicadores. scrollIntoView con inline:'center'
+ * centra la carta dentro del scroll container, que es el comportamiento
+ * esperado con scroll-snap-type:x mandatory.
+ *
+ * @param {number} idx - Índice de la carta (0, 1, 2).
+ */
 function goToPolicy(idx){
   const track = document.getElementById('polTrack');
   if(!track) return;
-  const cards = track.querySelectorAll('.card');
-  if(cards[idx]) cards[idx].scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  const cards = track.querySelectorAll('.pol-card');
+  if(cards[idx]){
+    cards[idx].scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  }
 }
 
-// ── Sincronizar dots con el scroll ──
-(function(){
+/**
+ * initPolDots — Sincroniza los dots indicadores con el scroll del track.
+ *
+ * En cada evento scroll del #polTrack:
+ * ─ Calcula el centro horizontal del viewport del track.
+ * ─ Encuentra la carta cuyo centro está más cerca de ese punto.
+ * ─ Activa el dot correspondiente.
+ *
+ * requestAnimationFrame garantiza que el cálculo ocurra solo una vez
+ * por frame de renderizado (evita layout thrashing).
+ */
+(function initPolDots(){
   const track = document.getElementById('polTrack');
   const dots  = document.querySelectorAll('#polDots .lp-dot');
   if(!track || !dots.length) return;
 
-  let raf = false;
-  function sync(){
-    const cards  = [...track.querySelectorAll('.card')];
+  let raf = false; /* Flag para throttle con rAF */
+
+  function syncDots(){
+    const cards  = [...track.querySelectorAll('.pol-card')];
     const center = track.scrollLeft + track.offsetWidth / 2;
     let closest = 0, minDist = Infinity;
-    cards.forEach((c, i) => {
-      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center);
+
+    cards.forEach((card, i) => {
+      /* Distancia del centro de la carta al centro del viewport del track */
+      const d = Math.abs(card.offsetLeft + card.offsetWidth / 2 - center);
       if(d < minDist){ minDist = d; closest = i; }
     });
-    dots.forEach((d, i) => d.classList.toggle('active', i === closest));
+
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === closest));
     raf = false;
   }
-  track.addEventListener('scroll', () => { if(!raf){ raf = true; requestAnimationFrame(sync); } }, { passive:true });
-  // Trigger once on load
-  sync();
+
+  track.addEventListener('scroll', () => {
+    if(!raf){ raf = true; requestAnimationFrame(syncDots); }
+  }, { passive: true }); /* passive:true → no bloquea el hilo de scroll */
+
+  /* Sincronización inicial */
+  syncDots();
 })();
 
-// ── Tap-to-reveal en cards de políticas (sustituto de hover en móvil) ──
-(function(){
+/**
+ * initPolTouch — Tap-to-reveal en cards de Políticas (sustituto de hover).
+ *
+ * En móvil, el CSS :hover no funciona de forma confiable.
+ * Al tocar una carta se añade la clase .touched que activa la
+ * transformación CSS del .card__content (girar de -45deg a 0deg).
+ * Tocar la misma carta de nuevo la cierra.
+ * Tocar otra carta cierra la anterior.
+ */
+(function initPolTouch(){
   document.querySelectorAll('.pol-card').forEach(card => {
     card.addEventListener('click', () => {
-      const open = card.classList.contains('touched');
+      const isOpen = card.classList.contains('touched');
+      /* Cierra todas las cartas abiertas */
       document.querySelectorAll('.pol-card.touched').forEach(c => c.classList.remove('touched'));
-      if(!open) card.classList.add('touched');
+      /* Abre la tocada (toggle: si ya estaba abierta, queda cerrada) */
+      if(!isOpen) card.classList.add('touched');
     });
   });
 })();
