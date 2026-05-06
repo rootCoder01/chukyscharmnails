@@ -567,67 +567,66 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 }
 
 /* ── Fase A: Hero ─────────────────────────────── */
-.lp-hero{
-  background:var(--bg);
-  padding:0 24px;
-}
+.lp-hero{background:var(--bg);padding:clamp(60px,10vh,100px) 24px}
 .lp-hero::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 60% 40%,rgba(200,17,26,.08) 0%,transparent 70%);
+  background:radial-gradient(ellipse at 60% 40%,rgba(200,17,26,.07) 0%,transparent 70%);
   pointer-events:none;
 }
 .lp-hero-layout{
-  display:flex;
-  align-items:center;justify-content:center;
-  gap:clamp(24px,6vw,80px);
-  width:100%;max-width:900px;
-  flex-wrap:wrap;
-  z-index:1;
-  padding:0 8px;
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(20px,5vw,72px);width:100%;max-width:900px;
+  flex-wrap:wrap;z-index:1;
 }
-.lp-hero-text{flex:1;min-width:240px;text-align:left}
-.lp-hero-title{
-  font-family:'Lilita One',cursive;
-  font-size:clamp(44px,11vw,88px);
-  color:var(--accent);
-  line-height:.9;
-  letter-spacing:-2px;
-  text-shadow:4px 4px 0 rgba(200,17,26,.15);
+.lp-hero-text{flex:1;min-width:220px;text-align:left}
+/* Hero brand: reutiliza las clases .brand-good originales con escala hero */
+.lp-hero-brand{display:flex;flex-direction:column;gap:2px;line-height:1}
+.lp-hero-brand .brand-good{
+  font-size:clamp(42px,10.5vw,82px) !important;
+  display:block;
+  text-shadow:3px 3px 0 rgba(200,17,26,.12);
+}
+.lp-hero-brand .brand-good:last-child{
+  color:var(--accent-navy) !important;
+  font-size:clamp(32px,8vw,64px) !important;
+  transform:rotate(-1deg) !important;
 }
 .lp-hero-tag{
   font-family:'Fredoka One',cursive;
-  font-size:clamp(13px,2.5vw,17px);
-  color:var(--accent-navy);
-  letter-spacing:2px;
-  margin-top:12px;
-  opacity:.8;
+  font-size:clamp(12px,2.4vw,16px);
+  color:var(--accent-navy);letter-spacing:2px;
+  margin-top:12px;opacity:.7;
+}
+.lp-hero-location{
+  display:flex;align-items:center;gap:5px;
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(11px,1.8vw,13px);
+  color:var(--muted);margin-top:6px;font-weight:600;
 }
 .lp-hero-img-wrap{
-  flex:0 0 auto;
-  position:relative;
+  flex:0 0 auto;position:relative;
   display:flex;align-items:center;justify-content:center;
 }
 .lp-hero-blob{
   position:absolute;
-  width:clamp(200px,42vw,360px);
-  height:clamp(200px,42vw,360px);
-  background:radial-gradient(ellipse,rgba(200,17,26,.12) 0%,transparent 70%);
-  border-radius:50%;
-  animation:blobPulse 5s ease-in-out infinite;
+  width:clamp(200px,44vw,340px);height:clamp(200px,44vw,340px);
+  background:radial-gradient(ellipse,rgba(200,17,26,.11) 0%,transparent 70%);
+  border-radius:50%;animation:blobPulse 5s ease-in-out infinite;
 }
 @keyframes blobPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 .lp-hero-img{
-  width:clamp(180px,38vw,320px);
-  height:auto;
-  filter:drop-shadow(0 24px 48px rgba(200,17,26,.28));
+  width:clamp(170px,36vw,300px);height:auto;
+  filter:drop-shadow(0 20px 40px rgba(200,17,26,.26));
   animation:floatBody 4s ease-in-out infinite;
   position:relative;z-index:1;
 }
-@keyframes floatBody{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(1deg)}}
-@media(max-width:600px){
-  .lp-hero-layout{flex-direction:column;text-align:center}
+@keyframes floatBody{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-13px) rotate(1deg)}}
+@media(max-width:580px){
+  .lp-hero-layout{flex-direction:column;align-items:center}
   .lp-hero-text{text-align:center;min-width:0}
-  .lp-hero-img{width:clamp(160px,55vw,260px)}
+  .lp-hero-brand .brand-good{text-align:center}
+  .lp-hero-location{justify-content:center}
+  .lp-hero-img{width:clamp(150px,52vw,240px)}
 }
 
 /* ── Scroll hint ─────────────────────────────── */
@@ -636,40 +635,32 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   display:flex;flex-direction:column;align-items:center;gap:6px;
   animation:bounceHint 2s ease-in-out infinite;pointer-events:none;
 }
-.scroll-hint-text{font-family:'Fredoka One',cursive;font-size:10px;color:var(--accent);letter-spacing:3px;opacity:.6}
-.scroll-hint-arrow{width:20px;height:20px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(45deg);opacity:.5}
+.scroll-hint-text{font-family:'Fredoka One',cursive;font-size:10px;color:var(--accent);letter-spacing:3px;opacity:.55}
+.scroll-hint-arrow{width:18px;height:18px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(45deg);opacity:.45}
 @keyframes bounceHint{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
 
 /* ── Fase 2: Agenda ─────────────────────────────── */
-.lp-agenda{
-  background:linear-gradient(150deg,var(--accent) 0%,var(--accent-dark) 100%);
-}
-.lp-agenda-inner{
-  display:flex;flex-direction:column;align-items:center;
-  max-width:600px;width:100%;gap:0;
-}
+.lp-agenda{background:linear-gradient(150deg,var(--accent) 0%,var(--accent-dark) 100%)}
+.lp-agenda-inner{display:flex;flex-direction:column;align-items:center;max-width:600px;width:100%}
 .lp-nail-swatches{display:flex;gap:8px;justify-content:center;margin-bottom:36px}
 .nail-sw{
-  width:clamp(32px,8vw,52px);
-  height:clamp(44px,11vw,70px);
+  width:clamp(30px,7.5vw,50px);height:clamp(42px,10.5vw,68px);
   border-radius:40% 40% 50% 50%/30% 30% 60% 60%;
-  border:2px solid rgba(255,255,255,.25);
+  border:2px solid rgba(255,255,255,.22);
   animation:swPulse 2.5s ease-in-out infinite;
 }
 @keyframes swPulse{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.1)}}
 .lp-agenda-title{
   font-family:'Lilita One',cursive;
-  font-size:clamp(32px,8vw,60px);
-  color:var(--gold);
-  text-shadow:2px 2px 0 rgba(0,0,0,.25);
-  line-height:1;margin-bottom:14px;text-align:center;
+  font-size:clamp(30px,7.5vw,58px);
+  color:var(--gold);text-shadow:2px 2px 0 rgba(0,0,0,.22);
+  line-height:1.05;margin-bottom:14px;text-align:center;
 }
 .lp-agenda-sub{
   font-family:'Fredoka One',cursive;
-  font-size:clamp(13px,2.8vw,17px);
-  color:rgba(255,255,255,.82);
-  text-align:center;margin-bottom:32px;
-  letter-spacing:.3px;line-height:1.5;
+  font-size:clamp(13px,2.6vw,16px);
+  color:rgba(255,255,255,.8);
+  text-align:center;margin-bottom:32px;line-height:1.55;
 }
 .lp-cta-btn{
   display:inline-flex;align-items:center;gap:6px;
@@ -683,104 +674,125 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   box-shadow:0 6px 24px rgba(0,0,0,.18);
   text-decoration:none;
 }
-.lp-cta-btn:hover{transform:scale(1.04) translateY(-2px);box-shadow:0 10px 32px rgba(0,0,0,.25)}
+.lp-cta-btn:hover,.lp-cta-btn:focus{
+  transform:scale(1.04) translateY(-2px);
+  box-shadow:0 10px 32px rgba(0,0,0,.25);
+  outline:none;
+}
 .lp-cta-outline{
   background:transparent;color:var(--accent);
   border:2px solid var(--accent);
-  font-size:clamp(13px,3vw,16px);
-  padding:11px 28px;
+  font-size:clamp(13px,3vw,16px);padding:11px 28px;
   box-shadow:none;
 }
 .lp-cta-outline:hover{background:var(--accent);color:var(--gold)}
 
 /* ── Fase 3: Servicios ─────────────────────────────── */
-.lp-services{
-  background:var(--white);
-  padding:80px 0 60px;
-}
+.lp-services{background:var(--white);padding:80px 0 60px}
 .lp-section-header{text-align:center;padding:0 24px;margin-bottom:0}
 .lp-eyebrow{
   font-family:'Fredoka One',cursive;font-size:10px;
-  letter-spacing:3px;text-transform:uppercase;
-  color:var(--muted);margin-bottom:6px;
+  letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;
 }
 .lp-section-title{
   font-family:'Lilita One',cursive;
   font-size:clamp(24px,6vw,42px);
-  color:var(--accent);
-  text-shadow:2px 2px 0 rgba(200,17,26,.1);
+  color:var(--accent);text-shadow:2px 2px 0 rgba(200,17,26,.1);
   margin-bottom:36px;
 }
 
-/* Cards track (scroll horizontal) */
-.lp-cards-track-wrap{
-  position:relative;width:100%;display:flex;align-items:center;
-}
+/* ── Card track (shared: services + policies) ─────────── */
+.lp-cards-track-wrap{position:relative;width:100%;display:flex;align-items:center}
 .lp-cards-track{
   display:flex;
-  gap:clamp(16px,4vw,28px);
+  gap:clamp(14px,3.5vw,24px);
   overflow-x:auto;
   scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
+  -webkit-overflow-scrolling:touch;  /* iOS momentum */
+  overscroll-behavior-x:contain;    /* prevent page scroll bleed */
   scroll-behavior:smooth;
-  padding:20px clamp(20px,8vw,80px);
+  padding:16px clamp(16px,7vw,64px);
   scrollbar-width:none;
+  /* Ensure pointer events work reliably on iOS */
+  touch-action:pan-x;
 }
 .lp-cards-track::-webkit-scrollbar{display:none}
 .lp-cards-track .card{
   scroll-snap-align:center;
   flex-shrink:0;
+  /* prevent card's own transform from breaking snap */
+  will-change:transform;
 }
 
 /* Arrow buttons */
 .lp-arrow{
-  position:absolute;
-  top:50%;transform:translateY(-50%);
-  z-index:10;
-  width:40px;height:40px;
-  background:var(--white);
-  border:2px solid var(--accent);
-  border-radius:50%;
-  font-size:22px;line-height:1;
-  color:var(--accent);cursor:pointer;
-  transition:all .15s;
+  position:absolute;top:50%;transform:translateY(-50%);
+  z-index:10;width:40px;height:40px;
+  background:var(--white);border:2px solid var(--accent);border-radius:50%;
+  font-size:22px;color:var(--accent);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 12px rgba(200,17,26,.15);
-  padding:0;
+  box-shadow:0 2px 12px rgba(200,17,26,.15);padding:0;
+  transition:all .15s;
 }
-.lp-arrow:hover{background:var(--accent);color:var(--gold)}
+.lp-arrow:hover,.lp-arrow:focus{background:var(--accent);color:var(--gold);outline:none}
 .lp-arrow-left{left:4px}
 .lp-arrow-right{right:4px}
-.lp-arrow-light{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:var(--gold)}
-.lp-arrow-light:hover{background:rgba(255,255,255,.25)}
+.lp-arrow-light{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.3);
+  color:var(--gold);
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+.lp-arrow-light:hover,.lp-arrow-light:focus{background:rgba(255,255,255,.22);color:var(--white)}
 @media(max-width:500px){.lp-arrow{width:32px;height:32px;font-size:18px}}
 
 /* ── Fase 4: Políticas ─────────────────────────────── */
-.lp-policies{
-  background:var(--accent-navy);
-  padding:80px 0 60px;
-}
-.lp-policy-track{padding:20px clamp(20px,8vw,80px)}
-/* Policy cards sizing override */
-.pol-card{
-  width:clamp(240px,70vw,320px) !important;
-  height:clamp(160px,22vw,220px) !important;
-}
+.lp-policies{background:var(--accent-navy);padding:80px 0 60px}
 
-/* ── Fase 5: Footer phase ─────────────────────────────── */
-.lp-footer-phase{
-  min-height:unset;padding:0;
-  display:block;
+/* Policy cards: correct sizing + tap-to-reveal on mobile */
+.pol-card{
+  width:clamp(260px,78vw,340px) !important;
+  height:clamp(180px,26vw,230px) !important;
+  flex-shrink:0 !important;
+  scroll-snap-align:center !important;
+  /* Prevent height collapse on mobile */
+  min-height:180px;
 }
+.pol-card .card__front-text{
+  font-size:clamp(20px,4.5vw,34px) !important;
+  padding:0 12px !important;
+  word-break:break-word;
+}
+/* Tap-to-reveal via .touched class (set by JS on mobile) */
+.pol-card.touched .card__content{
+  transform:translate(-50%,-50%) rotate(0deg) !important;
+  opacity:1 !important;
+}
+/* Dot indicators */
+.lp-scroll-dots{
+  display:flex;gap:8px;justify-content:center;
+  padding-top:16px;
+}
+.lp-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.22);
+  border:none;padding:0;cursor:pointer;
+  transition:background .25s,transform .2s;
+}
+.lp-dot.active{background:var(--gold);transform:scale(1.35)}
+
+/* ── Fase 5 (footer-phase) — eliminada del scrubbing ─── */
+/* El footer ahora vive fuera del scrubbing como sección estática */
+.lp-footer-phase{display:none !important}
 
 /* ── Reveal animations ─────────────────────────────── */
-.reveal-up{opacity:0;transform:translateY(36px);transition:opacity .6s ease,transform .6s ease}
+.reveal-up{opacity:0;transform:translateY(32px);transition:opacity .55s ease,transform .55s ease}
 .reveal-up.visible{opacity:1;transform:translateY(0)}
 .reveal-delay-1{transition-delay:.1s}
-.reveal-delay-2{transition-delay:.22s}
-.reveal-delay-3{transition-delay:.34s}
-.reveal-delay-4{transition-delay:.46s}
-.reveal-delay-5{transition-delay:.58s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.32s}
+.reveal-delay-4{transition-delay:.44s}
+.reveal-delay-5{transition-delay:.56s}
 </style>
 </head>
 <body>
@@ -792,7 +804,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
       <img src="Chucky.png" alt="Chucky" class="sticky-chucky" onerror="this.style.display='none'"/>
       <span class="sticky-brand-name">Chucky's<span class="sticky-tm">™</span> <span class="sticky-studio-word">Charm Studio</span></span>
     </div>
-    <a class="sticky-cta" href="#bookingSection" onclick="smoothScrollToBooking()">Agendar 💅</a>
+    <a class="sticky-cta" href="#agenda">Agendar 💅</a>
   </div>
 </header>
 
@@ -802,15 +814,23 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 <section class="lp-phase lp-hero" id="lpHeroA">
   <div class="lp-hero-layout">
     <div class="lp-hero-text reveal-up">
-      <h1 class="lp-hero-title">Chucky's<br>Charm<br>Studio</h1>
-      <p class="lp-hero-tag">Home Studio · Clavería, CDMX</p>
+      <!-- Reutiliza tipografía original: .brand-good (Lilita One) + colores del sistema -->
+      <h1 class="lp-hero-brand">
+        <span class="brand-good">Chucky's<span class="brand-tm">™</span></span>
+        <span class="brand-good">Charm Studio</span>
+      </h1>
+      <p class="lp-hero-tag">Personalize Your Nails!</p>
+      <p class="lp-hero-location">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        Clavería, Azcapotzalco, CDMX
+      </p>
     </div>
     <div class="lp-hero-img-wrap reveal-up reveal-delay-2">
       <div class="lp-hero-blob"></div>
-      <img src="Chucky_Body.png" alt="Chucky" class="lp-hero-img" onerror="this.style.display='none'"/>
+      <img src="Chucky_Body.png" alt="Chucky mascota" class="lp-hero-img" onerror="this.style.display='none'"/>
     </div>
   </div>
-  <div class="scroll-hint">
+  <div class="scroll-hint" aria-hidden="true">
     <span class="scroll-hint-text">SCROLL</span>
     <div class="scroll-hint-arrow"></div>
   </div>
@@ -828,7 +848,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
     <h2 class="lp-agenda-title reveal-up reveal-delay-1">¿Lista para<br>lucir increíble?</h2>
     <p class="lp-agenda-sub reveal-up reveal-delay-2">Reserva en minutos · Anticipo $100 MXN confirma tu lugar</p>
-    <button class="lp-cta-btn reveal-up reveal-delay-3" onclick="smoothScrollToBooking()">💅 Agendar mi Cita</button>
+    <a class="lp-cta-btn reveal-up reveal-delay-3" href="#agenda">💅 Agendar mi Cita</a>
   </div>
 </section>
 
@@ -861,7 +881,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
     <button class="lp-arrow lp-arrow-right" id="srvArrowR" onclick="scrollCards(1)" aria-label="Siguiente">&#8250;</button>
   </div>
-  <button class="lp-cta-btn lp-cta-outline reveal-up" style="margin-top:32px" onclick="smoothScrollToBooking()">Reservar ahora →</button>
+  <a class="lp-cta-btn lp-cta-outline reveal-up" href="#agenda" style="margin-top:32px">Reservar ahora →</a>
 </section>
 
 <!-- ── FASE 4: POLÍTICAS (cards originales reutilizados) ─────── -->
@@ -905,66 +925,21 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
         </div>
       </div>
     </div>
-    <button class="lp-arrow lp-arrow-right lp-arrow-light" id="polArrowR" onclick="scrollPolicies(1)" aria-label="Siguiente">&#8250;</button>
+    <button class="lp-arrow lp-arrow-right lp-arrow-light" onclick="scrollPolicies(1)" aria-label="Siguiente">&#8250;</button>
+  </div>
+  <div class="lp-scroll-dots" id="polDots" role="tablist" aria-label="Políticas">
+    <button class="lp-dot active" onclick="goToPolicy(0)" aria-label="Cancelaciones"></button>
+    <button class="lp-dot"        onclick="goToPolicy(1)" aria-label="Anticipos"></button>
+    <button class="lp-dot"        onclick="goToPolicy(2)" aria-label="Puntualidad"></button>
   </div>
 </section>
 
-<!-- ── FASE 5: FOOTER ORIGINAL INTEGRADO ─────────────────────── -->
-<section class="lp-phase lp-footer-phase" id="lpFooterPhase">
+<!-- ═══════════════ FIN DEL SCRUBBING — footer estático abajo ═══════════════ -->
 
-  <!-- Marquee integrado -->
-  <div class="marquee-bar">
-    <div class="marquee-track">
-      <span>✦ BATTERIES INCLUDED ✦</span><span>SHE WANTS YOU FOR A BEST MANICURE ✦</span><span>AGES 4 &amp; UP ✦</span><span>COLLECT ALL DESIGNS ✦</span>
-      <span>✦ BATTERIES INCLUDED ✦</span><span>SHE WANTS YOU FOR A BEST MANICURE ✦</span><span>AGES 4 &amp; UP ✦</span><span>COLLECT ALL DESIGNS ✦</span>
-    </div>
-  </div>
+<!-- ═══════════════ AGENDA — separación landing / sistema ═══════════════ -->
+<div id="agenda"></div>
 
-  <!-- Footer original mantenido -->
-  <footer class="site-footer" id="siteFooter">
-    <div class="footer-main">
-      <div>
-        <p class="footer-col-title">Chucky's Charm Studio™</p>
-        <p style="font-size:13px;color:var(--gold);opacity:.85;line-height:1.6">Home Studio especializado<br>en uñas personalizadas.<br>¡Tu diseño, tus reglas!</p>
-      </div>
-      <div>
-        <p class="footer-col-title">Contacto</p>
-        <a class="footer-link" href="mailto:chukyscharmstuido@gmail.com">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          chukyscharmstuido@gmail.com
-        </a>
-        <a class="footer-link" href="tel:+525512345678">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.21a2 2 0 012-2.18h3A2 2 0 017.22 1a12.37 12.37 0 002.67 5.34 2 2 0 01-.45 2.09L8.09 9.78a16 16 0 006.13 6.13l1.35-1.35a2 2 0 012.09-.45A12.37 12.37 0 0023 16.92z"/></svg>
-          +52 55 1234 5678
-        </a>
-        <a class="footer-link" href="https://maps.app.goo.gl/kY3HEH1GBgSb6YNY6?g_st=aw" target="_blank">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-          Clavería, Azcapotzalco, CDMX
-        </a>
-      </div>
-      <div>
-        <p class="footer-col-title">Horarios</p>
-        <p style="font-size:13px;color:var(--gold);opacity:.85;line-height:2">Lunes – Sábado<br>10:00 AM – 8:00 PM<br><span style="font-size:11px;opacity:.7">Domingos cerrado</span></p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      Play Partners Toys™ · Chucky's Charm Studio · Todos los derechos reservados 2025
-      <br><span style="font-size:10px;opacity:.7">Área administrativa disponible únicamente para el equipo · Solo clientas en esta vista</span>
-    </div>
-    <!-- CHUCKY RUNNER VIDEO -->
-    <div class="chucky-runner-wrap" id="chuckyRunnerWrap">
-      <video class="chucky-runner" id="chuckyVideo" muted playsinline loop preload="none">
-        <source src="Chuky_Footpage.webm" type="video/webm"/>
-      </video>
-    </div>
-  </footer>
-
-</section>
-
-<!-- ═══════════════ BOOKING ANCHOR ═══════════════ -->
-<div id="bookingSection"></div>
-
-<!-- ═══════════════ BOOKING HEADER (compacto, solo encima del form) ═══════════════ -->
+<!-- ═══════════════ BOOKING HEADER ═══════════════ -->
 <header class="site-header">
   <div class="header-inner">
     <div style="display:flex;align-items:center;gap:14px">
@@ -1183,6 +1158,47 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   </div>
 
 </main>
+
+<!-- ═══════════════ BATTERIES BAR ═══════════════ -->
+<div class="batteries-bar">⚡ BATTERIES INCLUDED ⚡</div>
+
+<!-- ═══════════════ FOOTER — estático, al final de toda la página ═══════════════ -->
+<footer class="site-footer" id="siteFooter">
+  <div class="footer-main">
+    <div>
+      <p class="footer-col-title">Chucky's Charm Studio™</p>
+      <p style="font-size:13px;color:var(--gold);opacity:.85;line-height:1.6">Home Studio especializado<br>en uñas personalizadas.<br>¡Tu diseño, tus reglas!</p>
+    </div>
+    <div>
+      <p class="footer-col-title">Contacto</p>
+      <a class="footer-link" href="mailto:chukyscharmstuido@gmail.com">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        chukyscharmstuido@gmail.com
+      </a>
+      <a class="footer-link" href="tel:+525512345678">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.21a2 2 0 012-2.18h3A2 2 0 017.22 1a12.37 12.37 0 002.67 5.34 2 2 0 01-.45 2.09L8.09 9.78a16 16 0 006.13 6.13l1.35-1.35a2 2 0 012.09-.45A12.37 12.37 0 0023 16.92z"/></svg>
+        +52 55 1234 5678
+      </a>
+      <a class="footer-link" href="https://maps.app.goo.gl/kY3HEH1GBgSb6YNY6?g_st=aw" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        Clavería, Azcapotzalco, CDMX
+      </a>
+    </div>
+    <div>
+      <p class="footer-col-title">Horarios</p>
+      <p style="font-size:13px;color:var(--gold);opacity:.85;line-height:2">Lunes – Sábado<br>10:00 AM – 8:00 PM<br><span style="font-size:11px;opacity:.7">Domingos cerrado</span></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    Play Partners Toys™ · Chucky's Charm Studio · Todos los derechos reservados 2025
+    <br><span style="font-size:10px;opacity:.7">Área administrativa disponible únicamente para el equipo · Solo clientas en esta vista</span>
+  </div>
+  <div class="chucky-runner-wrap" id="chuckyRunnerWrap">
+    <video class="chucky-runner" id="chuckyVideo" muted playsinline loop preload="none">
+      <source src="Chuky_Footpage.webm" type="video/webm"/>
+    </video>
+  </div>
+</footer>
 
 <script>
 // ═══════════════ CALENDAR ═══════════════
@@ -1621,53 +1637,85 @@ function resetAll(){
 
 // ═══════════════ LANDING PAGE JS ═══════════════
 
-// Smooth scroll to booking
-function smoothScrollToBooking(){
-  const el=document.getElementById('bookingSection');
-  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-// Sticky header: visible once user scrolls past the hero
-(function initStickyHeader(){
-  const header=document.getElementById('stickyHeader');
-  const hero=document.getElementById('lpHeroA');
-  if(!header||!hero)return;
-  const obs=new IntersectionObserver(entries=>{
-    const heroVisible=entries[0].isIntersecting;
-    header.classList.toggle('visible',!heroVisible);
-  },{threshold:0.1});
-  obs.observe(hero);
+// ── Sticky header: aparece cuando el hero sale del viewport ──
+(function(){
+  const header = document.getElementById('stickyHeader');
+  const hero   = document.getElementById('lpHeroA');
+  if(!header || !hero) return;
+  new IntersectionObserver(
+    ([e]) => header.classList.toggle('visible', !e.isIntersecting),
+    { threshold: 0.08 }
+  ).observe(hero);
 })();
 
-// Reveal-up on scroll
-(function initReveal(){
-  const targets=document.querySelectorAll('.reveal-up');
-  if(!targets.length)return;
-  const obs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}
-    });
-  },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
-  targets.forEach(t=>obs.observe(t));
+// ── Reveal-up: anima elementos al entrar al viewport ──
+(function(){
+  const obs = new IntersectionObserver(
+    entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.1, rootMargin: '0px 0px -28px 0px' }
+  );
+  document.querySelectorAll('.reveal-up').forEach(t => obs.observe(t));
 })();
 
-// Card track horizontal scroll (services)
+// ── Scroll horizontal: servicios ──
 function scrollCards(dir){
-  const track=document.getElementById('srvTrack');
-  if(!track)return;
-  const card=track.querySelector('.card');
-  const step=card?card.offsetWidth+parseInt(getComputedStyle(track).gap||'24'):280;
-  track.scrollBy({left:dir*step,behavior:'smooth'});
+  const track = document.getElementById('srvTrack');
+  if(!track) return;
+  const card = track.querySelector('.card');
+  const gap  = parseFloat(getComputedStyle(track).gap) || 20;
+  track.scrollBy({ left: dir * ((card ? card.offsetWidth : 280) + gap), behavior:'smooth' });
 }
 
-// Card track horizontal scroll (policies)
+// ── Scroll horizontal: políticas ──
 function scrollPolicies(dir){
-  const track=document.getElementById('polTrack');
-  if(!track)return;
-  const card=track.querySelector('.card');
-  const step=card?card.offsetWidth+parseInt(getComputedStyle(track).gap||'24'):280;
-  track.scrollBy({left:dir*step,behavior:'smooth'});
+  const track = document.getElementById('polTrack');
+  if(!track) return;
+  const card = track.querySelector('.card');
+  const gap  = parseFloat(getComputedStyle(track).gap) || 20;
+  track.scrollBy({ left: dir * ((card ? card.offsetWidth : 300) + gap), behavior:'smooth' });
 }
+
+// ── Ir a card específica (dots) ──
+function goToPolicy(idx){
+  const track = document.getElementById('polTrack');
+  if(!track) return;
+  const cards = track.querySelectorAll('.card');
+  if(cards[idx]) cards[idx].scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+}
+
+// ── Sincronizar dots con el scroll ──
+(function(){
+  const track = document.getElementById('polTrack');
+  const dots  = document.querySelectorAll('#polDots .lp-dot');
+  if(!track || !dots.length) return;
+
+  let raf = false;
+  function sync(){
+    const cards  = [...track.querySelectorAll('.card')];
+    const center = track.scrollLeft + track.offsetWidth / 2;
+    let closest = 0, minDist = Infinity;
+    cards.forEach((c, i) => {
+      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center);
+      if(d < minDist){ minDist = d; closest = i; }
+    });
+    dots.forEach((d, i) => d.classList.toggle('active', i === closest));
+    raf = false;
+  }
+  track.addEventListener('scroll', () => { if(!raf){ raf = true; requestAnimationFrame(sync); } }, { passive:true });
+  // Trigger once on load
+  sync();
+})();
+
+// ── Tap-to-reveal en cards de políticas (sustituto de hover en móvil) ──
+(function(){
+  document.querySelectorAll('.pol-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const open = card.classList.contains('touched');
+      document.querySelectorAll('.pol-card.touched').forEach(c => c.classList.remove('touched'));
+      if(!open) card.classList.add('touched');
+    });
+  });
+})();
 
 // ═══════════════ INIT ═══════════════
 renderCal();
