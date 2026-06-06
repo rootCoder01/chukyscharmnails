@@ -218,43 +218,57 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Imagen decorativa en la esquina superior */
+/* ─────────────────────────────────────────────────────────────
+   IMAGEN DECORATIVA EN CARDS
+   ─ Aparece SOLO en cards de Servicios (no en Políticas).
+   ─ Posición: esquina INFERIOR derecha (bottom:10px, right:10px).
+   ─ Se activa con hover en desktop y :active en móvil.
+   ─ pointer-events:none asegura que no interfiera con clics.
+   ───────────────────────────────────────────────────────────── */
 .card::after {
   content: "";
   position: absolute;
 
-  /* Posición en esquina superior derecha */
-  top: 10px;
+  /* ✅ CORREGIDO: esquina inferior derecha (antes era top:10px) */
+  bottom: 10px;
   right: 10px;
+  top: auto;             /* anula cualquier top heredado */
 
-  /* Tamaño adaptable */
   width: clamp(40px, 10vw, 70px);
   height: clamp(40px, 10vw, 70px);
 
-  /* Imagen que tú defines */
-  background-image: url("Chucky.png"); /* ← CAMBIA ESTO */
+  background-image: url("Chucky.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 
-  opacity: 0; /* Oculta por defecto */
+  opacity: 0;                          /* oculto por defecto */
   transform: scale(0.6) rotate(10deg);
-
   transition: all 0.3s ease;
-  z-index: 3; /* Encima del contenido */
-  pointer-events: none; /* No interfiere con clics */
+  z-index: 3;
+  pointer-events: none;
 }
 
-/* Aparece en desktop (hover) */
+/* Aparece al hacer hover (desktop) */
 .card:hover::after {
   opacity: 1;
   transform: scale(1) rotate(0deg);
 }
 
-/* Aparece en móvil (cuando el usuario toca la card) */
+/* Aparece al tocar (mobile) */
 .card:active::after {
   opacity: 1;
   transform: scale(1) rotate(0deg);
+}
+
+/* ✅ CORRECCIÓN: ocultar imagen decorativa en cards de POLÍTICAS
+   Se aplica tanto via clase .pol-card como cuando están dentro
+   del contenedor grid .card-container — doble cobertura. */
+.pol-card::after,
+.card-container .card::after,
+.lp-policy-track .card::after {
+  display: none !important;
+  content: none !important;
 }
 
 /* Contenido con Espaciado Proporcional */
@@ -518,29 +532,916 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   .footer-main{grid-template-columns:1fr;gap:16px}
 }
 @media(max-width:480px){
-  .services-grid{grid-template-columns:1fr 1fr}
-  .brand-good{font-size:32px}
+  .brand-good{font-size:28px}
+}
+
+/* ═══════════════ LANDING PAGE ═══════════════ */
+
+/* ── Sticky Header ─────────────────────────────── */
+.sticky-header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(252,221,97,.96);
+  backdrop-filter:blur(8px);
+  border-bottom:2px solid var(--accent);
+  transform:translateY(-100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  will-change:transform;
+}
+.sticky-header.visible{transform:translateY(0)}
+.sticky-header-inner{
+  max-width:960px;margin:0 auto;
+  padding:8px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.sticky-brand{display:flex;align-items:center;gap:10px}
+/* ✅ FIX #4: sin drop-shadow, conserva transparencia PNG */
+.sticky-chucky{width:34px;height:auto;}
+.sticky-brand-name{font-family:'Lilita One',cursive;font-size:18px;color:var(--accent);line-height:1;white-space:nowrap}
+.sticky-tm{font-size:9px;vertical-align:super;font-weight:700;color:#666}
+.sticky-studio-word{color:var(--accent-navy);font-size:15px}
+.sticky-cta{
+  flex-shrink:0;
+  background:var(--accent);color:var(--gold);
+  font-family:'Fredoka One',cursive;font-size:13px;
+  padding:7px 18px;border-radius:100px;
+  border:2px solid var(--accent-dark);
+  text-decoration:none;white-space:nowrap;
+  transition:all .15s;
+}
+.sticky-cta:hover{background:var(--accent-dark)}
+
+/* ── Phase base ─────────────────────────────── */
+.lp-phase{
+  position:relative;
+  width:100%;
+  min-height:100svh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:80px 24px 60px;
+  overflow:hidden;
+}
+
+/* ── Fase A: Hero ─────────────────────────────── */
+.lp-hero{background:var(--bg);padding:clamp(60px,10vh,100px) 24px}
+.lp-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 60% 40%,rgba(200,17,26,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.lp-hero-layout{
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(20px,5vw,72px);width:100%;max-width:900px;
+  flex-wrap:wrap;z-index:1;
+}
+.lp-hero-text{flex:1;min-width:220px;text-align:left}
+/* Hero brand: reutiliza las clases .brand-good originales con escala hero */
+.lp-hero-brand{display:flex;flex-direction:column;gap:2px;line-height:1}
+.lp-hero-brand .brand-good{
+  font-size:clamp(42px,10.5vw,82px) !important;
+  display:block;
+  text-shadow:3px 3px 0 rgba(200,17,26,.12);
+}
+.lp-hero-brand .brand-good:last-child{
+  color:var(--accent-navy) !important;
+  font-size:clamp(32px,8vw,64px) !important;
+  transform:rotate(-1deg) !important;
+}
+.lp-hero-tag{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(12px,2.4vw,16px);
+  color:var(--accent-navy);letter-spacing:2px;
+  margin-top:12px;opacity:.7;
+}
+.lp-hero-location{
+  display:flex;align-items:center;gap:5px;
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(11px,1.8vw,13px);
+  color:var(--muted);margin-top:6px;font-weight:600;
+}
+.lp-hero-img-wrap{
+  flex:0 0 auto;position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.lp-hero-blob{
+  position:absolute;
+  width:clamp(200px,44vw,340px);height:clamp(200px,44vw,340px);
+  background:radial-gradient(ellipse,rgba(200,17,26,.11) 0%,transparent 70%);
+  border-radius:50%;animation:blobPulse 5s ease-in-out infinite;
+}
+@keyframes blobPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+/* ─────────────────────────────────────────────────────────────
+   IMAGEN HERO (Chucky_Body.png)
+   ✅ FIX #4: se eliminó filter:drop-shadow — causaba un halo
+   de color que degradaba la apariencia con fondos transparentes.
+   La animación de flotado se conserva íntegra.
+   ───────────────────────────────────────────────────────────── */
+.lp-hero-img{
+  width:clamp(170px,36vw,300px);height:auto;
+  /* Sin filtro — preserva transparencia PNG sin sombra */
+  animation:floatBody 4s ease-in-out infinite;
+  position:relative;z-index:1;
+}
+@keyframes floatBody{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-13px) rotate(1deg)}}
+@media(max-width:580px){
+  .lp-hero-layout{flex-direction:column;align-items:center}
+  .lp-hero-text{text-align:center;min-width:0}
+  .lp-hero-brand .brand-good{text-align:center}
+  .lp-hero-location{justify-content:center}
+  .lp-hero-img{width:clamp(150px,52vw,240px)}
+}
+
+/* ── Scroll hint ─────────────────────────────── */
+.scroll-hint{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  animation:bounceHint 2s ease-in-out infinite;pointer-events:none;
+}
+.scroll-hint-text{font-family:'Fredoka One',cursive;font-size:10px;color:var(--accent);letter-spacing:3px;opacity:.55}
+.scroll-hint-arrow{width:18px;height:18px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(45deg);opacity:.45}
+@keyframes bounceHint{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+
+/* ── Fase 2: Agenda ─────────────────────────────── */
+.lp-agenda{background:linear-gradient(150deg,var(--accent) 0%,var(--accent-dark) 100%)}
+.lp-agenda-inner{display:flex;flex-direction:column;align-items:center;max-width:600px;width:100%}
+.lp-agenda-title{
+  font-family:'Lilita One',cursive;
+  font-size:clamp(30px,7.5vw,58px);
+  color:var(--gold);text-shadow:2px 2px 0 rgba(0,0,0,.22);
+  line-height:1.05;margin-bottom:14px;text-align:center;
+}
+.lp-agenda-sub{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(13px,2.6vw,16px);
+  color:rgba(255,255,255,.8);
+  text-align:center;margin-bottom:32px;line-height:1.55;
+}
+.lp-cta-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--gold);color:var(--accent-dark);
+  font-family:'Lilita One',cursive;
+  font-size:clamp(15px,3.5vw,20px);
+  padding:14px 36px;border-radius:100px;
+  border:2.5px solid var(--accent-dark);
+  cursor:pointer;letter-spacing:.5px;
+  transition:all .2s;
+  box-shadow:0 6px 24px rgba(0,0,0,.18);
+  text-decoration:none;
+}
+.lp-cta-btn:hover,.lp-cta-btn:focus{
+  transform:scale(1.04) translateY(-2px);
+  box-shadow:0 10px 32px rgba(0,0,0,.25);
+  outline:none;
+}
+.lp-cta-outline{
+  background:transparent;color:var(--accent);
+  border:2px solid var(--accent);
+  font-size:clamp(13px,3vw,16px);padding:11px 28px;
+  box-shadow:none;
+}
+.lp-cta-outline:hover{background:var(--accent);color:var(--gold)}
+
+/* ── Fase 3: Servicios ─────────────────────────────── */
+.lp-services{background:var(--white);padding:80px 0 60px}
+.lp-section-header{text-align:center;padding:0 24px;margin-bottom:0}
+.lp-eyebrow{
+  font-family:'Fredoka One',cursive;font-size:10px;
+  letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+}
+.lp-section-title{
+  font-family:'Lilita One',cursive;
+  font-size:clamp(24px,6vw,42px);
+  color:var(--accent);text-shadow:2px 2px 0 rgba(200,17,26,.1);
+  margin-bottom:36px;
+}
+
+/* ── Card track (shared: services + policies) ─────────── */
+.lp-cards-track-wrap{position:relative;width:100%;display:flex;align-items:center}
+.lp-cards-track{
+  display:flex;
+  gap:clamp(14px,3.5vw,24px);
+  overflow-x:auto;
+  overflow-y:visible;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  scroll-behavior:smooth;
+  padding:32px clamp(16px,7vw,64px);
+  scrollbar-width:none;
+  /*
+   * touch-action: pan-x pan-y
+   * Permite que el navegador maneje AMBOS ejes de forma nativa.
+   * El eje que "gana" lo determina el ángulo del gesto inicial.
+   * Si el dedo se mueve más en Y → página hace scroll vertical.
+   * Si el dedo se mueve más en X → el track hace scroll horizontal.
+   * La detección la hace el compositor del browser en el hilo de UI,
+   * por lo que es más fluida que cualquier solución en JS.
+   */
+  touch-action: pan-x pan-y;
+}
+.lp-cards-track::-webkit-scrollbar{display:none}
+.lp-cards-track .card{
+  scroll-snap-align:center;
+  flex-shrink:0;
+  /* prevent card's own transform from breaking snap */
+  will-change:transform;
+}
+
+/* Arrow buttons */
+.lp-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  z-index:10;width:40px;height:40px;
+  background:var(--white);border:2px solid var(--accent);border-radius:50%;
+  font-size:22px;color:var(--accent);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 12px rgba(200,17,26,.15);padding:0;
+  transition:all .15s;
+}
+.lp-arrow:hover,.lp-arrow:focus{background:var(--accent);color:var(--gold);outline:none}
+.lp-arrow-left{left:4px}
+.lp-arrow-right{right:4px}
+.lp-arrow-light{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.3);
+  color:var(--gold);
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+.lp-arrow-light:hover,.lp-arrow-light:focus{background:rgba(255,255,255,.22);color:var(--white)}
+@media(max-width:500px){.lp-arrow{width:32px;height:32px;font-size:18px}}
+
+/* ─────────────────────────────────────────────────────────────
+   TRACK DE SCROLL HORIZONTAL — POLÍTICAS
+   ─ Problema raíz: .card tiene overflow:hidden + transform en hover,
+     lo que interfería con el scroll container.
+   ─ Solución: contenedor dedicado .pol-track que es completamente
+     independiente del .lp-cards-track usado en Servicios.
+   ─ overscroll-behavior-x:contain evita que el scroll de la página
+     "robe" el gesto horizontal.
+   ─ -webkit-overflow-scrolling:touch activa inercia en iOS Safari.
+   ─ touch-action:pan-x indica al navegador que este eje es del track.
+   ───────────────────────────────────────────────────────────── */
+
+/* ── Dot indicators ── */
+.lp-scroll-dots{display:flex;gap:8px;justify-content:center;padding-top:16px}
+.lp-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.22);border:none;padding:0;cursor:pointer;transition:background .25s,transform .2s}
+.lp-dot.active{background:var(--gold);transform:scale(1.35)}
+
+/* ── Fase 4: Políticas (fondo y padding de sección) ── */
+.lp-policies { background: var(--accent-navy); padding: 80px 0 60px; }
+/* El footer ahora vive fuera del scrubbing como sección estática */
+.lp-footer-phase{display:none !important}
+
+/* ── Reveal animations ─────────────────────────────── */
+.reveal-up{opacity:0;transform:translateY(32px);transition:opacity .55s ease,transform .55s ease}
+.reveal-up.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.32s}
+.reveal-delay-4{transition-delay:.44s}
+.reveal-delay-5{transition-delay:.56s}
+
+/* ═══════════════════════════════════════════════════════════════
+   POLICY CARDS — Nueva implementación
+   ─────────────────────────────────────────────────────────────
+   Clase base: .pc-card (prefijo "pc" = policy card)
+   Evita conflicto total con .card existente de Servicios.
+
+   Animación:
+   ─ ::before (esfera top-right) y ::after (esfera bottom-left)
+     comienzan ocultos (opacity:0) y al hover escalan x7 llenando
+     la card con el color --accent del sistema.
+   ─ El texto cambia a blanco en hover para contraste.
+   ─ scale:1.05 y box-shadow dan profundidad visual.
+
+   FIX SCROLL:
+   ─ .pc-card usa overflow:visible en lugar de overflow:hidden
+     para que el scale en hover no cree un nuevo stacking context
+     que capture eventos de wheel/touch.
+   ─ touch-action:manipulation en el track permite scroll vertical
+     aunque el dedo esté sobre una card.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Contenedor del track de políticas — scroll horizontal */
+.pc-track-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.pc-track {
+  display: flex;
+  gap: clamp(16px, 3vw, 28px);
+  overflow-x: auto;
+  overflow-y: visible;           /* visible: el scale no queda recortado */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  /*
+   * touch-action: pan-x pan-y
+   * ─────────────────────────────────────────────────────────
+   * La clave para que AMBAS direcciones funcionen simultáneamente:
+   *
+   * ❌ pan-y solo   → scroll vertical OK, swipe horizontal BLOQUEADO
+   * ❌ pan-x solo   → swipe horizontal OK, scroll vertical BLOQUEADO
+   * ✅ pan-x pan-y  → el browser detecta la intención del gesto por
+   *                    ángulo: >45° de Y = scroll página, <45° de Y
+   *                    = scroll del track. Ambos conviven fluidamente.
+   *
+   * La "competencia" entre ejes se resuelve con el JS initSwipeGesture
+   * que bloquea temporalmente el eje no deseado durante el gesto activo
+   * usando scroll-snap y overscroll-behavior, sin cancelar eventos.
+   * ─────────────────────────────────────────────────────────
+   */
+  touch-action: pan-x pan-y;
+  padding: 40px clamp(16px, 7vw, 64px);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.pc-track::-webkit-scrollbar { display: none; }
+
+/* Cada card hace snap al centro — tamaño fijo idéntico al original */
+/* ═══════════════════════════════════════════════════════════════════
+   POLÍTICA CARDS — Diseño EXACTO de la card proporcionada
+   ═══════════════════════════════════════════════════════════════════
+   Se usa la clase .pc-card como scope para no interferir con .card
+   de Servicios. Los valores de CSS son 1:1 del diseño original:
+   ─ width: 320px  ─ padding: 36px  ─ border-radius: 24px
+   ─ overflow: hidden  ─ border: 1px solid #999999
+   ─ ::before top-right y ::after bottom-left con scale(7) en hover
+   ─ background de las esferas: #C8111A (rojo marca) y #1a1a8c (navy)
+
+   FIX SCROLL (#3): overflow:hidden en la card es la causa raíz del
+   bloqueo de wheel events en Chrome/Safari cuando scale > 1.
+   Solución: se mantiene overflow:hidden (requerido para las esferas)
+   PERO se aplica `will-change: transform` para que el browser
+   promueva la card a su propia capa de composición y así NO interrumpa
+   el hilo de scroll de la página. Adicionalmente, `touch-action: pan-y`
+   en el .pc-track permite scroll vertical nativo aunque el dedo esté
+   sobre la card.
+   ═══════════════════════════════════════════════════════════════════ */
+.pc-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 320px;
+  padding: 36px;
+  border-radius: 24px;
+  overflow: hidden;
+  line-height: 1.6;
+  border: 1px solid #999999;
+  /* Fondo blanco en estado normal */
+  background: #ffffff;
+  /*
+   * Se separan las transiciones:
+   * ─ background y border-color van con la misma curva pero sin delay
+   *   para que el cambio de color sea instantáneo al entrar el cursor.
+   * ─ box-shadow, scale y border-radius mantienen la curva original.
+   */
+  transition:
+    background    0.48s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color  0.48s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow    0.48s cubic-bezier(0.23, 1, 0.32, 1),
+    scale         0.48s cubic-bezier(0.23, 1, 0.32, 1);
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  will-change: transform;
+}
+
+/* Esfera superior-derecha */
+.pc-card::before {
+  content: "";
+  position: absolute;
+  right: -5.2rem;
+  top: -5.2rem;
+  width: 10.4rem;
+  height: 10.4rem;
+  /* Misma color que el hover background para que no haya contraste
+     entre la esfera y el fondo rojo al expandirse */
+  background: #C8111A;
+  z-index: 0;
+  opacity: 0;
+  border-radius: 50%;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Esfera inferior-izquierda — también roja para unificar el fondo */
+.pc-card::after {
+  content: "";
+  position: absolute;
+  left: -5.2rem;
+  bottom: -5.2rem;
+  width: 10.4rem;
+  height: 10.4rem;
+  background: #C8111A;
+  z-index: 0;
+  opacity: 0;
+  border-radius: 50%;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Hover: esferas escalan cubriendo la card */
+.pc-card:hover::before { scale: 7; opacity: 1; }
+.pc-card:hover::after  { scale: 7; opacity: 1; }
+
+/* Hover: el background del card cambia a rojo al instante —
+   las esferas y el fondo son del mismo color → transición limpia */
+.pc-card:hover {
+  background: #C8111A;
+  box-shadow:
+    0rem 6px 13px rgba(0, 0, 0, 0.1),
+    0rem 24px 24px rgba(0, 0, 0, 0.09),
+    0rem 55px 33px rgba(0, 0, 0, 0.05),
+    0rem 97px 39px rgba(0, 0, 0, 0.01),
+    0rem 152px 43px rgba(0, 0, 0, 0);
+  border-color: #C8111A;
+  scale: 1.05;
+}
+
+/* Contenido interno */
+.pc-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  color: #000000;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  z-index: 1;
+}
+
+/* Heading */
+.pc-content .pc-heading {
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.3;
+  z-index: 1;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Para */
+.pc-content .pc-para {
+  z-index: 1;
+  opacity: 0.8;
+  font-size: 18px;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Textos en blanco durante hover */
+.pc-card:hover .pc-content .pc-heading { color: #ffffff; }
+.pc-card:hover .pc-content .pc-para    { color: #ffffff; }
+
+/* Estado .touched — tap en móvil, mismo color que hover */
+.pc-card.touched::before { scale: 7; opacity: 1; }
+.pc-card.touched::after  { scale: 7; opacity: 1; }
+.pc-card.touched {
+  background: #C8111A;
+  border-color: #C8111A;
+  box-shadow: 0rem 6px 13px rgba(0,0,0,.1), 0rem 24px 24px rgba(0,0,0,.09);
+  scale: 1.02;
+}
+.pc-card.touched .pc-content .pc-heading { color: #ffffff; }
+.pc-card.touched .pc-content .pc-para    { color: #ffffff; }
+
+/* Responsivo móvil */
+@media (max-width: 520px) {
+  .pc-card { width: clamp(260px, 88vw, 310px); padding: 28px; }
+  .pc-content .pc-heading { font-size: clamp(24px, 7vw, 32px); }
+  .pc-content .pc-para    { font-size: clamp(14px, 4vw, 17px); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   VIDEO PLAYER CARD
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Wrapper centrado encima de "¿Lista para lucir increíble?" */
+.vpc-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 36px;
+}
+
+/* Card principal */
+.vpc-card {
+  width: clamp(280px, 85vw, 360px);
+  height: clamp(180px, 28vw, 225px);
+  background: linear-gradient(135deg,
+    rgba(26, 26, 26, 0.92) 0%,
+    rgba(26, 26, 140, 0.30) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 15px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  padding: 14px 14px 10px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+
+  /* ✅ FIX SCROLL: manipulation permite scroll normal al tocar */
+  touch-action: manipulation;
+
+  box-shadow: inset 0px 0px 1px rgba(0,0,0,.8);
+  transition: all .25s ease-in;
+  cursor: default;
+}
+
+/* Hover: sombra interna + brillo */
+.vpc-card:hover {
+  box-shadow:
+    inset 0px 10px 36px -13px rgba(0,0,0,.75),
+    0 0 0 1px rgba(255, 215, 0, 0.35),
+    0 8px 32px rgba(0,0,0,.4);
+  border-color: rgba(255, 215, 0, 0.45);
+}
+
+/* Todos los hijos ocultos por defecto, aparecen en hover */
+.vpc-card > * { opacity: 0; transition: opacity .25s ease-in; }
+.vpc-card:hover > * { opacity: 1; }
+
+/* ── Fila superior ── */
+.vpc-up {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vpc-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vpc-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(11px, 2.5vw, 13px);
+  color: var(--gold);
+  letter-spacing: .5px;
+  opacity: 1; /* visible siempre dentro del grupo */
+}
+
+.vpc-subtitle {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(9px, 2vw, 10px);
+  color: rgba(255,255,255,.55);
+  letter-spacing: .3px;
+}
+
+.vpc-up-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Barra de progreso ── */
+.vpc-playbar {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 2px;
+}
+
+.vpc-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,.15);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Progreso animado — se activa al hacer hover en la card padre */
+.vpc-bar::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 2px;
+  transition: none;
+}
+
+/* Al hacer hover en la card, la animación comienza */
+.vpc-card:hover .vpc-bar::after {
+  animation: vpc-progress 25s ease forwards;
+}
+
+@keyframes vpc-progress {
+  0%   { width: 0; }
+  100% { width: 100%; }
+}
+
+/* Thumb del progreso */
+.vpc-bar-thumb {
+  position: absolute;
+  top: 50%; left: 0;
+  transform: translate(-50%, -50%);
+  width: 10px; height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ── Fila inferior ── */
+.vpc-down {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vpc-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Icono pequeño */
+.vpc-svg {
+  width: 28px; height: 28px;
+  padding: 5px;
+  border-radius: 50%;
+  fill: rgba(255,255,255,.85);
+  transition: background .15s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.vpc-svg:hover { background: rgba(255,255,255,.15); }
+
+/* Botón Play/Pause central */
+.vpc-pause {
+  width: 40px; height: 40px;
+  padding: 6px;
+  fill: white;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform .15s;
+}
+.vpc-pause:hover { transform: scale(1.1); }
+
+/* Tiempo */
+.vpc-time {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(9px, 2vw, 11px);
+  color: rgba(255,255,255,.7);
+  white-space: nowrap;
+}
+
+/* Texto "hover video" del card original — reemplazado por título real */
+/* Se omite para no duplicar texto */
+
+/* Responsivo móvil */
+@media (max-width: 480px) {
+  .vpc-card { height: clamp(160px, 45vw, 200px); }
+  .vpc-pause { width: 34px; height: 34px; }
+  .vpc-svg   { width: 24px; height: 24px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ HEADER ═══════════════ -->
-<header class="site-header">
-  <div class="header-inner">
-    <div>
-      <span class="brand-good">Chucky's<span class="brand-tm">™</span></span>
-      <span class="brand-good" style="font-size:32px;color:var(--accent-navy);text-shadow:none;transform:rotate(-1deg)">Charm Studio</span>
+<!-- ═══════════════ STICKY HEADER (oculto en fase hero, visible después) ═══════════════ -->
+<header class="sticky-header" id="stickyHeader">
+  <div class="sticky-header-inner">
+    <div class="sticky-brand">
+      <img src="Chucky.png" alt="Chucky" class="sticky-chucky" onerror="this.style.display='none'"/>
+      <span class="sticky-brand-name">Chucky's<span class="sticky-tm">™</span> <span class="sticky-studio-word">Charm Studio</span></span>
     </div>
-    <span class="brand-studio">Home Studio · Personalize Your Nails!</span>
-    <a class="location-link" href="https://maps.app.goo.gl/kY3HEH1GBgSb6YNY6?g_st=aw" target="_blank">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="var(--accent-navy)" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="var(--accent-navy)" stroke-width="1.5" fill="none"/></svg>
-      Clavería, Azcapotzalco, CDMX · Ver en Google Maps
-    </a>
+    <a class="sticky-cta" href="#agenda">Agendar 💅</a>
   </div>
 </header>
 
-<!-- ═══════════════ MARQUEE ═══════════════ -->
+<!-- ═══════════════ LANDING SCRUB ═══════════════ -->
+
+<!-- ── FASE A: HERO VISUAL (solo nombre + Chucky_Body) ──────── -->
+<section class="lp-phase lp-hero" id="lpHeroA">
+  <div class="lp-hero-layout">
+    <div class="lp-hero-text reveal-up">
+      <!-- Reutiliza tipografía original: .brand-good (Lilita One) + colores del sistema -->
+      <h1 class="lp-hero-brand">
+        <span class="brand-good">Chucky's<span class="brand-tm">™</span></span>
+        <span class="brand-good">Charm Studio</span>
+      </h1>
+      <p class="lp-hero-tag">Personalize Your Nails!</p>
+      <p class="lp-hero-location">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        Clavería, Azcapotzalco, CDMX
+      </p>
+    </div>
+    <div class="lp-hero-img-wrap reveal-up reveal-delay-2">
+      <div class="lp-hero-blob"></div>
+      <img src="Chucky_Home.png" alt="Chucky mascota" class="lp-hero-img" onerror="this.style.display='none'"/>
+    </div>
+  </div>
+  <div class="scroll-hint" aria-hidden="true">
+    <span class="scroll-hint-text">SCROLL</span>
+    <div class="scroll-hint-arrow"></div>
+  </div>
+</section>
+
+<!-- ── FASE 2: AGENDA ──────────────────────────────────────── -->
+<section class="lp-phase lp-agenda" id="lpAgenda">
+  <div class="lp-agenda-inner">
+
+    <!-- VIDEO PLAYER CARD — único elemento visual encima del título -->
+    <div class="vpc-wrapper reveal-up">
+      <div class="vpc-card" aria-label="Preview del estudio">
+
+        <!-- Fila superior: título + controles top-right -->
+        <div class="vpc-up">
+          <div class="vpc-title-group">
+            <span class="vpc-title">Chucky's Charm Studio</span>
+            <span class="vpc-subtitle">Portfolio · Nails Art</span>
+          </div>
+          <div class="vpc-up-right">
+            <!-- Botón pantalla completa -->
+            <svg class="vpc-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M3 3h6v2H5v4H3V3zm12 0h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zm14 4h4v-4h2v6h-6v-2z"/>
+            </svg>
+            <!-- Botón ajustes -->
+            <svg class="vpc-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.34.07-.68.07-1.08s-.03-.73-.07-1.08l2.32-1.8c.21-.17.27-.46.13-.71L19.6 5.36c-.13-.25-.42-.34-.67-.25l-2.73 1.1c-.57-.44-1.18-.8-1.85-1.07L14 2.42C13.95 2.18 13.73 2 13.5 2h-3c-.23 0-.45.18-.5.42l-.35 2.72c-.67.27-1.28.63-1.85 1.07l-2.73-1.1c-.25-.09-.54 0-.67.25L2.75 8.91c-.14.25-.08.54.13.71l2.32 1.8C5.16 11.79 5.13 12.13 5.13 12.5s.03.7.07 1.08l-2.32 1.8c-.21.17-.27.46-.13.71l1.28 2.21c.13.25.42.34.67.25l2.73-1.1c.57.44 1.18.8 1.85 1.07l.35 2.72c.05.24.27.42.5.42h3c.23 0 .45-.18.5-.42l.35-2.72c.67-.27 1.28-.63 1.85-1.07l2.73 1.1c.25.09.54 0 .67-.25l1.28-2.21c.14-.25.08-.54-.13-.71l-2.32-1.8z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="vpc-playbar">
+          <div class="vpc-bar">
+            <!-- Thumb del progreso (posicionado por JS si se necesita) -->
+            <div class="vpc-bar-thumb"></div>
+          </div>
+        </div>
+
+        <!-- Fila inferior: controles de reproducción + tiempo -->
+        <div class="vpc-down">
+          <div class="vpc-icons">
+            <!-- Anterior -->
+            <svg class="vpc-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Anterior">
+              <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
+            </svg>
+            <!-- Play / Pause principal -->
+            <svg class="vpc-pause" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Reproducir">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            <!-- Siguiente -->
+            <svg class="vpc-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Siguiente">
+              <path d="m6 18 8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+            </svg>
+            <!-- Volumen -->
+            <svg class="vpc-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Volumen">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+            </svg>
+          </div>
+          <!-- Tiempo de reproducción -->
+          <p class="vpc-time">00:43 / 02:15</p>
+        </div>
+
+      </div><!-- /vpc-card -->
+    </div><!-- /vpc-wrapper -->
+
+    <!-- Título y subtítulo de la sección Agenda -->
+    <h2 class="lp-agenda-title reveal-up reveal-delay-1">¿Lista para<br>lucir increíble?</h2>
+    <p class="lp-agenda-sub reveal-up reveal-delay-2">Reserva en minutos · Anticipo $100 MXN confirma tu lugar</p>
+    <a class="lp-cta-btn reveal-up reveal-delay-3" href="#agenda">Agendar Mi Cita</a>
+
+  </div>
+</section>
+
+<!-- ── FASE 3: SERVICIOS (cards originales reutilizados) ─────── -->
+<section class="lp-phase lp-services" id="lpServices">
+  <div class="lp-section-header reveal-up">
+    <p class="lp-eyebrow">Lo que ofrecemos</p>
+    <h2 class="lp-section-title">Nuestros Servicios</h2>
+  </div>
+  <!-- Cards originales integrados con scroll horizontal -->
+  <div class="lp-cards-track-wrap">
+    <button class="lp-arrow lp-arrow-left" id="srvArrowL" onclick="scrollCards(-1)" aria-label="Anterior">&#8249;</button>
+    <div class="lp-cards-track" id="srvTrack">
+      <div class="card"><div class="content">
+        <p class="heading">GEL (SEMI) PERMANENTE</p>
+        <p class="para">Diseño/Color en Gel sobre uñita natural. Duración de 2 a 3 semanas.</p>
+      </div></div>
+      <div class="card"><div class="content">
+        <p class="heading">RUBBER BALANCE</p>
+        <p class="para">Base protectora de alto impacto con acabado gel. Fortalece y protege la uña natural.</p>
+      </div></div>
+      <div class="card"><div class="content">
+        <p class="heading">EXTENSIÓN ACRÍLICA</p>
+        <p class="para">Técnica en la cual se alarga la uñita natural. Duración de 3 a 4 semanas.</p>
+      </div></div>
+      <div class="card"><div class="content">
+        <p class="heading">RETIRO</p>
+        <p class="para">Proceso de eliminación de cualquier material aplicado en las uñitas de forma segura.</p>
+      </div></div>
+    </div>
+    <button class="lp-arrow lp-arrow-right" id="srvArrowR" onclick="scrollCards(1)" aria-label="Siguiente">&#8250;</button>
+  </div>
+  <a class="lp-cta-btn lp-cta-outline reveal-up" href="#agenda" style="margin-top:32px">Reservar ahora →</a>
+</section>
+
+<!-- ── FASE 4: POLÍTICAS ─────────────────────────────────────
+     Rediseñadas con la nueva card base (.pc-card):
+     ─ Esferas animadas ::before (rojo) y ::after (navy) en hover.
+     ─ Sin overflow:hidden → el scale no captura eventos de scroll.
+     ─ touch-action:pan-y pan-x en el track → scroll vertical libre.
+     ─ Clases prefijadas .pc-* para cero conflictos con .card.
+   ─────────────────────────────────────────────────────────── -->
+<section class="lp-phase lp-policies" id="lpPolicies">
+  <div class="lp-section-header reveal-up">
+    <p class="lp-eyebrow" style="color:rgba(255,215,0,.7)">Reglas del Estudio</p>
+    <h2 class="lp-section-title" style="color:var(--gold)">Políticas del Negocio</h2>
+  </div>
+
+  <!-- Wrapper con flechas ancladas -->
+  <div class="pc-track-wrap">
+
+    <!-- Flecha izquierda -->
+    <button class="lp-arrow lp-arrow-left lp-arrow-light"
+            onclick="scrollPolicies(-1)"
+            aria-label="Política anterior">&#8249;</button>
+
+    <!-- Track de scroll horizontal — touch-action pan-y = scroll vertical libre -->
+    <div class="pc-track" id="polTrack">
+
+      <!-- Card 1: Cancelaciones — contenido real, diseño exacto del original -->
+      <div class="pc-card" role="article">
+        <div class="pc-content">
+          <p class="pc-heading">Cancelaciones</p>
+          <p class="pc-para">Cancela o reprograma hasta 24 horas antes sin penalización. Con menos de 24 hrs el anticipo no es reembolsable — ese tiempo estaba reservado solo para ti.</p>
+        </div>
+      </div>
+
+      <!-- Card 2: Anticipos -->
+      <div class="pc-card" role="article">
+        <div class="pc-content">
+          <p class="pc-heading">Anticipos</p>
+          <p class="pc-para">El anticipo de $100 MXN confirma tu cita. Sin él el espacio sigue disponible para otras clientas. Se descuenta del total el día del servicio.</p>
+        </div>
+      </div>
+
+      <!-- Card 3: Puntualidad -->
+      <div class="pc-card" role="article">
+        <div class="pc-content">
+          <p class="pc-heading">Puntualidad</p>
+          <p class="pc-para">Tolerancia máxima de 15 minutos. Pasado ese tiempo la cita puede cancelarse sin reembolso. Si llegas tarde el diseño podría simplificarse para no afectar la siguiente cita.</p>
+        </div>
+      </div>
+
+    </div><!-- /pc-track -->
+
+    <!-- Flecha derecha -->
+    <button class="lp-arrow lp-arrow-right lp-arrow-light"
+            onclick="scrollPolicies(1)"
+            aria-label="Política siguiente">&#8250;</button>
+
+  </div><!-- /pc-track-wrap -->
+
+  <!-- Dots indicadores sincronizados con el scroll -->
+  <div class="lp-scroll-dots" id="polDots" role="tablist" aria-label="Indicadores de políticas">
+    <button class="lp-dot active" onclick="goToPolicy(0)" aria-label="Cancelaciones"></button>
+    <button class="lp-dot"        onclick="goToPolicy(1)" aria-label="Anticipos"></button>
+    <button class="lp-dot"        onclick="goToPolicy(2)" aria-label="Puntualidad"></button>
+  </div>
+</section>
+
+<!-- ═══════════════ FIN DEL SCRUBBING — footer estático abajo ═══════════════ -->
+
+<!-- ═══════════════ AGENDA — separación landing / sistema ═══════════════ -->
+<div id="agenda"></div>
+
+<!-- ═══════════════ BOOKING HEADER ═══════════════
+     ✅ SOLO muestra nombre de marca e imagen.
+     ❌ Se eliminaron: subtítulo "Home Studio · Personalize Your Nails!"
+        y el link de ubicación — aplica solo en esta sección del calendario.
+        El resto del sitio (landing, footer) los conserva íntegros.
+  ═══════════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div style="display:flex;align-items:center;gap:14px">
+      <!-- Chucky.png sin filtro de sombra (fix #4) -->
+      <img src="Chucky.png" alt="Chucky" style="width:44px;height:auto;" onerror="this.style.display='none'"/>
+      <div>
+        <span class="brand-good">Chucky's<span class="brand-tm">™</span></span>
+        <span class="brand-good" style="font-size:28px;color:var(--accent-navy);text-shadow:none;transform:rotate(-1deg)">Charm Studio</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ MARQUEE (booking section) ═══════════════ -->
 <div class="marquee-bar">
   <div class="marquee-track">
     <span>✦ BATTERIES INCLUDED ✦</span><span>SHE WANTS YOU FOR A BEST MANICURE ✦</span><span>AGES 4 &amp; UP ✦</span><span>COLLECT ALL DESIGNS ✦</span>
@@ -638,6 +1539,19 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
           <p class="field-error" id="errTel">Ingresa un número de teléfono válido (8-12 dígitos)</p>
         </div>
         <div class="form-full">
+          <label class="field-label">Tipo de Servicio *</label>
+          <select class="field-input" id="fServicio">
+            <option value="">— Selecciona un servicio —</option>
+            <option value="gel_permanente">Gel (Semi) Permanente — Diseño/color sobre uña natural</option>
+            <option value="rubber_balance">Rubber Balance — Base protectora con acabado de gel</option>
+            <option value="extension_acrilica">Extensión Acrílica — Alargamiento de uña natural</option>
+            <option value="gel_extension">Gel + Extensión — Combo gel sobre extensión acrílica</option>
+            <option value="retiro">Retiro — Eliminación de cualquier material aplicado</option>
+            <option value="retiro_mas_nuevo">Retiro + Servicio Nuevo — Retiro e inmediata aplicación</option>
+          </select>
+          <p class="field-error" id="errServicio">Selecciona un tipo de servicio</p>
+        </div>
+        <div class="form-full">
           <label class="field-label">Notas para la manicurista (Opcional)</label>
           <textarea class="field-input field-textarea" id="fNotas" placeholder="Describe el diseño que deseas, longitud, acabado..."></textarea>
         </div>
@@ -727,102 +1641,12 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
   </div>
 
-  <!-- ─── SERVICIOS ─── -->
-  <hr class="section-divider"/>
-  <p class="sec-label">Lo que ofrecemos</p>
-  <p class="sec-title" style="margin-bottom:18px">Nuestros Servicios</p>
-  <div class="services-grid">
-
-<div class="slider-container">
-  <div class="card">
-    <div class="content">
-      <p class="heading">GEL (SEMI) PERMANENTE</p>
-      <p class="para">
-        Diseño/Color en Gel sobre uñita natural. Duracion de 2 a 3 semanas.
-      </p>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="content">
-      <p class="heading">RUBBER BALANCE</p>
-      <p class="para">
-        Desliza hacia la izquierda para ver más contenido y efectos increíbles.
-      </p>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="content">
-      <p class="heading">EXTENSION ACRILICA</p>
-      <p class="para">
-        Tecnica en la cual se alarga la uñita natural.Duracion de 3 a 4 semanas.
-      </p>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="content">
-      <p class="heading">RETIRO</p>
-      <p class="para">
-        Proceso de eliminacion de cualquier material aplicado en las uñitas.
-      </p>
-    </div>
-  </div>
-</div>
-
-  <!-- ─── POLÍTICAS ─── -->
-  <hr class="section-divider"/>
-  <p class="sec-label">Reglas del Estudio</p>
-  <p class="sec-title" style="margin-bottom:18px">Políticas del Negocio</p>
-  
-  <div class="card-container">
-  <div class="card">
-    <span class="card__front-text">CANCELACIONES</span>
-    <div class="card__content">
-      <div class="card__text-side">
-        <p class="card__title">Politica de Cancelaciones</p>
-        <p class="card__description">
-          Puedes cancelar o reprogramar hasta 24 horas antes sin penalización. Cancelaciones con menos de 24 horas pierden el anticipo ¡Recuerda, ese tiempo estaba reservado exclusivamente para ti! 
-        </p>
-      </div>
-      <img src="Kiupie_1.png" alt="User" class="card__image">
-    </div>
-  </div>
-
-  <div class="card">
-    <span class="card__front-text">ANTICIPOS</span>
-    <div class="card__content">
-      <div class="card__text-side">
-        <p class="card__title">Politica de Anticipos</p>
-        <p class="card__description">
-          El anticipo de $100 MXN es necesario para confirmar tu cita, en caso contrario, el espacio sigue disponible para otras clientas. El anticipo se descuenta del total el día del servicio.
-        </p>
-      </div>
-      <img src="Kiupie_2.png" alt="User" class="card__image">
-    </div>
-  </div>
-
-  <div class="card">
-    <span class="card__front-text">PUNTUALIDAD</span>
-    <div class="card__content">
-      <div class="card__text-side">
-        <p class="card__title">Tolerancia de Tiempo</p>
-        <p class="card__description">
-          Se tolera un máximo de 15 minutos de retraso. Pasado este tiempo la cita puede cancelarse y el anticipo no es reembolsable. Si llegas después de los 15 minutos, aún podremos atenderte; sin embargo, el diseño podría simplificarse para no afectar el horario de la siguiente cita.
-        </p>
-      </div>
-      <img src="Kiupie_3.png" alt="User" class="card__image">
-    </div>
-  </div>
-</div>
-
 </main>
 
 <!-- ═══════════════ BATTERIES BAR ═══════════════ -->
 <div class="batteries-bar">⚡ BATTERIES INCLUDED ⚡</div>
 
-<!-- ═══════════════ FOOTER ═══════════════ -->
+<!-- ═══════════════ FOOTER — estático, al final de toda la página ═══════════════ -->
 <footer class="site-footer" id="siteFooter">
   <div class="footer-main">
     <div>
@@ -837,7 +1661,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
       </a>
       <a class="footer-link" href="tel:+525512345678">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.21a2 2 0 012-2.18h3A2 2 0 017.22 1a12.37 12.37 0 002.67 5.34 2 2 0 01-.45 2.09L8.09 9.78a16 16 0 006.13 6.13l1.35-1.35a2 2 0 012.09-.45A12.37 12.37 0 0023 16.92z"/></svg>
-        +52 55 1234 5678
+        (+52) 2298602148
       </a>
       <a class="footer-link" href="https://maps.app.goo.gl/kY3HEH1GBgSb6YNY6?g_st=aw" target="_blank">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
@@ -850,12 +1674,40 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
   </div>
   <div class="footer-bottom">
-    Play Partners Toys™ · Chucky's Charm Studio · Todos los derechos reservados 2025
-    <br><span style="font-size:10px;opacity:.7">Área administrativa disponible únicamente para el equipo · Solo clientas en esta vista</span>
+    Play Partners Toys™ · Chucky's Charm Studio
+    <br><span style="font-size:10px;opacity:.7">Novedades 26, Claveria, Azcapotzaclo, 02080 Ciudad de Mexico, CDMX</span>
   </div>
-  <!-- CHUCKY RUNNER VIDEO -->
+  <!-- ════════════════════════════════════════════════════════
+       CHUCKY RUNNER — Video animado con transparencia
+       ────────────────────────────────────────────────────────
+       ¿POR QUÉ .webm CON TRANSPARENCIA FALLA EN iOS?
+
+       WebM/VP9 con canal alpha (transparencia) NO es compatible
+       con Safari/iOS porque Apple nunca implementó VP9 alpha en
+       sus decodificadores de hardware (solo decodifican H.264/H.265).
+
+       En Android (Chrome/Firefox) sí funciona porque Chromium incluye
+       el decodificador de software de VP9 que sí entiende el canal alpha.
+
+       En iOS, el video se decodifica sin el canal alpha → el fondo
+       queda negro sólido en lugar de transparente.
+
+       SOLUCIÓN:
+       Se usan dos <source> ordenados por prioridad:
+         1. HEVC con alpha (.mp4) → para Safari iOS 14+ / macOS Safari
+            (exportar con codec hvc1 + modo alpha desde After Effects
+            o usando ffmpeg: ffmpeg -i input.mov -c:v libx265 -tag:v hvc1
+            -pix_fmt yuva420p output_alpha.mp4)
+         2. WebM/VP9 con alpha (.webm) → para Chrome/Android/Firefox
+
+       Si no existe el .mp4, iOS simplemente no muestra el video
+       (degradación elegante, no rompe nada).
+       ════════════════════════════════════════════════════════ -->
   <div class="chucky-runner-wrap" id="chuckyRunnerWrap">
     <video class="chucky-runner" id="chuckyVideo" muted playsinline loop preload="none">
+      <!-- Fuente 1: HEVC + alpha para Safari iOS 14+ y macOS Safari -->
+      <source src="Chuky_Footpage_alpha.mp4" type='video/mp4; codecs="hvc1"'/>
+      <!-- Fuente 2: WebM VP9 + alpha para Chrome, Firefox, Android -->
       <source src="Chuky_Footpage.webm" type="video/webm"/>
     </video>
   </div>
@@ -940,7 +1792,27 @@ function nextMonth(){
 }
 
 // ═══════════════ STEP NAVIGATION ═══════════════
+/**
+ * goStep(n) — Cambia el panel activo del flujo de agendamiento.
+ *
+ * ✅ FIX #6 — PROBLEMA DE SCROLL AL PULSAR "CONTINUAR":
+ * El comportamiento original usaba window.scrollTo({top:0}), lo que
+ * forzaba a la página a subir hasta el inicio absoluto (landing page).
+ * Esto rompía la experiencia porque el usuario perdía el contexto del
+ * formulario y tenía que hacer scroll manual para regresar.
+ *
+ * SOLUCIÓN:
+ * ─ Se reemplaza window.scrollTo(0,0) por un scroll suave hacia el
+ *   elemento #agenda (el div ancla que separa landing del sistema).
+ * ─ Esto mantiene al usuario dentro de la sección de agendamiento
+ *   sin saltar al inicio de la página.
+ * ─ Se usa scrollIntoView con block:'start' para que el encabezado
+ *   del formulario sea lo primero visible.
+ *
+ * @param {number} n - Número del paso al que navegar (1-4)
+ */
 function goStep(n){
+  /* Actualiza clases de paneles y steps bar */
   for(let i=1;i<=4;i++){
     document.getElementById('panel'+i).classList.toggle('active',i===n);
     const si=document.getElementById('stepItem'+i);
@@ -948,7 +1820,17 @@ function goStep(n){
     if(i===n)si.classList.add('active');
     else if(i<n)si.classList.add('done');
   }
-  window.scrollTo({top:0,behavior:'smooth'});
+
+  /*
+   * ✅ Scroll controlado: en lugar de ir al top de la página,
+   * el scroll va hasta el ancla #agenda (inicio del sistema de
+   * agendamiento), que está justo antes del header del formulario.
+   * Esto preserva la separación visual landing / sistema.
+   */
+  const anchor = document.getElementById('agenda');
+  if(anchor){
+    anchor.scrollIntoView({behavior:'smooth', block:'start'});
+  }
 }
 
 function goStepSafe(n){
@@ -986,17 +1868,28 @@ function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())}
 function validPhone(v){return /^[\d\s\-().]{8,12}$/.test(v.trim())}
 
 // ═══════════════ STEP 2 → STEP 3 ═══════════════
+const SERVICIOS_LABELS={
+  'gel_permanente':'💅 Gel (Semi) Permanente',
+  'rubber_balance':'🛡️ Rubber Balance',
+  'extension_acrilica':'✨ Extensión Acrílica',
+  'gel_extension':'🌟 Gel + Extensión',
+  'retiro':'🧹 Retiro',
+  'retiro_mas_nuevo':'♻️ Retiro + Servicio Nuevo'
+};
+
 function toStep3(){
   const nombre=document.getElementById('fNombre').value.trim();
   const apellido=document.getElementById('fApellido').value.trim();
   const email=document.getElementById('fEmail').value.trim();
   const tel=document.getElementById('fTel').value.trim();
+  const servicio=document.getElementById('fServicio').value;
   const gErr=document.getElementById('formGlobalErr');
   let ok=true;
   setFieldErr('fNombre','errNombre',!nombre);if(!nombre)ok=false;
   setFieldErr('fApellido','errApellido',!apellido);if(!apellido)ok=false;
   setFieldErr('fEmail','errEmail',!validEmail(email));if(!validEmail(email))ok=false;
   setFieldErr('fTel','errTel',!validPhone(tel));if(!validPhone(tel))ok=false;
+  setFieldErr('fServicio','errServicio',!servicio);if(!servicio)ok=false;
   if(!ok){gErr.textContent='Por favor corrige los campos marcados.';gErr.classList.add('show');return;}
   // also verify step1 data still intact
   if(!selDate||!selSlot){gErr.textContent='La fecha y horario ya no están disponibles. Regresa al paso 1.';gErr.classList.add('show');return;}
@@ -1005,10 +1898,13 @@ function toStep3(){
   booking.email=email;
   booking.tel=document.getElementById('fPrefix').value+' '+tel;
   booking.notas=document.getElementById('fNotas').value;
+  booking.servicio=servicio;
+  booking.servicioLabel=SERVICIOS_LABELS[servicio]||servicio;
   document.getElementById('citaSummaryStep3').innerHTML=buildSummaryHTML()+
-    `<div class="cita-row"><span class="cita-key">Clienta</span><span class="cita-val">${nombre} ${apellido}</span></div>
+    `<div class="cita-row"><span class="cita-key">Servicio</span><span class="cita-val">${booking.servicioLabel}</span></div>
+     <div class="cita-row"><span class="cita-key">Clienta</span><span class="cita-val">${nombre} ${apellido}</span></div>
      <div class="cita-row"><span class="cita-key">Correo</span><span class="cita-val">${email}</span></div>
-     <div class="cita-key"></span><div class="cita-row"><span class="cita-key">Teléfono</span><span class="cita-val">${booking.tel}</span></div>`;
+     <div class="cita-row"><span class="cita-key">Teléfono</span><span class="cita-val">${booking.tel}</span></div>`;
   goStep(3);
 }
 
@@ -1092,6 +1988,7 @@ function confirmBooking(){
   document.getElementById('confirmCard').innerHTML=
     `<div class="confirm-row"><span class="confirm-key">Folio</span><span class="confirm-val">${folio}</span></div>
      <div class="confirm-row"><span class="confirm-key">Clienta</span><span class="confirm-val">${booking.nombre} ${booking.apellido}</span></div>
+     <div class="confirm-row"><span class="confirm-key">Servicio</span><span class="confirm-val">${booking.servicioLabel||'N/D'}</span></div>
      <div class="confirm-row"><span class="confirm-key">Fecha</span><span class="confirm-val">${DNAMES[booking.date.getDay()]} ${booking.date.getDate()} de ${MONTHS[booking.date.getMonth()]} ${booking.date.getFullYear()}</span></div>
      <div class="confirm-row"><span class="confirm-key">Horario</span><span class="confirm-val">${booking.slot.label}</span></div>
      <div class="confirm-row"><span class="confirm-key">Correo</span><span class="confirm-val">${booking.email}</span></div>
@@ -1126,6 +2023,7 @@ function downloadPDF(){
     // Details
     const rows=[
       ['Clienta',booking.nombre+' '+booking.apellido],
+      ['Servicio',booking.servicioLabel||'N/D'],
       ['Fecha',DNAMES[booking.date.getDay()]+' '+booking.date.getDate()+' de '+MONTHS[booking.date.getMonth()]+' '+booking.date.getFullYear()],
       ['Horario',booking.slot.label],
       ['Correo',booking.email],
@@ -1140,16 +2038,84 @@ function downloadPDF(){
       doc.setTextColor(139,0,0);doc.setFontSize(8);doc.setFont('helvetica','bold');
       doc.text(k+':',14,y);
       doc.setTextColor(26,26,26);doc.setFont('helvetica','normal');
-      doc.text(String(v),55,y);
+      // truncate long values so they don't overflow
+      const vStr=String(v);
+      const maxW=80;
+      const lines=doc.splitTextToSize(vStr,maxW);
+      doc.text(lines[0],55,y);
       y+=10;
     });
-    // Footer
-    doc.setFillColor(200,17,26);doc.rect(0,188,148,22,'F');
-    doc.setTextColor(255,215,0);doc.setFontSize(7);doc.setFont('helvetica','normal');
-    doc.text('Clavería, Azcapotzalco, CDMX  ·  chukyscharmstuido@gmail.com  ·  +52 55 1234 5678',74,196,{align:'center'});
-    doc.text('⚡ BATTERIES INCLUDED ⚡  ·  Play Partners Toys™  2025',74,203,{align:'center'});
-    doc.save('comprobante_'+booking.folio+'.pdf');
-    showActionMsg('¡Comprobante descargado!');
+
+    // ── Reference images section ──
+    if(uploadedFiles.length>0){
+      // Check if we need a new page
+      if(y>160){doc.addPage();doc.setFillColor(255,248,220);doc.rect(0,0,148,210,'F');y=20;}
+      else{y+=4;}
+      // Section header
+      doc.setFillColor(200,17,26);doc.rect(10,y-4,128,8,'F');
+      doc.setTextColor(255,215,0);doc.setFontSize(8);doc.setFont('helvetica','bold');
+      doc.text('IMÁGENES DE REFERENCIA',74,y+1,{align:'center'});
+      y+=12;
+
+      // Layout: up to 3 per row, small thumbnails
+      const thumbW=36,thumbH=28,gap=4,startX=10;
+      let imgPromises=uploadedFiles.map(f=>new Promise(resolve=>{
+        const reader=new FileReader();
+        reader.onload=e=>resolve(e.target.result);
+        reader.onerror=()=>resolve(null);
+        reader.readAsDataURL(f);
+      }));
+
+      // We do this synchronously after promise resolution
+      Promise.all(imgPromises).then(dataUrls=>{
+        let col=0,rowY=y;
+        dataUrls.forEach((dataUrl,idx)=>{
+          if(!dataUrl)return;
+          const x=startX+col*(thumbW+gap);
+          try{
+            // Draw white bg + border
+            doc.setFillColor(255,255,255);doc.rect(x,rowY,thumbW,thumbH,'F');
+            doc.setDrawColor(200,17,26);doc.rect(x,rowY,thumbW,thumbH,'S');
+            // Add image (fit inside box with padding)
+            doc.addImage(dataUrl,'JPEG',x+1,rowY+1,thumbW-2,thumbH-2,'','FAST');
+          }catch(e){
+            // If image fails, show placeholder
+            doc.setFillColor(240,240,240);doc.rect(x,rowY,thumbW,thumbH,'F');
+            doc.setTextColor(150,150,150);doc.setFontSize(7);
+            doc.text('IMG '+(idx+1),x+thumbW/2,rowY+thumbH/2,{align:'center'});
+          }
+          col++;
+          if(col>=3){col=0;rowY+=thumbH+gap;}
+        });
+        // Footer on current/last page
+        const totalPages=doc.internal.getNumberOfPages();
+        for(let pg=1;pg<=totalPages;pg++){
+          doc.setPage(pg);
+          doc.setFillColor(200,17,26);doc.rect(0,188,148,22,'F');
+          doc.setTextColor(255,215,0);doc.setFontSize(7);doc.setFont('helvetica','normal');
+          doc.text('Clavería, Azcapotzalco, CDMX  ·  chukyscharmstuido@gmail.com  ·  +52 55 1234 5678',74,196,{align:'center'});
+          doc.text('⚡ BATTERIES INCLUDED ⚡  ·  Play Partners Toys™  2025',74,203,{align:'center'});
+        }
+        doc.save('comprobante_'+booking.folio+'.pdf');
+        showActionMsg('¡Comprobante descargado!');
+      }).catch(()=>{
+        // Fallback: save without images
+        doc.setFillColor(200,17,26);doc.rect(0,188,148,22,'F');
+        doc.setTextColor(255,215,0);doc.setFontSize(7);doc.setFont('helvetica','normal');
+        doc.text('Clavería, Azcapotzalco, CDMX  ·  chukyscharmstuido@gmail.com  ·  +52 55 1234 5678',74,196,{align:'center'});
+        doc.text('⚡ BATTERIES INCLUDED ⚡  ·  Play Partners Toys™  2025',74,203,{align:'center'});
+        doc.save('comprobante_'+booking.folio+'.pdf');
+        showActionMsg('¡Comprobante descargado!');
+      });
+    } else {
+      // No images – standard footer
+      doc.setFillColor(200,17,26);doc.rect(0,188,148,22,'F');
+      doc.setTextColor(255,215,0);doc.setFontSize(7);doc.setFont('helvetica','normal');
+      doc.text('Clavería, Azcapotzalco, CDMX  ·  chukyscharmstuido@gmail.com  ·  +52 55 1234 5678',74,196,{align:'center'});
+      doc.text('⚡ BATTERIES INCLUDED ⚡  ·  Play Partners Toys™  2025',74,203,{align:'center'});
+      doc.save('comprobante_'+booking.folio+'.pdf');
+      showActionMsg('¡Comprobante descargado!');
+    }
   }catch(e){
     alert('No se pudo generar el PDF. Intenta de nuevo.');
   }
@@ -1175,6 +2141,7 @@ function resetAll(){
   selDate=null;selSlot=null;uploadedFiles=[];booking={};paymentDone=false;replaceIdx=-1;
   ['fNombre','fApellido','fEmail','fTel','fNotas','cardNum','cardName','cardExp','cardCvv']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const fServicio=document.getElementById('fServicio');if(fServicio)fServicio.value='';
   document.getElementById('imgPreviewGrid').innerHTML='';
   document.getElementById('slotsSection').style.display='none';
   document.getElementById('btnToStep2').style.display='none';
@@ -1209,6 +2176,236 @@ function resetAll(){
     });
   },{threshold:0.3});
   obs.observe(footer);
+})();
+
+// ═══════════════ LANDING PAGE JS ═══════════════
+
+/**
+ * initStickyHeader
+ * Muestra el header sticky cuando el hero sale del viewport.
+ * Usa IntersectionObserver (sin listener de scroll) → mejor performance.
+ */
+(function initStickyHeader(){
+  const header = document.getElementById('stickyHeader');
+  const hero   = document.getElementById('lpHeroA');
+  if(!header || !hero) return;
+  new IntersectionObserver(
+    ([entry]) => header.classList.toggle('visible', !entry.isIntersecting),
+    { threshold: 0.08 }
+  ).observe(hero);
+})();
+
+/**
+ * initReveal
+ * Anima .reveal-up al entrar al viewport (opacity + translateY).
+ */
+(function initReveal(){
+  const obs = new IntersectionObserver(
+    entries => entries.forEach(e => {
+      if(e.isIntersecting) e.target.classList.add('visible');
+    }),
+    { threshold: 0.1, rootMargin: '0px 0px -28px 0px' }
+  );
+  document.querySelectorAll('.reveal-up').forEach(t => obs.observe(t));
+})();
+
+/**
+ * initSwipeGesture(track)
+ * ─────────────────────────────────────────────────────────────────
+ * Problema raíz del conflicto de ejes:
+ *
+ *   touch-action: pan-y  → el browser bloquea el swipe horizontal.
+ *   touch-action: pan-x  → el browser bloquea el scroll vertical.
+ *   touch-action: auto   → el browser decide, pero suele priorizar
+ *                          el primer eje detectado y puede ser errático.
+ *   touch-action: pan-x pan-y → permite ambos, pero el browser
+ *                          compite entre ejes en el compositor.
+ *
+ * Solución:
+ *   1. CSS fija touch-action: pan-x pan-y (ambos habilitados).
+ *   2. JS detecta el ángulo del gesto en touchstart.
+ *   3. Si el ángulo es predominantemente horizontal (|ΔX| > |ΔY|):
+ *      → se activa el scroll del track con scrollBy.
+ *      → se llama a e.stopPropagation() para que la página no scrollee.
+ *   4. Si el ángulo es predominantemente vertical (|ΔY| > |ΔX|):
+ *      → no se interviene → el browser maneja el scroll de página.
+ *
+ * Esto replica el comportamiento de carruseles modernos (Instagram,
+ * Twitter, etc.) donde el eje de intención inicial determina cuál
+ * scroll se activa, y el otro queda bloqueado durante ese gesto.
+ *
+ * Se usan listeners { passive: true } para no bloquear el hilo de
+ * composición del browser (requisito de Chrome Lighthouse).
+ *
+ * @param {HTMLElement} track — El elemento scrollable (.lp-cards-track
+ *                               o .pc-track)
+ */
+function initSwipeGesture(track) {
+  if(!track) return;
+
+  let startX = 0;       // posición X inicial del toque
+  let startY = 0;       // posición Y inicial del toque
+  let startScrollLeft = 0; // scrollLeft del track al inicio
+  let isDragging = false;   // gesto activo
+  let axisLocked = null;    // 'h' = horizontal | 'v' = vertical | null = sin determinar
+
+  // Umbral en px para decidir el eje (≥8px de movimiento antes de bloquear)
+  const AXIS_THRESHOLD = 8;
+
+  track.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    startScrollLeft = track.scrollLeft;
+    isDragging = true;
+    axisLocked = null;
+    // Desactiva scroll suave mientras el dedo está activo
+    // para que el seguimiento sea inmediato
+    track.style.scrollBehavior = 'auto';
+  }, { passive: true });
+
+  track.addEventListener('touchmove', e => {
+    if(!isDragging) return;
+
+    const t    = e.touches[0];
+    const dx   = t.clientX - startX;
+    const dy   = t.clientY - startY;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+
+    // Determinar eje solo una vez por gesto (cuando supera el umbral)
+    if(!axisLocked && (absDx > AXIS_THRESHOLD || absDy > AXIS_THRESHOLD)) {
+      axisLocked = absDx > absDy ? 'h' : 'v';
+    }
+
+    if(axisLocked === 'h') {
+      // Gesto horizontal → mover el track
+      // No llamamos preventDefault (passive listener), pero sí
+      // asignamos scrollLeft directamente para seguimiento inmediato.
+      track.scrollLeft = startScrollLeft - dx;
+      // stopPropagation evita que el scroll horizontal
+      // se interprete como intención de scroll de página.
+      e.stopPropagation();
+    }
+    // Si axisLocked === 'v', no intervenimos → el browser scrollea la página.
+  }, { passive: true });
+
+  track.addEventListener('touchend', () => {
+    isDragging = false;
+    axisLocked = null;
+    // Reactivar scroll suave para los botones de flecha
+    track.style.scrollBehavior = 'smooth';
+  }, { passive: true });
+
+  track.addEventListener('touchcancel', () => {
+    isDragging = false;
+    axisLocked = null;
+    track.style.scrollBehavior = 'smooth';
+  }, { passive: true });
+}
+
+// Aplicar el detector de gestos a ambos tracks
+(function initAllSwipe(){
+  initSwipeGesture(document.getElementById('srvTrack'));
+  initSwipeGesture(document.getElementById('polTrack'));
+})();
+
+/**
+ * scrollCards(dir)
+ * Desplaza el track de Servicios via botones de flecha.
+ * behavior:'smooth' se respeta porque no hay gesto activo.
+ */
+function scrollCards(dir){
+  const track = document.getElementById('srvTrack');
+  if(!track) return;
+  const card = track.querySelector('.card');
+  const gap  = parseFloat(getComputedStyle(track).gap) || 20;
+  track.scrollBy({ left: dir * ((card ? card.offsetWidth : 280) + gap), behavior:'smooth' });
+}
+
+/**
+ * scrollPolicies(dir)
+ * Desplaza el track de Políticas via botones de flecha.
+ */
+function scrollPolicies(dir){
+  const track = document.getElementById('polTrack');
+  if(!track) return;
+  const card = track.querySelector('.pc-card');
+  const gap  = parseFloat(getComputedStyle(track).gap) || 16;
+  track.scrollBy({ left: dir * ((card ? card.offsetWidth : 300) + gap), behavior:'smooth' });
+}
+
+/**
+ * goToPolicy(idx)
+ * Navega a una card específica de Políticas (usado por los dots).
+ */
+function goToPolicy(idx){
+  const track = document.getElementById('polTrack');
+  if(!track) return;
+  const cards = track.querySelectorAll('.pc-card');
+  if(cards[idx]){
+    cards[idx].scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  }
+}
+
+/**
+ * initPolDots
+ * Sincroniza los indicadores de puntos con el scroll del track de Políticas.
+ * Usa rAF para throttle y passive:true para no bloquear el compositor.
+ */
+(function initPolDots(){
+  const track = document.getElementById('polTrack');
+  const dots  = document.querySelectorAll('#polDots .lp-dot');
+  if(!track || !dots.length) return;
+
+  let raf = false;
+
+  function syncDots(){
+    const cards  = [...track.querySelectorAll('.pc-card')];
+    const center = track.scrollLeft + track.offsetWidth / 2;
+    let closest = 0, minDist = Infinity;
+    cards.forEach((card, i) => {
+      const d = Math.abs(card.offsetLeft + card.offsetWidth / 2 - center);
+      if(d < minDist){ minDist = d; closest = i; }
+    });
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === closest));
+    raf = false;
+  }
+
+  track.addEventListener('scroll', () => {
+    if(!raf){ raf = true; requestAnimationFrame(syncDots); }
+  }, { passive: true });
+
+  syncDots();
+})();
+
+/**
+ * initPcTouch
+ * Tap-to-hover en .pc-card para móvil.
+ * Distingue entre tap (click) y swipe para no activar .touched
+ * cuando el usuario solo está deslizando el carrusel.
+ */
+(function initPcTouch(){
+  document.querySelectorAll('.pc-card').forEach(card => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    card.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    card.addEventListener('touchend', e => {
+      const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+      // Solo activar .touched si fue un tap (movimiento < 10px en ambos ejes)
+      if(dx < 10 && dy < 10){
+        const isOpen = card.classList.contains('touched');
+        document.querySelectorAll('.pc-card.touched').forEach(c => c.classList.remove('touched'));
+        if(!isOpen) card.classList.add('touched');
+      }
+    }, { passive: true });
+  });
 })();
 
 // ═══════════════ INIT ═══════════════
