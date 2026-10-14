@@ -536,6 +536,9 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 @media(max-width:480px){
   .mani-nav{ width: 32px; height: 32px; font-size: 18px; }
 }
+
+/* Offset para que el header fijo no tape el destino del scroll automático */  /* ← NUEVO */
+#stepBar,#agenda{scroll-margin-top:64px} 
 </style>
 </head>
 <body>
@@ -678,7 +681,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 <main class="main">
 
   <!-- STEP BAR — 5 pasos -->
-  <div class="step-bar">
+  <div class="step-bar" id="stepBar">
     <div class="step-item active" id="stepItem1" onclick="goStepSafe(1)"><span class="step-num">1</span><span class="step-name">Fecha</span></div>
     <div class="step-item"       id="stepItem2" onclick="goStepSafe(2)"><span class="step-num">2</span><span class="step-name">Artista</span></div>
     <div class="step-item"       id="stepItem3" onclick="goStepSafe(3)"><span class="step-num">3</span><span class="step-name">Datos</span></div>
@@ -997,11 +1000,15 @@ function renderCal(){
   }
 }
 
+let autoAdvanceTimer=null; 
+  
 function selectDate(dt){
   selDate=dt;selSlot=null;selMani=null;
   renderCal();
-  document.getElementById('btnToStep2').style.display='block';
-}
+  document.getElementById('btnToStep2').style.display='block';   // respaldo si regresa al paso 1
+  // Avance automático al paso de manicurista                    
+  clearTimeout(autoAdvanceTimer);                                
+  autoAdvanceTimer=setTimeout(toStep2,350);                      
 
 /**
  * renderSlots — Renderiza horarios según la agenda de la manicurista.
@@ -1038,7 +1045,7 @@ function nextMonth(){
  * Hace scroll hacia #agenda para mantener al usuario en el sistema de reservas.
  * @param {number} n — Paso destino (1-5)
  */
-function goStep(n){
+function goStep(n,scrollTargetId='agenda'){
   for(let i=1;i<=5;i++){
     document.getElementById('panel'+i).classList.toggle('active',i===n);
     const si=document.getElementById('stepItem'+i);
@@ -1047,7 +1054,7 @@ function goStep(n){
     if(i===n)si.classList.add('active');
     else if(i<n)si.classList.add('done');
   }
-  const anchor=document.getElementById('agenda');
+  const anchor=document.getElementById(scrollTargetId)||document.getElementById('agenda');
   if(anchor)anchor.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -1064,10 +1071,11 @@ function goStepSafe(n){
 /** Paso 1 → 2: valida fecha y lanza carrusel */
 function toStep2(){
   if(!selDate)return;
+  clearTimeout(autoAdvanceTimer);
   booking.date=selDate;
   selMani=null;selSlot=null;
   document.getElementById('citaSummary2M').innerHTML=buildSummaryHTML();
-  goStep(2);
+  goStep(2,'stepBar);
   initManiCarousel();
 }
 
