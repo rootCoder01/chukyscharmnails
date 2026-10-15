@@ -537,8 +537,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   .mani-nav{ width: 32px; height: 32px; font-size: 18px; }
 }
 
-/* Offset para que el header fijo no tape el destino del scroll automático */  /* ← NUEVO */
-#stepBar,#agenda{scroll-margin-top:64px} 
+/* Offset para que el header fijo no tape el destino del scroll automático */
+#stepBar,#agenda{scroll-margin-top:64px}
 </style>
 </head>
 <body>
@@ -1000,15 +1000,16 @@ function renderCal(){
   }
 }
 
-let autoAdvanceTimer=null; 
-  
+let autoAdvanceTimer=null;
+
 function selectDate(dt){
   selDate=dt;selSlot=null;selMani=null;
   renderCal();
-  document.getElementById('btnToStep2').style.display='block';   // respaldo si regresa al paso 1
-  // Avance automático al paso de manicurista                    
-  clearTimeout(autoAdvanceTimer);                                
-  autoAdvanceTimer=setTimeout(toStep2,350);                      
+  document.getElementById('btnToStep2').style.display='block'; // respaldo si regresa al paso 1
+  // Avance automático: la clienta ve el día marcado y pasa al paso de manicurista
+  clearTimeout(autoAdvanceTimer);
+  autoAdvanceTimer=setTimeout(toStep2,350);
+}
 
 /**
  * renderSlots — Renderiza horarios según la agenda de la manicurista.
@@ -1041,9 +1042,11 @@ function nextMonth(){
 
 // ═══════════════ NAVEGACIÓN DE PASOS ═══════════════
 /**
- * goStep(n) — Cambia el panel activo del flujo.
- * Hace scroll hacia #agenda para mantener al usuario en el sistema de reservas.
+ * goStep(n, scrollTargetId) — Cambia el panel activo del flujo.
+ * Hace scroll hacia scrollTargetId (por defecto #agenda) para mantener
+ * al usuario dentro del sistema de reservas.
  * @param {number} n — Paso destino (1-5)
+ * @param {string} [scrollTargetId='agenda'] — id del elemento al que se hace scroll
  */
 function goStep(n,scrollTargetId='agenda'){
   for(let i=1;i<=5;i++){
@@ -1068,14 +1071,14 @@ function goStepSafe(n){
   if(n===4&&booking.nombre){goStep(4);return;}
 }
 
-/** Paso 1 → 2: valida fecha y lanza carrusel */
+/** Paso 1 → 2: valida fecha y lanza carrusel (con scroll directo a la barra de pasos) */
 function toStep2(){
   if(!selDate)return;
   clearTimeout(autoAdvanceTimer);
   booking.date=selDate;
   selMani=null;selSlot=null;
   document.getElementById('citaSummary2M').innerHTML=buildSummaryHTML();
-  goStep(2,'stepBar);
+  goStep(2,'stepBar');
   initManiCarousel();
 }
 
@@ -1449,6 +1452,7 @@ function showActionMsg(msg){const el=document.getElementById('successActionMsg')
 // ═══════════════ RESET ═══════════════
 function resetAll(){
   selDate=null;selSlot=null;selMani=null;uploadedFiles=[];booking={};paymentDone=false;replaceIdx=-1;
+  clearTimeout(autoAdvanceTimer);
   ['fNombre','fApellido','fEmail','fTel','fNotas','cardNum','cardName','cardExp','cardCvv']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const fs=document.getElementById('fServicio');if(fs)fs.value='';
