@@ -224,9 +224,16 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .footer-bottom{border-top:1px solid rgba(255,255,255,.2);padding:10px 24px 56px;text-align:center;font-size:11px;color:var(--gold);opacity:.8;max-width:960px;margin:0 auto}
 
 /* ─── CHUCKY RUNNER ─────────────────────────────── */
+/* Android/Windows: se muestra el <video> WebM con canal alfa.
+   iOS/Safari: WebKit elige el MP4 HEVC; si ese archivo trae el fondo
+   amarillo "horneado", el JS dibuja el video en un <canvas> y elimina el
+   fondo (chroma key). El <video> queda como fuente invisible. */
 .chucky-runner-wrap{position:absolute;bottom:0;left:0;width:100%;height:180px;pointer-events:none;overflow:hidden}
-.chucky-runner{position:absolute;bottom:0;height:180px;width:auto;opacity:0;transition:opacity .5s}
+.chucky-runner{position:absolute;bottom:0;left:0;height:180px;width:auto;opacity:0;transition:opacity .5s;background:transparent}
+canvas.chucky-runner{display:block}
 .chucky-runner.running{animation:runAcross linear 6s infinite}
+/* Fuente oculta: se mantiene "visible" a nivel técnico para que WebKit no pause el video */
+video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
 @keyframes runAcross{0%{left:-100px;transform:scaleX(1)}49%{left:calc(100% + 60px);transform:scaleX(1)}50%{left:calc(100% + 60px);transform:scaleX(-1)}99%{left:-100px;transform:scaleX(-1)}100%{left:-100px;transform:scaleX(1)}}
 
 /* ─── RESPONSIVE ─────────────────────────────── */
@@ -361,12 +368,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .mani-carousel-wrap{position:relative;display:flex;align-items:center;gap:8px;margin-bottom:8px}
 
 /* Botones de navegación del carrusel */
-.mani-nav{background:var(--accent);color:var(--gold);border:none;border-radius:50%;width:40px;height:40px;font-size:24px;font-family:'Fredoka One',cursive;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:2;line-height:1}
+.mani-nav{background:var(--accent);color:var(--gold);border:none;border-radius:50%;width:40px;height:40px;font-size:24px;font-family:'Fredoka One',cursive;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:2;line-height:1;touch-action:manipulation}
 .mani-nav:hover{background:var(--accent-dark)}
 
 /* Área de scroll — padding vertical y horizontal para no recortar
-   los pseudo-elementos ::before/::after que rotan en hover */
-.mani-track-outer{overflow:hidden;flex:1;cursor:grab;user-select:none;padding:16px 10px 22px}
+   los pseudo-elementos ::before/::after que rotan en hover.
+   touch-action:pan-y → el swipe horizontal lo maneja el JS y el
+   scroll vertical de la página sigue siendo nativo (Android/iOS). */
+.mani-track-outer{overflow:hidden;flex:1;cursor:grab;user-select:none;-webkit-user-select:none;padding:16px 10px 22px;touch-action:pan-y}
 .mani-track-outer.grabbing{cursor:grabbing}
 
 /* Track interno */
@@ -378,8 +387,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
    Prefijo "mani-" para no chocar con .card (Servicios).
    Medidas, perspectiva, curva y transform del giro: 1:1 con el original.
    Colores adaptados a la paleta del estudio.
-   ─ Desktop (hover): gira al pasar el mouse.
-   ─ Móvil (sin hover): gira con un tap (.flipped vía JS).
+   ─ Desktop (mouse): gira al pasar el mouse.
+   ─ Táctil (Android / iOS / tablets): gira con un tap (.flipped vía JS).
    ═══════════════════════════════════════════════════════════════ */
 .mani-flip-card{
   background-color:transparent;
@@ -391,6 +400,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   position:relative;
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 .mani-flip-title{
   font-size:1.5em;
@@ -407,8 +417,9 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   transition:transform 0.6s;
   transition-timing-function:cubic-bezier(0.61, 0.98, 0.48, 1.01);
   transform-style:preserve-3d;
+  -webkit-transform-style:preserve-3d;
 }
-@media(hover:hover){
+@media(hover:hover) and (pointer:fine){
   .mani-flip-card:hover .mani-flip-inner{transform:rotate(180deg) rotateX(180deg)}
 }
 .mani-flip-card.flipped .mani-flip-inner{transform:rotate(180deg) rotateX(180deg)}
@@ -426,6 +437,17 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   backface-visibility:hidden;
   border-radius:1rem;
   overflow:hidden;
+}
+
+/* Hit-testing: solo la cara visible recibe toques.
+   Chrome Android a veces entrega el tap a la cara oculta de un elemento
+   con transform 3D; así el botón del reverso siempre recibe el toque. */
+.mani-flip-back{pointer-events:none}
+.mani-flip-card.flipped .mani-flip-back{pointer-events:auto}
+.mani-flip-card.flipped .mani-flip-front{pointer-events:none}
+@media(hover:hover) and (pointer:fine){
+  .mani-flip-card:hover .mani-flip-back{pointer-events:auto}
+  .mani-flip-card:hover .mani-flip-front{pointer-events:none}
 }
 
 /* Frente: foto de la artista + nombre */
@@ -467,13 +489,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   border:1px solid rgba(255,215,0,.45);border-radius:20px;
   padding:3px 8px;letter-spacing:.3px;
 }
+/* Botón del reverso: área táctil ≥ 44px (guía Apple/Google) */
 .mani-select-btn{
   background:var(--gold);
   color:var(--accent-dark);
   border:none;
-  padding:8px 16px;
+  min-height:44px;
+  padding:12px 22px;
   font-weight:800;
-  font-size:11px;
+  font-size:12px;
   border-radius:9999px;
   cursor:pointer;
   margin-top:4px;
@@ -481,10 +505,13 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   text-transform:uppercase;
   font-family:'Nunito',sans-serif;
   box-shadow:0 3px 8px rgba(0,0,0,.2);
-  transition:transform .2s,box-shadow .2s,background .2s;
+  transition:background .2s;
+  position:relative;z-index:2;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
-.mani-select-btn:hover{transform:translateY(-1px);box-shadow:0 5px 12px rgba(0,0,0,.28)}
-.mani-select-btn:active{transform:translateY(1px)}
+/* Sin efectos hover/active en el botón: en táctil el primer toque activaba
+   el hover en vez del click. El toque ahora selecciona directo. */
 
 /* Estado seleccionado */
 .mani-flip-card.selected .mani-flip-front,
@@ -875,22 +902,21 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
     <div>
       <p class="footer-col-title">Contacto</p>
-      <!-- TODO: reemplazar "chuckyscharmstudio" por el usuario real de cada red -->
-      <a class="footer-link" href="https://www.instagram.com/chuckyscharmstudio" target="_blank" rel="noopener" aria-label="Instagram">
+      <a class="footer-link" href="https://www.instagram.com/chuckyscharm.nails" target="_blank" rel="noopener" aria-label="Instagram">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-        @chuckyscharmstudio
+        @chuckyscharm.nails
       </a>
-      <a class="footer-link" href="https://www.tiktok.com/@chuckyscharmstudio" target="_blank" rel="noopener" aria-label="TikTok">
+      <a class="footer-link" href="https://www.tiktok.com/@chuckyscharm_nails" target="_blank" rel="noopener" aria-label="TikTok">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.6 2.6 0 0 1-2.59-2.6 2.6 2.6 0 0 1 3.37-2.48V9.66a5.73 5.73 0 0 0-.78-.05A5.69 5.69 0 0 0 4.17 15.3 5.69 5.69 0 0 0 9.86 21a5.69 5.69 0 0 0 5.68-5.69V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.3 4.3 0 0 1-3.24-1.48z"/></svg>
-        @chuckyscharmstudio
+        @chuckyscharm_nails
       </a>
       <a class="footer-link" href="tel:+522298602148">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.21a2 2 0 012-2.18h3A2 2 0 017.22 1a12.37 12.37 0 002.67 5.34 2 2 0 01-.45 2.09L8.09 9.78a16 16 0 006.13 6.13l1.35-1.35a2 2 0 012.09-.45A12.37 12.37 0 0023 16.92z"/></svg>
         (+52) 2298602148
       </a>
-      <a class="footer-link" href="https://maps.app.goo.gl/kY3HEH1GBgSb6YNY6?g_st=aw" target="_blank">
+      <a class="footer-link" href="https://www.google.com/maps/search/?api=1&amp;query=Av.+Claver%C3%ADa+180,+Claveria,+Azcapotzalco,+02080+Ciudad+de+M%C3%A9xico,+CDMX" target="_blank" rel="noopener">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-        Clavería, Azcapotzalco, CDMX
+        Av. Clavería 180-2nd, Clavería, Azcapotzalco, CDMX
       </a>
     </div>
     <div>
@@ -900,13 +926,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   </div>
   <div class="footer-bottom">
     Play Partners Toys™ · Chucky's Charm Studio
-    <br><span style="font-size:10px;opacity:.7">Novedades 26, Claveria, Azcapotzaclo, 02080 Ciudad de Mexico, CDMX</span>
+    <br><span style="font-size:10px;opacity:.7">Av. Clavería 180-2nd, Clavería, Azcapotzalco, 02080 Ciudad de México, CDMX</span>
   </div>
   <div class="chucky-runner-wrap" id="chuckyRunnerWrap">
-    <video class="chucky-runner" id="chuckyVideo" muted playsinline loop preload="none">
+    <video class="chucky-runner" id="chuckyVideo" muted playsinline webkit-playsinline loop preload="none" disablepictureinpicture disableremoteplayback>
       <source src="Chuky_Footpage_alpha.mp4" type='video/mp4; codecs="hvc1"'/>
       <source src="Chuky_Footpage.webm" type="video/webm"/>
     </video>
+    <!-- Lienzo para iOS/Safari: muestra el video sin el fondo amarillo -->
+    <canvas class="chucky-runner" id="chuckyCanvas" aria-hidden="true"></canvas>
   </div>
 </footer>
 
@@ -932,10 +960,8 @@ const SERVICIOS_LABELS={
  * Ampliar con: vacations[], diasNoLaborables[] en futuras versiones.
  */
 const MANICURISTS=[
-  {id:1,name:'Pamela León',   image:'Pamela_Leon.jpeg',    specialties:['Gel Semi-Permanente','Nail Art','Diseño 3D'], busySlots:{}},
-  {id:2,name:'Andrea Ruiz',   image:'Pamela_Leon.png',    specialties:['Acrílico','Rubber Balance','French'],         busySlots:{}},
-  {id:3,name:'Sofía Méndez',  image:'Sofia_Mendez.png',   specialties:['Gel','Press-On','Encapsulado'],               busySlots:{}},
-  {id:4,name:'Fernanda Torres',image:'Fernanda_Torres.png',specialties:['Diseño 3D','Nail Art','Acrílico'],           busySlots:{}}
+  {id:1,name:'Pamela León',  image:'Pamela_Leon.jpeg', specialties:['Gel Semi-Permanente','Nail Art','Diseño 3D'], busySlots:{}},
+  {id:2,name:'Fátima García',image:'Fatima_Garcia.png', specialties:['Acrílico','Rubber Balance','French'],        busySlots:{}}
 ];
 
 // ═══════════════ ESTADO GLOBAL ═══════════════
@@ -1075,6 +1101,7 @@ function toStep2(){
   booking.date=selDate;
   selMani=null;selSlot=null;
   document.getElementById('citaSummary2M').innerHTML=buildSummaryHTML();
+  document.getElementById('maniSelIndicator').textContent='';
   goStep(2,'stepBar');
   initManiCarousel();
 }
@@ -1137,6 +1164,12 @@ function buildSummaryHTML(){
 // ═══════════════ CARRUSEL DE MANICURISTAS ═══════════════
 let maniOffset=0,maniCardWidth=0,maniIsDragging=false;
 const MANI_CLONE_COUNT=3;
+/** Distancia (px) que separa un "tap" de un "arrastre". Un dedo en Android
+ *  se mueve varios px al tocar; con 10px el tap ya no se confunde con drag. */
+const MANI_TAP_SLOP=10;
+/** Momento del último arrastre real: los clicks dentro de 350 ms se ignoran */
+let maniLastDragAt=0;
+function maniWasDrag(){return Date.now()-maniLastDragAt<350;}
 
 /**
  * initManiCarousel — Construye el carrusel con scroll infinito.
@@ -1159,21 +1192,23 @@ function initManiCarousel(){
 
 /**
  * buildManiCard — Construye la flip card de una manicurista:
- *   .mani-flip-card
- *     .mani-selected-badge
- *     .mani-flip-inner
- *       .mani-flip-front  → foto + nombre + "Ver más"
- *       .mani-flip-back   → nombre + especialidades + botón Seleccionar
- * Desktop: gira con hover · Móvil: gira con tap.
+ *   .mani-item
+ *     .mani-flip-card
+ *       .mani-selected-badge
+ *       .mani-flip-inner
+ *         .mani-flip-front  → foto + nombre + hint
+ *         .mani-flip-back   → nombre + especialidades + botón Seleccionar
+ * Mouse: gira con hover y el click selecciona.
+ * Táctil: tap gira la card; el botón Seleccionar del reverso elige en un toque.
  * @param {Object} mani
  * @returns {HTMLElement} — wrapper .mani-item
  */
-const CAN_HOVER=window.matchMedia('(hover:hover)').matches;
-let maniJustDragged=false;
+const CAN_HOVER=window.matchMedia('(hover:hover) and (pointer:fine)').matches;
 
 function buildManiCard(mani){
   const item=document.createElement('div');
   item.className='mani-item';
+  item.dataset.maniId=mani.id;
 
   const card=document.createElement('div');
   card.className='mani-flip-card';
@@ -1201,19 +1236,23 @@ function buildManiCard(mani){
       </div>
     </div>`;
 
-  card.querySelector('.mani-select-btn').onclick=e=>{
-    e.stopPropagation();
-    if(maniJustDragged)return;
+  // Botón Seleccionar: el toque selecciona directo y no gira ni activa la card
+  const selBtn=card.querySelector('.mani-select-btn');
+  selBtn.addEventListener('pointerdown',e=>e.stopPropagation());
+  selBtn.addEventListener('click',e=>{
+    e.preventDefault();e.stopPropagation();
+    if(maniWasDrag())return;
     selectMani(mani.id);
-  };
-  // Tap en móvil = girar; click en desktop = seleccionar directo
-  card.onclick=()=>{
-    if(maniJustDragged)return;
+  });
+
+  // Mouse: click en la card selecciona · Táctil: tap gira la card
+  card.addEventListener('click',()=>{
+    if(maniWasDrag())return;
     if(CAN_HOVER){selectMani(mani.id);return;}
     const willFlip=!card.classList.contains('flipped');
     document.querySelectorAll('.mani-flip-card.flipped').forEach(c=>c.classList.remove('flipped'));
     if(willFlip)card.classList.add('flipped');
-  };
+  });
   card.onkeydown=e=>{
     if(e.key==='Enter'){e.preventDefault();selectMani(mani.id);}
     if(e.key===' '){e.preventDefault();card.classList.toggle('flipped');}
@@ -1237,10 +1276,12 @@ function selectMani(maniId){
 
 /** highlightManiCards — Marca visualmente todas las instancias (clones) de la card seleccionada */
 function highlightManiCards(maniId){
-  document.querySelectorAll('.mani-flip-card').forEach(card=>{
-    const isSel=parseInt(card.dataset.maniId)===maniId;
-    card.classList.toggle('selected',isSel);
-    const btn=card.querySelector('.mani-select-btn');
+  document.querySelectorAll('.mani-item').forEach(item=>{
+    const isSel=parseInt(item.dataset.maniId)===maniId;
+    item.classList.toggle('selected',isSel);
+    const card=item.querySelector('.mani-flip-card');
+    if(card)card.classList.toggle('selected',isSel);
+    const btn=item.querySelector('.mani-select-btn');
     if(btn)btn.textContent=isSel?'✓ Seleccionada':'Seleccionar';
   });
 }
@@ -1256,7 +1297,7 @@ function maniCarouselNav(dir){
   setTimeout(()=>normalizeCarouselPos(),360);
 }
 
-/** getManiCardWidth — Ancho de item (card+specs) + gap en px */
+/** getManiCardWidth — Ancho de item + gap en px */
 function getManiCardWidth(){
   const track=document.getElementById('maniTrack');
   const item=track.querySelector('.mani-item');
@@ -1282,23 +1323,63 @@ function normalizeCarouselPos(){
 }
 
 /**
- * initManiDrag — Drag con mouse y swipe touch.
- * Umbral 40px para confirmar cambio de card. Se inicializa una sola vez.
+ * initManiDrag — Drag/swipe unificado con Pointer Events (mouse, touch y
+ * lápiz en Android, iOS 13+, Windows y Mac).
+ * ─ Un movimiento menor a MANI_TAP_SLOP es un tap → el click llega intacto
+ *   a la card o al botón.
+ * ─ Si domina el eje horizontal se arrastra el carrusel; si domina el
+ *   vertical se deja el scroll de la página al navegador.
+ * ─ Sin setPointerCapture: en Chrome Android redirige el click al
+ *   contenedor y el botón "Seleccionar" nunca lo recibía.
+ * Se inicializa una sola vez.
  */
 function initManiDrag(){
   const outer=document.getElementById('maniTrackOuter');
   if(!outer||outer._dragInited)return;
   outer._dragInited=true;
-  let startX=0,startOffset=0;
-  function onStart(x){maniIsDragging=true;startX=x;startOffset=maniOffset;outer.classList.add('grabbing');maniCardWidth=getManiCardWidth();document.getElementById('maniTrack').style.transition='none';}
-  function onMove(x){if(!maniIsDragging)return;const dx=x-startX;const track=document.getElementById('maniTrack');track.style.transform=`translateX(${-(startOffset*maniCardWidth-dx)}px)`;}
-  function onEnd(x){if(!maniIsDragging)return;maniIsDragging=false;outer.classList.remove('grabbing');const dx=x-startX;if(Math.abs(dx)>6){maniJustDragged=true;setTimeout(()=>maniJustDragged=false,60);}if(Math.abs(dx)>40)maniOffset=startOffset-(dx>0?1:-1);setTrackPos(true);setTimeout(()=>normalizeCarouselPos(),360);}
-  outer.addEventListener('mousedown',e=>{onStart(e.clientX);e.preventDefault();});
-  document.addEventListener('mousemove',e=>{if(maniIsDragging)onMove(e.clientX);});
-  document.addEventListener('mouseup',e=>{onEnd(e.clientX);});
-  outer.addEventListener('touchstart',e=>{onStart(e.touches[0].clientX);},{passive:true});
-  outer.addEventListener('touchmove',e=>{if(maniIsDragging)onMove(e.touches[0].clientX);},{passive:true});
-  outer.addEventListener('touchend',e=>{onEnd(e.changedTouches[0].clientX);});
+  const track=document.getElementById('maniTrack');
+  let startX=0,startY=0,startOffset=0,active=false,axis=null,pid=null;
+
+  outer.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    active=true;axis=null;pid=e.pointerId;
+    startX=e.clientX;startY=e.clientY;startOffset=maniOffset;
+    maniCardWidth=getManiCardWidth();
+  });
+
+  window.addEventListener('pointermove',e=>{
+    if(!active||e.pointerId!==pid)return;
+    const dx=e.clientX-startX,dy=e.clientY-startY;
+    if(!axis){
+      if(Math.abs(dx)<MANI_TAP_SLOP&&Math.abs(dy)<MANI_TAP_SLOP)return;
+      axis=Math.abs(dx)>Math.abs(dy)?'h':'v';
+      if(axis==='h'){
+        maniIsDragging=true;
+        outer.classList.add('grabbing');
+        track.style.transition='none';
+      }
+    }
+    if(axis!=='h')return;
+    track.style.transform=`translateX(${-(startOffset*maniCardWidth-dx)}px)`;
+  });
+
+  function end(e,cancelled){
+    if(!active||e.pointerId!==pid)return;
+    active=false;
+    if(axis==='h'){
+      const dx=e.clientX-startX;
+      maniLastDragAt=Date.now();
+      maniIsDragging=false;
+      outer.classList.remove('grabbing');
+      if(!cancelled&&Math.abs(dx)>40)maniOffset=startOffset-(dx>0?1:-1);
+      setTrackPos(true);
+      setTimeout(()=>normalizeCarouselPos(),360);
+    }
+    axis=null;pid=null;
+  }
+  window.addEventListener('pointerup',e=>end(e,false));
+  window.addEventListener('pointercancel',e=>end(e,true));
+  outer.addEventListener('dragstart',e=>e.preventDefault());
 }
 
 // ═══════════════ VALIDACIONES ═══════════════
@@ -1443,8 +1524,8 @@ function addPDFFooter(doc){
   for(let pg=1;pg<=total;pg++){
     doc.setPage(pg);doc.setFillColor(200,17,26);doc.rect(0,188,148,22,'F');
     doc.setTextColor(255,215,0);doc.setFontSize(7);doc.setFont('helvetica','normal');
-    doc.text('Clavería, Azcapotzalco, CDMX · IG/TikTok @chuckyscharmstudio · (+52) 2298602148',74,196,{align:'center'});
-    doc.text('⚡ BATTERIES INCLUDED ⚡ · Play Partners Toys™',74,203,{align:'center'});
+    doc.text('Av. Clavería 180-2nd, Clavería, Azcapotzalco, CDMX · (+52) 2298602148',74,196,{align:'center'});
+    doc.text('IG @chuckyscharm.nails · TikTok @chuckyscharm_nails · ⚡ BATTERIES INCLUDED ⚡',74,203,{align:'center'});
   }
 }
 
@@ -1473,13 +1554,134 @@ function resetAll(){
 }
 
 // ═══════════════ CHUCKY RUNNER ═══════════════
+/**
+ * initChucky — Chucky corriendo en el footer.
+ * ─ Android / Windows / Chrome: reproducen el WebM con alfa → se muestra el <video>.
+ * ─ iOS / Safari: WebKit elige el MP4 HEVC. Si ese MP4 no trae canal alfa
+ *   real, el fondo amarillo se ve. Para corregirlo:
+ *     1. Se dibuja cada frame en <canvas>.
+ *     2. En el primer frame se leen las 4 esquinas: si son transparentes el
+ *        archivo ya trae alfa y se usa el <video> tal cual; si son opacas,
+ *        ese color (el amarillo) se toma como color clave.
+ *     3. Se eliminan los píxeles cercanos al color clave (chroma key en
+ *        espacio YCbCr, con borde suave y sin halo amarillo).
+ *   El color clave se detecta solo: no depende del tono exacto de amarillo.
+ */
 (function initChucky(){
-  const video=document.getElementById('chuckyVideo');const footer=document.getElementById('siteFooter');
-  if(!video||!footer)return;let running=false;
+  const video=document.getElementById('chuckyVideo');
+  const canvas=document.getElementById('chuckyCanvas');
+  const footer=document.getElementById('siteFooter');
+  if(!video||!canvas||!footer)return;
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+
+  // Ajuste fino del recorte (distancia en el plano de color)
+  const KEY_INNER=18;   // por debajo → transparente total
+  const KEY_OUTER=36;   // entre INNER y OUTER → borde semitransparente
+  const LUMA_W=0.35;    // peso de la luminosidad (protege contornos oscuros)
+  const MAX_H=Math.round(180*Math.min(window.devicePixelRatio||1,2));
+
+  let running=false;
+  let mode=null;        // null (sin decidir) | 'video' | 'key' | 'off'
+  let kY=0,kCb=0,kCr=0;
+
+  const usesMp4=()=>/\.mp4(\?|#|$)/i.test(video.currentSrc||'');
+
+  function show(el){el.style.opacity='1';el.classList.add('running');}
+  function hide(el){el.style.opacity='0';el.classList.remove('running');}
+
+  function sizeCanvas(){
+    const vw=video.videoWidth,vh=video.videoHeight;
+    if(!vw||!vh)return false;
+    const h=Math.min(vh,MAX_H);
+    canvas.height=h;
+    canvas.width=Math.round(vw*h/vh);
+    return true;
+  }
+
+  /** Decide el modo con el primer frame (una sola vez) */
+  function decideMode(){
+    if(!usesMp4()){mode='video';return;}
+    if(!sizeCanvas())return; // aún sin dimensiones: reintenta en el siguiente frame
+    const w=canvas.width,h=canvas.height;
+    let d;
+    try{ctx.clearRect(0,0,w,h);ctx.drawImage(video,0,0,w,h);d=ctx.getImageData(0,0,w,h).data;}
+    catch(err){mode='off';return;} // lienzo bloqueado: mejor ocultar que mostrar el fondo
+    const pts=[[1,1],[w-2,1],[1,h-2],[w-2,h-2]];
+    let r=0,g=0,b=0,a=0;
+    pts.forEach(([x,y])=>{const i=(y*w+x)*4;r+=d[i];g+=d[i+1];b+=d[i+2];a+=d[i+3];});
+    r/=4;g/=4;b/=4;a/=4;
+    if(a<128){mode='video';return;} // el MP4 ya trae transparencia real
+    kY=.299*r+.587*g+.114*b;
+    kCb=-.168736*r-.331264*g+.5*b;
+    kCr=.5*r-.418688*g-.081312*b;
+    mode='key';
+  }
+
+  function keyFrame(){
+    const w=canvas.width,h=canvas.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.drawImage(video,0,0,w,h);
+    let img;
+    try{img=ctx.getImageData(0,0,w,h);}catch(err){mode='off';applyMode();return;}
+    const d=img.data,span=KEY_OUTER-KEY_INNER;
+    for(let i=0;i<d.length;i+=4){
+      const r=d[i],g=d[i+1],b=d[i+2];
+      const y=.299*r+.587*g+.114*b;
+      const dCb=(-.168736*r-.331264*g+.5*b)-kCb;
+      const dCr=(.5*r-.418688*g-.081312*b)-kCr;
+      const dY=(y-kY)*LUMA_W;
+      const dist=Math.sqrt(dCb*dCb+dCr*dCr+dY*dY);
+      if(dist<KEY_INNER){d[i+3]=0;}
+      else if(dist<KEY_OUTER){
+        const t=(dist-KEY_INNER)/span; // 0 = fondo · 1 = Chucky
+        d[i+3]=d[i+3]*t;
+        // Quita el halo amarillo del borde llevándolo hacia gris neutro
+        const s=1-t;
+        d[i]=r+(y-r)*s;d[i+1]=g+(y-g)*s;d[i+2]=b+(y-b)*s;
+      }
+    }
+    ctx.putImageData(img,0,0);
+  }
+
+  function applyMode(){
+    if(!running)return;
+    if(mode==='video'){video.classList.remove('is-source');hide(canvas);show(video);}
+    else if(mode==='key'){video.classList.add('is-source');video.style.opacity='';video.classList.remove('running');show(canvas);}
+    else if(mode==='off'){video.classList.remove('is-source');hide(video);hide(canvas);}
+  }
+
+  function schedule(){
+    if(!running)return;
+    if(typeof video.requestVideoFrameCallback==='function')video.requestVideoFrameCallback(loop);
+    else requestAnimationFrame(loop);
+  }
+
+  function loop(){
+    if(!running)return;
+    if(video.readyState>=2){
+      if(mode===null){decideMode();applyMode();}
+      if(mode==='key')keyFrame();
+      if(mode==='video'||mode==='off')return; // ya no hace falta el lienzo
+    }
+    schedule();
+  }
+
+  let loaded=false;
   const obs=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
-      if(e.isIntersecting&&!running){running=true;video.load();video.play().then(()=>{video.style.opacity='1';video.classList.add('running');}).catch(()=>{});}
-      else if(!e.isIntersecting&&running){running=false;video.pause();video.style.opacity='0';video.classList.remove('running');}
+      if(e.isIntersecting&&!running){
+        running=true;
+        if(!loaded){video.load();loaded=true;}
+        video.play().then(()=>{
+          if(mode===null||mode==='key')schedule();
+          applyMode();
+        }).catch(()=>{running=false;});
+      }else if(!e.isIntersecting&&running){
+        running=false;
+        video.pause();
+        video.classList.remove('is-source');
+        hide(video);hide(canvas);
+      }
     });
   },{threshold:0.3});
   obs.observe(footer);
