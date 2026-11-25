@@ -428,11 +428,11 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
    ═══════════════════════════════════════════════════════════════ */
 .mani-flip-card{background-color:transparent;width:var(--mani-w);height:calc(var(--mani-w) * 1.3368);flex:0 0 auto;-webkit-perspective:1000px;perspective:1000px;font-family:'Nunito',sans-serif;position:relative;cursor:pointer;border-radius:1rem;box-shadow:0 8px 14px 0 rgba(0,0,0,.2);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .mani-flip-title{font-size:1.5em;font-weight:900;text-align:center;margin:0;line-height:1.1;overflow-wrap:anywhere}
-.mani-flip-inner{position:relative;width:100%;height:100%;border-radius:inherit;text-align:center;transition:transform .6s cubic-bezier(.61,.98,.48,1.01);-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
+.mani-flip-inner{position:relative;width:100%;height:100%;border-radius:inherit;text-align:center;-webkit-transform:rotate(0deg) rotateX(0deg);transform:rotate(0deg) rotateX(0deg);transition:transform .6s cubic-bezier(.61,.98,.48,1.01);-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
 @media(hover:hover) and (pointer:fine){
-  .mani-flip-card:hover .mani-flip-inner{transform:rotateY(180deg)}
+  .mani-flip-card:hover .mani-flip-inner{-webkit-transform:rotate(180deg) rotateX(180deg);transform:rotate(180deg) rotateX(180deg)}
 }
-.mani-flip-card.flipped .mani-flip-inner{transform:rotateY(180deg)}
+.mani-flip-card.flipped .mani-flip-inner{-webkit-transform:rotate(180deg) rotateX(180deg);transform:rotate(180deg) rotateX(180deg)}
 
 .mani-flip-front,
 .mani-flip-back{position:absolute;top:0;left:0;display:flex;flex-direction:column;justify-content:center;width:100%;height:100%;border-radius:inherit;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden}
