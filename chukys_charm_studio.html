@@ -256,17 +256,18 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
 @media(max-width:480px){.brand-good{font-size:28px}}
 
 /* ═══════════════ LANDING PAGE ═══════════════ */
-.sticky-header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(252,221,97,.96);backdrop-filter:blur(8px);border-bottom:2px solid var(--accent);transform:translateY(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform}
-.sticky-header.visible{transform:translateY(0)}
-.sticky-header-inner{max-width:960px;margin:0 auto;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.sticky-brand{display:flex;align-items:center;gap:10px}
-.sticky-chucky{width:34px;height:auto}
-.sticky-brand-name{font-family:'Lilita One',cursive;font-size:18px;color:var(--accent);line-height:1;white-space:nowrap}
+.sticky-header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(252,221,97,.96);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:2px solid var(--accent);-webkit-transform:translateY(-100%);transform:translateY(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);will-change:transform}
+.sticky-header.visible{-webkit-transform:translateY(0);transform:translateY(0)}
+.sticky-header-inner{max-width:960px;margin:0 auto;padding:8px max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.sticky-brand{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0}
+.sticky-chucky{width:clamp(26px,8vw,34px);height:auto;flex:0 0 auto}
+.sticky-brand-name{font-family:'Lilita One',cursive;font-size:clamp(15px,4.6vw,18px);color:var(--accent);line-height:1.05;white-space:nowrap;min-width:0}
 .sticky-tm{font-size:9px;vertical-align:super;font-weight:700;color:#666}
-.sticky-studio-word{color:var(--accent-navy);font-size:15px}
-.sticky-cta{flex-shrink:0;background:var(--accent);color:var(--gold);font-family:'Fredoka One',cursive;font-size:13px;padding:7px 18px;border-radius:100px;border:2px solid var(--accent-dark);text-decoration:none;white-space:nowrap;transition:all .15s}
+.sticky-studio-word{color:var(--accent-navy);font-size:.84em}
+.sticky-cta{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:36px;background:var(--accent);color:var(--gold);font-family:'Fredoka One',cursive;font-size:clamp(12px,3.5vw,13px);line-height:1.2;padding:6px clamp(12px,3.6vw,18px);border-radius:100px;border:2px solid var(--accent-dark);text-decoration:none;white-space:nowrap;transition:background .15s;-webkit-tap-highlight-color:transparent}
 .sticky-cta:hover{background:var(--accent-dark)}
-.lp-phase{position:relative;width:100%;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px 60px;overflow:hidden}
+@media(max-width:400px){.sticky-brand-name{white-space:normal}.sticky-studio-word{display:block;margin-top:1px}}
+.lp-phase{position:relative;width:100%;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px 60px;overflow:hidden}
 .lp-hero{background:var(--bg);padding:clamp(60px,10vh,100px) 24px}
 .lp-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 40%,rgba(200,17,26,.07) 0%,transparent 70%);pointer-events:none}
 .lp-hero-layout{display:flex;align-items:center;justify-content:center;gap:clamp(20px,5vw,72px);width:100%;max-width:900px;flex-wrap:wrap;z-index:1}
@@ -396,84 +397,48 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
    Carrusel infinito con drag/swipe; cada item es una flip card.
    ═══════════════════════════════════════════════════════════════ */
 
-/* Wrapper del carrusel */
-.mani-carousel-wrap{position:relative;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+/* Wrapper del carrusel.
+   El JS (layoutManiCarousel) calcula cuántas cards COMPLETAS caben y fija
+   --mani-w / --mani-gap y el ancho del visor; así nunca se ve una card
+   cortada y el grupo queda centrado en cualquier pantalla. */
+.mani-carousel-wrap{--mani-w:190px;--mani-gap:24px;position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:0 auto 8px}
 
-/* Botones de navegación del carrusel */
-.mani-nav{background:var(--accent);color:var(--gold);border:none;border-radius:50%;width:40px;height:40px;font-size:24px;font-family:'Fredoka One',cursive;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:2;line-height:1;touch-action:manipulation}
+/* Botones de navegación (flechas SVG: se ven igual en todas las fuentes/sistemas) */
+.mani-nav{-webkit-appearance:none;appearance:none;background:var(--accent);color:var(--gold);border:none;border-radius:50%;width:40px;height:40px;flex:0 0 40px;padding:0;margin:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:2;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.mani-nav svg{width:20px;height:20px;display:block}
 .mani-nav:hover{background:var(--accent-dark)}
+.mani-nav:focus-visible{outline:3px solid var(--accent-navy);outline-offset:2px}
 
-/* Área de scroll — padding vertical y horizontal para no recortar
-   los pseudo-elementos ::before/::after que rotan en hover.
-   touch-action:pan-y → el swipe horizontal lo maneja el JS y el
-   scroll vertical de la página sigue siendo nativo (Android/iOS). */
-.mani-track-outer{overflow:hidden;flex:1;cursor:grab;user-select:none;-webkit-user-select:none;padding:16px 10px 22px;touch-action:pan-y}
+/* Visor: su ancho lo pone el JS (n cards + espacios). El padding deja lugar
+   al badge "✓ Seleccionada" y a la sombra sin recortarlos. */
+.mani-track-outer{position:relative;overflow:hidden;flex:0 0 auto;max-width:100%;min-width:0;cursor:grab;user-select:none;-webkit-user-select:none;padding:16px 10px 24px;touch-action:pan-y}
 .mani-track-outer.grabbing{cursor:grabbing}
 
 /* Track interno */
-.mani-track{display:flex;gap:24px;transition:transform .35s cubic-bezier(.23,1,.32,1);will-change:transform}
+.mani-track{display:flex;gap:var(--mani-gap);transition:transform .35s cubic-bezier(.23,1,.32,1);will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 
 /* ═══════════════════════════════════════════════════════════════
-   FLIP CARD de manicurista — basada en el diseño proporcionado
-   (.flip-card > .flip-card-inner > .flip-card-front / .flip-card-back)
-   Prefijo "mani-" para no chocar con .card (Servicios).
-   Medidas, perspectiva, curva y transform del giro: 1:1 con el original.
-   Colores adaptados a la paleta del estudio.
-   ─ Desktop (mouse): gira al pasar el mouse.
-   ─ Táctil (Android / iOS / tablets): gira con un tap (.flipped vía JS).
+   FLIP CARD de manicurista
+   ─ Tamaño fluido: ancho = --mani-w (máx. 190px), alto proporcional.
+   ─ Sin esquinas negras: cada capa interna (foto y degradado) lleva su
+     propio border-radius, porque Safari/iOS y algunos Android ignoran
+     overflow:hidden + border-radius dentro de un contexto 3D.
+   ─ La sombra va en la card (no en las caras): en WebKit la sombra de una
+     cara con backface-visibility se pintaba como esquina oscura.
+   ─ Desktop (mouse): gira al pasar el mouse. Táctil: gira con un tap.
    ═══════════════════════════════════════════════════════════════ */
-.mani-flip-card{
-  background-color:transparent;
-  width:190px;
-  height:254px;
-  perspective:1000px;
-  font-family:'Nunito',sans-serif;
-  flex-shrink:0;
-  position:relative;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;
-}
-.mani-flip-title{
-  font-size:1.5em;
-  font-weight:900;
-  text-align:center;
-  margin:0;
-  line-height:1.1;
-}
-.mani-flip-inner{
-  position:relative;
-  width:100%;
-  height:100%;
-  text-align:center;
-  transition:transform 0.6s;
-  transition-timing-function:cubic-bezier(0.61, 0.98, 0.48, 1.01);
-  transform-style:preserve-3d;
-  -webkit-transform-style:preserve-3d;
-}
+.mani-flip-card{background-color:transparent;width:var(--mani-w);height:calc(var(--mani-w) * 1.3368);flex:0 0 auto;-webkit-perspective:1000px;perspective:1000px;font-family:'Nunito',sans-serif;position:relative;cursor:pointer;border-radius:1rem;box-shadow:0 8px 14px 0 rgba(0,0,0,.2);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.mani-flip-title{font-size:1.5em;font-weight:900;text-align:center;margin:0;line-height:1.1;overflow-wrap:anywhere}
+.mani-flip-inner{position:relative;width:100%;height:100%;border-radius:inherit;text-align:center;transition:transform .6s cubic-bezier(.61,.98,.48,1.01);-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
 @media(hover:hover) and (pointer:fine){
-  .mani-flip-card:hover .mani-flip-inner{transform:rotate(180deg) rotateX(180deg)}
+  .mani-flip-card:hover .mani-flip-inner{transform:rotateY(180deg)}
 }
-.mani-flip-card.flipped .mani-flip-inner{transform:rotate(180deg) rotateX(180deg)}
+.mani-flip-card.flipped .mani-flip-inner{transform:rotateY(180deg)}
 
 .mani-flip-front,
-.mani-flip-back{
-  box-shadow:0 8px 14px 0 rgba(0,0,0,0.2);
-  position:absolute;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  width:100%;
-  height:100%;
-  -webkit-backface-visibility:hidden;
-  backface-visibility:hidden;
-  border-radius:1rem;
-  overflow:hidden;
-}
+.mani-flip-back{position:absolute;top:0;left:0;display:flex;flex-direction:column;justify-content:center;width:100%;height:100%;border-radius:inherit;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 
-/* Hit-testing: solo la cara visible recibe toques.
-   Chrome Android a veces entrega el tap a la cara oculta de un elemento
-   con transform 3D; así el botón del reverso siempre recibe el toque. */
+/* Solo la cara visible recibe toques (Chrome Android entregaba el tap a la cara oculta) */
 .mani-flip-back{pointer-events:none}
 .mani-flip-card.flipped .mani-flip-back{pointer-events:auto}
 .mani-flip-card.flipped .mani-flip-front{pointer-events:none}
@@ -482,90 +447,45 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
   .mani-flip-card:hover .mani-flip-front{pointer-events:none}
 }
 
-/* Frente: foto de la artista + nombre */
-.mani-flip-front{
-  background:#fff;
-  color:var(--text);
-  justify-content:flex-end;
-}
-.mani-flip-photo{
-  position:absolute;inset:0;
-  background-color:#222;
-  background-size:cover;
-  background-position:center 20%;
-  background-repeat:no-repeat;
-}
-.mani-flip-front::after{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(139,0,0,.85) 0%,rgba(139,0,0,.25) 38%,transparent 60%);
-}
+/* Frente: foto de la artista + nombre.
+   rotateY(0) crea su propia capa 3D: Safari así respeta backface-visibility. */
+.mani-flip-front{background:var(--accent-dark);color:var(--text);justify-content:flex-end;-webkit-transform:rotateY(0deg);transform:rotateY(0deg)}
+.mani-flip-photo{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;background-color:var(--accent-dark);background-image:linear-gradient(160deg,var(--accent),var(--accent-dark));background-size:cover;background-position:center 20%;background-repeat:no-repeat}
+.mani-flip-front::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;background:linear-gradient(to top,rgba(139,0,0,.85) 0%,rgba(139,0,0,.25) 38%,transparent 60%);pointer-events:none}
 .mani-flip-front-info{position:relative;z-index:1;padding:14px 10px 16px;color:var(--white)}
 .mani-flip-front-info .mani-flip-title{font-size:1.15em;color:var(--white)}
 .mani-flip-hint{font-size:11px;font-weight:700;color:var(--gold);margin-top:4px;letter-spacing:.5px}
 
 /* Reverso: especialidades + botón seleccionar */
-.mani-flip-back{
-  background:var(--accent);
-  color:var(--white);
-  transform:rotateY(180deg);
-  padding:16px 12px;
-  gap:10px;
-  align-items:center;
-}
+.mani-flip-back{background:var(--accent);color:var(--white);-webkit-transform:rotateY(180deg);transform:rotateY(180deg);padding:16px 12px;gap:10px;align-items:center}
 .mani-flip-back .mani-flip-title{font-size:1.2em;color:var(--gold)}
 .mani-flip-sub{font-size:11px;font-weight:700;opacity:.8;letter-spacing:1px;text-transform:uppercase}
 .mani-spec-list{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
-.mani-spec-tag{
-  font-size:10px;font-weight:700;
-  background:rgba(255,255,255,.14);color:var(--white);
-  border:1px solid rgba(255,215,0,.45);border-radius:20px;
-  padding:3px 8px;letter-spacing:.3px;
-}
+.mani-spec-tag{font-size:10px;font-weight:700;background:rgba(255,255,255,.14);color:var(--white);border:1px solid rgba(255,215,0,.45);border-radius:20px;padding:3px 8px;letter-spacing:.3px}
 /* Botón del reverso: área táctil ≥ 44px (guía Apple/Google) */
-.mani-select-btn{
-  background:var(--gold);
-  color:var(--accent-dark);
-  border:none;
-  min-height:44px;
-  padding:12px 22px;
-  font-weight:800;
-  font-size:12px;
-  border-radius:9999px;
-  cursor:pointer;
-  margin-top:4px;
-  letter-spacing:.5px;
-  text-transform:uppercase;
-  font-family:'Nunito',sans-serif;
-  box-shadow:0 3px 8px rgba(0,0,0,.2);
-  transition:background .2s;
-  position:relative;z-index:2;
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-}
-/* Sin efectos hover/active en el botón: en táctil el primer toque activaba
-   el hover en vez del click. El toque ahora selecciona directo. */
+.mani-select-btn{-webkit-appearance:none;appearance:none;background:var(--gold);color:var(--accent-dark);border:none;min-height:44px;max-width:100%;padding:12px 18px;font-weight:800;font-size:12px;border-radius:9999px;cursor:pointer;margin-top:4px;letter-spacing:.5px;text-transform:uppercase;font-family:'Nunito',sans-serif;box-shadow:0 3px 8px rgba(0,0,0,.2);transition:background .2s;position:relative;z-index:2;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 
-/* Estado seleccionado */
-.mani-flip-card.selected .mani-flip-front,
-.mani-flip-card.selected .mani-flip-back{box-shadow:0 0 0 3px var(--success),0 8px 14px 0 rgba(0,0,0,0.2)}
+/* Cards pequeñas (celulares angostos): textos un poco más compactos */
+.mani-carousel-wrap.is-compact .mani-flip-back{padding:12px 8px;gap:7px}
+.mani-carousel-wrap.is-compact .mani-flip-back .mani-flip-title{font-size:1.05em}
+.mani-carousel-wrap.is-compact .mani-spec-tag{font-size:9px;padding:2px 6px}
+.mani-carousel-wrap.is-compact .mani-select-btn{padding:10px 12px;font-size:11px}
+
+/* Estado seleccionado (anillo en la card, fuera del giro) */
+.mani-flip-card.selected{box-shadow:0 0 0 3px var(--success),0 8px 14px 0 rgba(0,0,0,.2)}
 .mani-flip-card.selected .mani-select-btn{background:var(--success);color:var(--white)}
 
 /* Badge "✓ Seleccionada" (fuera del giro, siempre visible) */
-.mani-selected-badge{
-  position:absolute;top:-10px;left:-8px;
-  background:var(--success);color:var(--white);
-  font-family:'Fredoka One',cursive;font-size:10px;
-  padding:3px 9px;border-radius:20px;
-  opacity:0;transform:scale(.7);transition:all .2s;
-  z-index:5;pointer-events:none;
-}
+.mani-selected-badge{position:absolute;top:-10px;left:-8px;background:var(--success);color:var(--white);font-family:'Fredoka One',cursive;font-size:10px;padding:3px 9px;border-radius:20px;opacity:0;transform:scale(.7);transition:all .2s;z-index:5;pointer-events:none;white-space:nowrap}
 .mani-flip-card.selected .mani-selected-badge{opacity:1;transform:scale(1)}
 
 /* Cada item del track */
-.mani-item{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.mani-item{display:flex;flex-direction:column;align-items:center;flex:0 0 auto}
 
 @media(max-width:480px){
-  .mani-nav{ width: 32px; height: 32px; font-size: 18px; }
+  .mani-carousel-wrap{gap:6px}
+  .mani-nav{width:34px;height:34px;flex-basis:34px}
+  .mani-nav svg{width:18px;height:18px}
 }
 
 /* Offset para que el header fijo no tape el destino del scroll automático */
@@ -778,11 +698,11 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
     </div>
     <div class="cita-summary" id="citaSummary2M"></div>
     <div class="mani-carousel-wrap">
-      <button class="mani-nav" onclick="maniCarouselNav(-1)" aria-label="Anterior">&#8249;</button>
+      <button class="mani-nav" type="button" onclick="maniCarouselNav(-1)" aria-label="Manicurista anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
       <div class="mani-track-outer" id="maniTrackOuter">
         <div class="mani-track" id="maniTrack"></div>
       </div>
-      <button class="mani-nav" onclick="maniCarouselNav(1)" aria-label="Siguiente">&#8250;</button>
+      <button class="mani-nav" type="button" onclick="maniCarouselNav(1)" aria-label="Manicurista siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
     <div id="maniSelIndicator" style="text-align:center;min-height:24px;margin:12px 0 4px;font-family:'Fredoka One',cursive;font-size:14px;color:var(--success)"></div>
     <div class="global-err" id="maniGlobalErr">Por favor selecciona una manicurista para continuar.</div>
@@ -1246,13 +1166,57 @@ function initManiCarousel(){
   for(let copy=0;copy<MANI_CLONE_COUNT;copy++){
     MANICURISTS.forEach(mani=>track.appendChild(buildManiCard(mani)));
   }
-  requestAnimationFrame(()=>{
-    maniCardWidth=getManiCardWidth();
-    maniOffset=MANICURISTS.length; // copia central
-    setTrackPos(false);
+  maniOffset=MANICURISTS.length; // copia central
+  initManiResize();
+  // Doble rAF: espera a que el panel 2 ya tenga ancho real (Safari lo calcula un frame después)
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    layoutManiCarousel();
     initManiDrag();
     if(selMani)highlightManiCards(selMani.id);
-  });
+  }));
+}
+
+/**
+ * layoutManiCarousel — Ajusta el carrusel al ancho disponible.
+ * 1. Mide el espacio libre entre las flechas.
+ * 2. Calcula cuántas cards COMPLETAS caben (1 a 3).
+ * 3. Si ni una cabe a 190px, la encoge (mín. 120px) con su alto proporcional.
+ * 4. Da al visor el ancho exacto de esas cards → sin cards cortadas y centrado.
+ * Se vuelve a llamar al rotar el celular o cambiar el tamaño de la ventana.
+ */
+const MANI_BASE_W=190,MANI_MIN_W=120,MANI_PADX=10;
+function layoutManiCarousel(){
+  const wrap=document.querySelector('.mani-carousel-wrap');
+  const outer=document.getElementById('maniTrackOuter');
+  if(!wrap||!outer||!wrap.clientWidth)return; // panel oculto: se reintenta al mostrarse
+  const navs=[...wrap.querySelectorAll('.mani-nav')];
+  const cs=getComputedStyle(wrap);
+  const wrapGap=parseFloat(cs.columnGap||cs.gap)||8;
+  const navW=navs.reduce((t,n)=>t+n.getBoundingClientRect().width,0);
+  const avail=Math.floor(wrap.clientWidth-navW-wrapGap*navs.length-MANI_PADX*2);
+  const gap=avail<420?16:24;
+  let n=Math.floor((avail+gap)/(MANI_BASE_W+gap));
+  n=Math.max(1,Math.min(n,3,MANICURISTS.length));
+  const w=Math.max(MANI_MIN_W,Math.min(MANI_BASE_W,Math.floor((avail-(n-1)*gap)/n)));
+  const view=n*w+(n-1)*gap;
+  wrap.style.setProperty('--mani-w',w+'px');
+  wrap.style.setProperty('--mani-gap',gap+'px');
+  wrap.classList.toggle('is-compact',w<170);
+  outer.style.width=(view+MANI_PADX*2)+'px';
+  maniCardWidth=w+gap;
+  setTrackPos(false);
+}
+
+/** initManiResize — Recalcula al rotar o redimensionar (una sola vez) */
+let maniResizeInited=false;
+function initManiResize(){
+  if(maniResizeInited)return;maniResizeInited=true;
+  const wrap=document.querySelector('.mani-carousel-wrap');
+  let raf=0;
+  const run=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(layoutManiCarousel);};
+  if(typeof ResizeObserver==='function'&&wrap)new ResizeObserver(run).observe(wrap);
+  window.addEventListener('resize',run);
+  window.addEventListener('orientationchange',()=>setTimeout(layoutManiCarousel,250));
 }
 
 /**
@@ -1362,20 +1326,20 @@ function maniCarouselNav(dir){
   setTimeout(()=>normalizeCarouselPos(),360);
 }
 
-/** getManiCardWidth — Ancho de item + gap en px */
+/** getManiCardWidth — Ancho de item + gap en px (enteros para evitar cortes de subpíxel) */
 function getManiCardWidth(){
   const track=document.getElementById('maniTrack');
   const item=track.querySelector('.mani-item');
-  if(!item)return 214;
-  const gap=parseFloat(getComputedStyle(track).gap)||24;
-  return item.offsetWidth+gap;
+  if(!item)return MANI_BASE_W+24;
+  const gap=parseFloat(getComputedStyle(track).columnGap)||24;
+  return Math.round(item.getBoundingClientRect().width+gap);
 }
 
 /** setTrackPos — Aplica transform al track */
 function setTrackPos(animate){
   const track=document.getElementById('maniTrack');
   track.style.transition=animate?'transform .35s cubic-bezier(.23,1,.32,1)':'none';
-  track.style.transform=`translateX(${-maniOffset*maniCardWidth}px)`;
+  track.style.transform=`translate3d(${-Math.round(maniOffset*maniCardWidth)}px,0,0)`;
 }
 
 /**
@@ -1425,7 +1389,7 @@ function initManiDrag(){
       }
     }
     if(axis!=='h')return;
-    track.style.transform=`translateX(${-(startOffset*maniCardWidth-dx)}px)`;
+    track.style.transform=`translate3d(${-Math.round(startOffset*maniCardWidth-dx)}px,0,0)`;
   });
 
   function end(e,cancelled){
