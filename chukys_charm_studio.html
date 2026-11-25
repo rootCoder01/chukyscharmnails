@@ -239,17 +239,16 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .footer-bottom{border-top:1px solid rgba(255,255,255,.2);padding:10px 24px 56px;text-align:center;font-size:11px;color:var(--gold);opacity:.8;max-width:960px;margin:0 auto}
 
 /* ─── CHUCKY RUNNER ─────────────────────────────── */
-/* Android/Windows: se muestra el <video> WebM con canal alfa.
-   iOS/Safari: WebKit elige el MP4 HEVC; si ese archivo trae el fondo
-   amarillo "horneado", el JS dibuja el video en un <canvas> y elimina el
-   fondo (chroma key). El <video> queda como fuente invisible. */
+/* Chrome/Edge/Firefox/Android: se muestra el <video> WebM con canal alfa.
+   iOS/Safari: se usa el MP4 (color + máscara apilados); el JS lo combina en
+   un <canvas> transparente. El <video> queda como fuente invisible. */
 .chucky-runner-wrap{position:absolute;bottom:0;left:0;width:100%;height:180px;pointer-events:none;overflow:hidden}
 .chucky-runner{position:absolute;bottom:0;left:0;height:180px;width:auto;opacity:0;transition:opacity .5s;background:transparent}
 canvas.chucky-runner{display:block}
 .chucky-runner.running{animation:runAcross linear 6s infinite}
 /* Fuente oculta: se mantiene "visible" a nivel técnico para que WebKit no pause el video */
 video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
-@keyframes runAcross{0%{left:-100px;transform:scaleX(1)}49%{left:calc(100% + 60px);transform:scaleX(1)}50%{left:calc(100% + 60px);transform:scaleX(-1)}99%{left:-100px;transform:scaleX(-1)}100%{left:-100px;transform:scaleX(1)}}
+@keyframes runAcross{0%{left:-170px;transform:scaleX(1)}49%{left:calc(100% + 20px);transform:scaleX(1)}50%{left:calc(100% + 20px);transform:scaleX(-1)}99%{left:-170px;transform:scaleX(-1)}100%{left:-170px;transform:scaleX(1)}}
 
 /* ─── RESPONSIVE ─────────────────────────────── */
 @media(max-width:700px){.form-grid,.card-form-grid,.receipt-actions{grid-template-columns:1fr}.slots-grid{grid-template-columns:1fr}.step-name{display:none}.footer-main{grid-template-columns:1fr;gap:16px}}
@@ -910,8 +909,10 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
   </div>
   <div class="chucky-runner-wrap" id="chuckyRunnerWrap">
     <video class="chucky-runner" id="chuckyVideo" muted playsinline webkit-playsinline loop preload="none" disablepictureinpicture disableremoteplayback>
-      <source src="Chuky_Footpage_alpha.mp4" type='video/mp4; codecs="hvc1"'/>
-      <source src="Chuky_Footpage.webm" type="video/webm"/>
+      <!-- WebM con transparencia real (Chrome, Edge, Firefox, Android) -->
+      <source src="Chucky_Runner.webm" type="video/webm"/>
+      <!-- MP4 H.264 (color arriba + máscara abajo): lo usan iPhone/iPad/Safari vía <canvas> -->
+      <source src="Chucky_Runner.mp4" type="video/mp4"/>
     </video>
     <!-- Lienzo para iOS/Safari: muestra el video sin el fondo amarillo -->
     <canvas class="chucky-runner" id="chuckyCanvas" aria-hidden="true"></canvas>
@@ -1726,16 +1727,14 @@ function resetAll(){
 // ═══════════════ CHUCKY RUNNER ═══════════════
 /**
  * initChucky — Chucky corriendo en el footer.
- * ─ Android / Windows / Chrome: reproducen el WebM con alfa → se muestra el <video>.
- * ─ iOS / Safari: WebKit elige el MP4 HEVC. Si ese MP4 no trae canal alfa
- *   real, el fondo amarillo se ve. Para corregirlo:
- *     1. Se dibuja cada frame en <canvas>.
- *     2. En el primer frame se leen las 4 esquinas: si son transparentes el
- *        archivo ya trae alfa y se usa el <video> tal cual; si son opacas,
- *        ese color (el amarillo) se toma como color clave.
- *     3. Se eliminan los píxeles cercanos al color clave (chroma key en
- *        espacio YCbCr, con borde suave y sin halo amarillo).
- *   El color clave se detecta solo: no depende del tono exacto de amarillo.
+ * ─ Chrome / Edge / Firefox / Android: reproducen Chucky_Runner.webm, que trae
+ *   transparencia real (VP9 con canal alfa) → se muestra el <video> directo.
+ * ─ Safari en Mac y cualquier navegador de iPhone/iPad (todos usan WebKit):
+ *   no muestran la transparencia del WebM, así que usan Chucky_Runner.mp4.
+ *   Ese MP4 trae el COLOR en la mitad de arriba y la MÁSCARA de transparencia
+ *   (blanco = visible, negro = transparente) en la mitad de abajo. Cada frame
+ *   se dibuja en un <canvas> combinando ambas mitades: mismo recorte exacto
+ *   que en Chrome, sin halos de color en los bordes.
  */
 (function initChucky(){
   const video=document.getElementById('chuckyVideo');
@@ -1744,79 +1743,56 @@ function resetAll(){
   if(!video||!canvas||!footer)return;
   const ctx=canvas.getContext('2d',{willReadFrequently:true});
 
-  // Ajuste fino del recorte (distancia en el plano de color)
-  const KEY_INNER=18;   // por debajo → transparente total
-  const KEY_OUTER=36;   // entre INNER y OUTER → borde semitransparente
-  const LUMA_W=0.35;    // peso de la luminosidad (protege contornos oscuros)
-  const MAX_H=Math.round(180*Math.min(window.devicePixelRatio||1,2));
+  // WebKit de Apple: se quita el <source> WebM para que tome el MP4
+  const ua=navigator.userAgent||'';
+  const isAppleWebKit=/iPad|iPhone|iPod/.test(ua)
+    ||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)
+    ||(/Safari\//.test(ua)&&!/Chrome|Chromium|CriOS|Edg|OPR|Firefox|FxiOS|Android/.test(ua));
+  if(isAppleWebKit){
+    const webm=video.querySelector('source[type="video/webm"]');
+    if(webm)webm.remove();
+  }
 
+  const MAX_H=Math.round(180*Math.min(window.devicePixelRatio||1,2));
+  const buf=document.createElement('canvas');          // lienzo auxiliar (color + máscara)
+  const bctx=buf.getContext('2d',{willReadFrequently:true});
   let running=false;
-  let mode=null;        // null (sin decidir) | 'video' | 'key' | 'off'
-  let kY=0,kCb=0,kCr=0;
+  let mode=null;        // null (sin decidir) | 'video' | 'stack' | 'off'
 
   const usesMp4=()=>/\.mp4(\?|#|$)/i.test(video.currentSrc||'');
-
   function show(el){el.style.opacity='1';el.classList.add('running');}
   function hide(el){el.style.opacity='0';el.classList.remove('running');}
-
-  function sizeCanvas(){
-    const vw=video.videoWidth,vh=video.videoHeight;
-    if(!vw||!vh)return false;
-    const h=Math.min(vh,MAX_H);
-    canvas.height=h;
-    canvas.width=Math.round(vw*h/vh);
-    return true;
-  }
 
   /** Decide el modo con el primer frame (una sola vez) */
   function decideMode(){
     if(!usesMp4()){mode='video';return;}
-    if(!sizeCanvas())return; // aún sin dimensiones: reintenta en el siguiente frame
-    const w=canvas.width,h=canvas.height;
-    let d;
-    try{ctx.clearRect(0,0,w,h);ctx.drawImage(video,0,0,w,h);d=ctx.getImageData(0,0,w,h).data;}
-    catch(err){mode='off';return;} // lienzo bloqueado: mejor ocultar que mostrar el fondo
-    const pts=[[1,1],[w-2,1],[1,h-2],[w-2,h-2]];
-    let r=0,g=0,b=0,a=0;
-    pts.forEach(([x,y])=>{const i=(y*w+x)*4;r+=d[i];g+=d[i+1];b+=d[i+2];a+=d[i+3];});
-    r/=4;g/=4;b/=4;a/=4;
-    if(a<128){mode='video';return;} // el MP4 ya trae transparencia real
-    kY=.299*r+.587*g+.114*b;
-    kCb=-.168736*r-.331264*g+.5*b;
-    kCr=.5*r-.418688*g-.081312*b;
-    mode='key';
+    const vw=video.videoWidth,vh=video.videoHeight;
+    if(!vw||!vh)return;                                // aún sin dimensiones: reintenta
+    const half=vh/2;
+    const h=Math.min(Math.round(half),MAX_H);
+    canvas.height=h;canvas.width=Math.round(vw*h/half);
+    buf.width=canvas.width;buf.height=h*2;
+    try{bctx.drawImage(video,0,0,buf.width,buf.height);bctx.getImageData(0,0,1,1);}
+    catch(err){mode='off';return;}                     // lienzo bloqueado: mejor ocultar
+    mode='stack';
   }
 
-  function keyFrame(){
+  /** Une color (mitad superior) + máscara (mitad inferior) en el canvas visible */
+  function stackFrame(){
     const w=canvas.width,h=canvas.height;
-    ctx.clearRect(0,0,w,h);
-    ctx.drawImage(video,0,0,w,h);
-    let img;
-    try{img=ctx.getImageData(0,0,w,h);}catch(err){mode='off';applyMode();return;}
-    const d=img.data,span=KEY_OUTER-KEY_INNER;
-    for(let i=0;i<d.length;i+=4){
-      const r=d[i],g=d[i+1],b=d[i+2];
-      const y=.299*r+.587*g+.114*b;
-      const dCb=(-.168736*r-.331264*g+.5*b)-kCb;
-      const dCr=(.5*r-.418688*g-.081312*b)-kCr;
-      const dY=(y-kY)*LUMA_W;
-      const dist=Math.sqrt(dCb*dCb+dCr*dCr+dY*dY);
-      if(dist<KEY_INNER){d[i+3]=0;}
-      else if(dist<KEY_OUTER){
-        const t=(dist-KEY_INNER)/span; // 0 = fondo · 1 = Chucky
-        d[i+3]=d[i+3]*t;
-        // Quita el halo amarillo del borde llevándolo hacia gris neutro
-        const s=1-t;
-        d[i]=r+(y-r)*s;d[i+1]=g+(y-g)*s;d[i+2]=b+(y-b)*s;
-      }
-    }
-    ctx.putImageData(img,0,0);
+    bctx.drawImage(video,0,0,w,h*2);
+    let top,bot;
+    try{top=bctx.getImageData(0,0,w,h);bot=bctx.getImageData(0,h,w,h).data;}
+    catch(err){mode='off';applyMode();return;}
+    const d=top.data;
+    for(let i=3;i<d.length;i+=4)d[i]=bot[i-3];         // alfa = brillo de la máscara
+    ctx.putImageData(top,0,0);
   }
 
   function applyMode(){
     if(!running)return;
     if(mode==='video'){video.classList.remove('is-source');hide(canvas);show(video);}
-    else if(mode==='key'){video.classList.add('is-source');video.style.opacity='';video.classList.remove('running');show(canvas);}
+    else if(mode==='stack'){video.classList.add('is-source');video.style.opacity='';video.classList.remove('running');show(canvas);}
     else if(mode==='off'){video.classList.remove('is-source');hide(video);hide(canvas);}
   }
 
@@ -1830,8 +1806,8 @@ function resetAll(){
     if(!running)return;
     if(video.readyState>=2){
       if(mode===null){decideMode();applyMode();}
-      if(mode==='key')keyFrame();
-      if(mode==='video'||mode==='off')return; // ya no hace falta el lienzo
+      if(mode==='stack')stackFrame();
+      if(mode==='video'||mode==='off')return;          // ya no hace falta el lienzo
     }
     schedule();
   }
@@ -1843,7 +1819,7 @@ function resetAll(){
         running=true;
         if(!loaded){video.load();loaded=true;}
         video.play().then(()=>{
-          if(mode===null||mode==='key')schedule();
+          if(mode===null||mode==='stack')schedule();
           applyMode();
         }).catch(()=>{running=false;});
       }else if(!e.isIntersecting&&running){
