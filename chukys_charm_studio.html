@@ -89,33 +89,33 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .day-cell.available::after{content:"";position:absolute;bottom:clamp(2px,.8vw,4px);left:50%;width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.55;transform:translateX(-50%);transition:opacity .15s}
 .day-cell.available:hover .day-num{background:rgba(200,17,26,.08)}
 .day-cell.today-mark .day-num{color:var(--accent);font-weight:900;box-shadow:inset 0 0 0 1.5px rgba(200,17,26,.35)}
-.day-cell.selected .day-num{background:var(--accent);color:var(--gold);font-weight:800;box-shadow:0 6px 14px -4px rgba(200,17,26,.55);transform:scale(1.04)}
+.day-cell.selected .day-num{background:var(--accent);color:var(--bg);font-weight:800;box-shadow:0 6px 14px -4px rgba(200,17,26,.55);transform:scale(1.04)}
 .day-cell.selected::after{opacity:0}
 .day-cell.available:focus-visible{outline:none}
 .day-cell.available:focus-visible .day-num{box-shadow:0 0 0 2px var(--accent-navy)}
 @media(hover:none){.day-cell.available:hover .day-num{background:transparent}.day-cell.selected:hover .day-num{background:var(--accent)}}
 
 /* ─── SLOTS ─────────────────────────────── */
-.slots-section{background:var(--white);border:2px solid var(--accent);border-radius:16px;padding:20px;margin-bottom:20px}
-.slots-title{font-family:'Fredoka One',cursive;font-size:16px;color:var(--text);margin-bottom:14px}
+.slots-section{background:var(--white);border:2px solid var(--accent-navy);border-radius:16px;padding:20px;margin-bottom:20px}
+.slots-title{font-family:'Fredoka One',cursive;font-size:16px;color:var(--accent-navy);margin-bottom:14px}
 .slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
 .slot-card{border-radius:14px;padding:16px 10px;text-align:center;border:2px solid transparent;cursor:pointer;transition:all .15s}
-.slot-card.avail{background:var(--bg);border-color:var(--accent)}
-.slot-card.avail:hover{background:var(--gold);border-color:var(--accent-dark);transform:translateY(-2px)}
+.slot-card.avail{background:rgba(26,26,140,.06);border-color:var(--accent-navy)}
+.slot-card.avail:hover{background:rgba(26,26,140,.14);border-color:var(--accent-navy);transform:translateY(-2px)}
 .slot-card.busy{background:var(--gray);border-color:#ddd;cursor:not-allowed;opacity:.6}
-.slot-card.sel{background:var(--accent);border-color:var(--accent-dark);transform:translateY(-2px)}
+.slot-card.sel{background:var(--accent-navy);border-color:var(--accent-navy);transform:translateY(-2px)}
 .slot-dot{width:10px;height:10px;border-radius:50%;margin:0 auto 6px;display:block}
 .slot-card.avail .slot-dot{background:var(--success)}
 .slot-card.busy .slot-dot{background:#E63946}
-.slot-card.sel .slot-dot{background:var(--gold)}
+.slot-card.sel .slot-dot{background:var(--white)}
 .slot-time{font-family:'Fredoka One',cursive;font-size:13px;display:block;margin-bottom:4px}
-.slot-card.avail .slot-time{color:var(--accent-dark)}
+.slot-card.avail .slot-time{color:var(--accent-navy)}
 .slot-card.busy .slot-time{color:#aaa}
-.slot-card.sel .slot-time{color:var(--gold)}
+.slot-card.sel .slot-time{color:var(--white)}
 .slot-status{font-size:11px;font-weight:700}
 .slot-card.avail .slot-status{color:var(--success)}
 .slot-card.busy .slot-status{color:#E63946}
-.slot-card.sel .slot-status{color:var(--gold)}
+.slot-card.sel .slot-status{color:rgba(255,255,255,.85)}
 
 /* ─── LEGEND ─────────────────────────────── */
 .legend{display:flex;gap:18px;margin:0 auto 20px;flex-wrap:wrap;justify-content:center;max-width:520px}
@@ -127,41 +127,56 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0}
 .form-full{grid-column:1/-1}
 .field-label{font-family:'Fredoka One',cursive;font-size:13px;color:var(--accent-dark);display:block;margin-bottom:5px;letter-spacing:.5px}
-.field-input{width:100%;padding:10px 14px;border:2px solid var(--gold);border-radius:12px;font-family:'Nunito',sans-serif;font-size:14px;background:var(--white);color:var(--text);outline:none;transition:border .2s}
+.field-input{width:100%;padding:10px 14px;border:2px solid var(--bg);border-radius:12px;font-family:'Nunito',sans-serif;font-size:14px;background:var(--white);color:var(--text);outline:none;transition:border .2s}
 .field-input:focus{border-color:var(--accent)}
 .field-input.error-field{border-color:#E63946}
 .field-textarea{resize:vertical;min-height:80px}
 .field-error{color:var(--accent);font-size:12px;margin-top:4px;font-family:'Fredoka One',cursive;display:none}
 .field-error.show{display:block}
 .phone-row{display:flex;gap:8px}
-.phone-prefix{padding:10px;border:2px solid var(--gold);border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;background:var(--white);color:var(--text);outline:none;cursor:pointer;flex:0 0 90px}
+.phone-prefix{padding:10px;border:2px solid var(--bg);border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;background:var(--white);color:var(--text);outline:none;cursor:pointer;flex:0 0 90px}
 .phone-prefix:focus{border-color:var(--accent)}
-.phone-number{flex:1;padding:10px;border:2px solid var(--gold);border-radius:12px}
+.phone-number{flex:1;padding:10px;border:2px solid var(--bg);border-radius:12px}
+
+/* ─── GUARDAR DATOS PARA FUTURAS CITAS (Paso 3) ─────────────────────────────── */
+.save-data{position:relative;display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:2px dashed var(--accent-navy);border-radius:14px;background:rgba(26,26,140,.05);cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:background .2s}
+.save-data input{position:absolute;opacity:0;width:0;height:0}
+.save-data-box{flex:0 0 22px;height:22px;border:2px solid var(--accent-navy);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px;background:var(--white)}
+.save-data input:checked+.save-data-box{background:var(--accent-navy)}
+.save-data:hover{background:rgba(26,26,140,.12)}
+.save-data input:checked+.save-data-box::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.save-data input:focus-visible+.save-data-box{box-shadow:0 0 0 3px rgba(26,26,140,.25)}
+.save-data-text{display:flex;flex-direction:column;gap:2px;color:var(--accent-navy)}
+.save-data-text strong{font-family:'Fredoka One',cursive;font-weight:400;font-size:14px}
+.save-data-text small{font-size:12px;color:var(--muted);font-weight:600;line-height:1.4}
+.saved-data-note{display:none;margin-top:8px;font-size:12px;font-weight:700;color:var(--accent-navy)}
+.saved-data-note.show{display:block}
+.saved-data-note button{background:none;border:none;color:var(--accent);font-weight:800;text-decoration:underline;cursor:pointer;font-size:12px;font-family:inherit;padding:0 0 0 4px}
 
 /* ─── CITA SUMMARY ─────────────────────────────── */
-.cita-summary{background:var(--gold);border:2px solid var(--accent);border-radius:14px;padding:16px;margin-bottom:20px}
-.cita-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px dashed rgba(200,17,26,.3);font-size:14px}
+.cita-summary{background:var(--white);border:2px solid var(--accent);border-radius:14px;padding:16px;margin-bottom:20px}
+.cita-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:5px 0;border-bottom:1px dashed rgba(200,17,26,.3);font-size:14px}
 .cita-row:last-child{border:none}
 .cita-key{font-family:'Fredoka One',cursive;color:var(--accent-dark);font-size:13px}
-.cita-val{color:var(--text);font-weight:700;font-size:13px}
+.cita-val{color:var(--text);font-weight:700;font-size:13px;text-align:right}
 
 /* ─── FILE UPLOAD ─────────────────────────────── */
-.upload-area{border:2px dashed var(--accent);border-radius:14px;padding:24px;text-align:center;background:var(--bg);cursor:pointer;transition:all .2s}
-.upload-area:hover{background:var(--gold);border-style:solid}
-.upload-hint{font-family:'Fredoka One',cursive;font-size:13px;color:var(--accent)}
+.upload-area{border:2px dashed var(--accent-navy);border-radius:14px;padding:24px;text-align:center;background:rgba(26,26,140,.05);cursor:pointer;transition:all .2s}
+.upload-area:hover{background:rgba(26,26,140,.12);border-style:solid}
+.upload-hint{font-family:'Fredoka One',cursive;font-size:13px;color:var(--accent-navy)}
 .upload-sub{font-size:11px;color:var(--muted);margin-top:4px}
 .img-preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:12px}
-.img-preview-item{position:relative;border-radius:10px;overflow:hidden;border:2px solid var(--accent);background:var(--gray)}
+.img-preview-item{position:relative;border-radius:10px;overflow:hidden;border:2px solid var(--accent-navy);background:var(--gray)}
 .img-preview-item img{width:100%;height:80px;object-fit:cover;display:block}
 .img-preview-remove{position:absolute;top:3px;right:3px;width:20px;height:20px;background:var(--accent);color:var(--gold);border:none;border-radius:50%;cursor:pointer;font-size:13px;line-height:20px;text-align:center;font-weight:700;padding:0}
 .img-preview-replace{position:absolute;bottom:3px;right:3px;width:20px;height:20px;background:var(--accent-navy);color:var(--white);border:none;border-radius:50%;cursor:pointer;font-size:10px;line-height:20px;text-align:center;padding:0}
 
 /* ─── PAYMENT ─────────────────────────────── */
 .payment-card{background:var(--white);border:2.5px solid var(--accent);border-radius:20px;padding:24px;margin-bottom:20px}
-.pay-amount-box{background:var(--gold);border:2px solid var(--accent);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px}
+.pay-amount-box{background:var(--bg);border:2px solid var(--accent);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px}
 .pay-label{font-family:'Fredoka One',cursive;font-size:14px;color:var(--accent-dark)}
 .pay-amount{font-family:'Lilita One',cursive;font-size:48px;color:var(--accent);line-height:1;text-shadow:2px 2px 0 var(--accent-dark)}
-.pay-desc{font-size:12px;color:var(--muted);margin-top:4px}
+.pay-desc{font-size:12px;color:#6b5a1e;margin-top:4px}
 .card-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .card-full{grid-column:1/-1}
 .security-badges{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
@@ -183,10 +198,10 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .success-title{font-family:'Lilita One',cursive;font-size:28px;color:var(--accent);text-shadow:1px 1px 0 var(--accent-dark);margin-bottom:8px}
 .success-sub{font-size:14px;color:#555;margin-bottom:24px;line-height:1.6}
 .confirm-card{background:var(--white);border:2px solid var(--accent);border-radius:16px;padding:18px;text-align:left;margin-bottom:16px}
-.confirm-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--gold);font-size:13px}
+.confirm-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;border-bottom:1px dashed var(--bg);font-size:13px}
 .confirm-row:last-child{border:none}
 .confirm-key{font-family:'Fredoka One',cursive;color:var(--accent-dark)}
-.confirm-val{font-weight:700;color:var(--text)}
+.confirm-val{font-weight:700;color:var(--text);text-align:right;overflow-wrap:anywhere}
 .receipt-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .receipt-actions .cta-btn{font-size:14px;padding:11px}
 
@@ -260,13 +275,34 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
 .lp-hero-brand .brand-good{font-size:clamp(42px,10.5vw,82px)!important;display:block;text-shadow:3px 3px 0 rgba(200,17,26,.12)}
 .lp-hero-brand .brand-good:last-child{color:var(--accent-navy)!important;font-size:clamp(32px,8vw,64px)!important;transform:rotate(-1deg)!important}
 .lp-hero-tag{font-family:'Fredoka One',cursive;font-size:clamp(12px,2.4vw,16px);color:var(--accent-navy);letter-spacing:2px;margin-top:12px;opacity:.7}
-.lp-hero-location{display:flex;align-items:center;gap:5px;font-family:'Nunito',sans-serif;font-size:clamp(11px,1.8vw,13px);color:var(--muted);margin-top:6px;font-weight:600}
+
+/* ─── REDES SOCIALES (Hero) ─────────────────────────────── */
+/* Contenedor renombrado a .social-card para no heredar los estilos
+   de .card (tarjetas de Servicios con sticker de Chucky en hover). */
+.social-card{width:fit-content;height:fit-content;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;gap:20px;margin-top:22px}
+/* for all social containers*/
+.socialContainer{width:52px;height:52px;border-radius:50%;background-color:rgb(44,44,44);display:flex;align-items:center;justify-content:center;overflow:hidden;transition-duration:.3s;text-decoration:none;-webkit-tap-highlight-color:transparent}
+/* instagram*/
+.containerOne:hover{background-color:#d62976;transition-duration:.3s}
+/* tiktok*/
+.containerTwo:hover{background-color:#000000;transition-duration:.3s}
+/* ubicación*/
+.containerThree:hover{background-color:#C8111A;transition-duration:.3s}
+/* whatsapp*/
+.containerFour:hover{background-color:#128C7E;transition-duration:.3s}
+.socialContainer:active{transform:scale(0.9);transition-duration:.3s}
+.socialSvg{width:17px}
+.socialSvg path{fill:rgb(255,255,255)}
+.socialContainer:hover .socialSvg{animation:slide-in-top 0.3s both}
+@keyframes slide-in-top{0%{transform:translateY(-50px);opacity:0}100%{transform:translateY(0);opacity:1}}
+
 .lp-hero-img-wrap{flex:0 0 auto;position:relative;display:flex;align-items:center;justify-content:center}
 .lp-hero-blob{position:absolute;width:clamp(200px,44vw,340px);height:clamp(200px,44vw,340px);background:radial-gradient(ellipse,rgba(200,17,26,.11) 0%,transparent 70%);border-radius:50%;animation:blobPulse 5s ease-in-out infinite}
 @keyframes blobPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 .lp-hero-img{width:clamp(170px,36vw,300px);height:auto;animation:floatBody 4s ease-in-out infinite;position:relative;z-index:1}
 @keyframes floatBody{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-13px) rotate(1deg)}}
-@media(max-width:580px){.lp-hero-layout{flex-direction:column;align-items:center}.lp-hero-text{text-align:center;min-width:0}.lp-hero-brand .brand-good{text-align:center}.lp-hero-location{justify-content:center}.lp-hero-img{width:clamp(150px,52vw,240px)}}
+@media(max-width:580px){.lp-hero-layout{flex-direction:column;align-items:center}.lp-hero-text{text-align:center;min-width:0}.lp-hero-brand .brand-good{text-align:center}.social-card{margin-left:auto;margin-right:auto}.lp-hero-img{width:clamp(150px,52vw,240px)}}
+@media(max-width:360px){.social-card{gap:12px}.socialContainer{width:46px;height:46px}}
 .scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;animation:bounceHint 2s ease-in-out infinite;pointer-events:none}
 .scroll-hint-text{font-family:'Fredoka One',cursive;font-size:10px;color:var(--accent);letter-spacing:3px;opacity:.55}
 .scroll-hint-arrow{width:18px;height:18px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(45deg);opacity:.45}
@@ -562,10 +598,25 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
         <span class="brand-good">Charm Studio</span>
       </h1>
       <p class="lp-hero-tag">Personalize Your Nails!</p>
-      <p class="lp-hero-location">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-        Clavería, Azcapotzalco, CDMX
-      </p>
+
+      <!-- Redes sociales: Instagram · TikTok · Ubicación · WhatsApp -->
+      <div class="social-card">
+        <a class="socialContainer containerOne" href="https://www.instagram.com/chuckyscharm.nails" target="_blank" rel="noopener" aria-label="Instagram @chuckyscharm.nails">
+          <svg viewBox="0 0 16 16" class="socialSvg instagramSvg" aria-hidden="true"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"></path></svg>
+        </a>
+
+        <a class="socialContainer containerTwo" href="https://www.tiktok.com/@chuckyscharm_nails" target="_blank" rel="noopener" aria-label="TikTok @chuckyscharm_nails">
+          <svg viewBox="0 0 16 16" class="socialSvg tiktokSvg" aria-hidden="true"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"></path></svg>
+        </a>
+
+        <a class="socialContainer containerThree" href="https://www.google.com/maps/search/?api=1&amp;query=Av.+Claver%C3%ADa+180,+Claveria,+Azcapotzalco,+02080+Ciudad+de+M%C3%A9xico,+CDMX" target="_blank" rel="noopener" aria-label="Ubicación: Av. Clavería 180, Azcapotzalco, CDMX">
+          <svg viewBox="0 0 16 16" class="socialSvg locationSvg" aria-hidden="true"><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"></path></svg>
+        </a>
+
+        <a class="socialContainer containerFour" href="https://wa.me/522298602148" target="_blank" rel="noopener" aria-label="WhatsApp (+52) 2298602148">
+          <svg viewBox="0 0 16 16" class="socialSvg whatsappSvg" aria-hidden="true"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"></path></svg>
+        </a>
+      </div>
     </div>
     <div class="lp-hero-img-wrap reveal-up reveal-delay-2">
       <div class="lp-hero-blob"></div>
@@ -788,6 +839,17 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
           <p class="field-error" id="errTel">Ingresa un número de teléfono válido (8-12 dígitos)</p>
         </div>
         <div class="form-full">
+          <label class="save-data" for="fGuardar">
+            <input type="checkbox" id="fGuardar"/>
+            <span class="save-data-box" aria-hidden="true"></span>
+            <span class="save-data-text">
+              <strong>Guardar mis datos para futuras citas</strong>
+              <small>Tu nombre, apellido, correo y celular se guardan solo en este dispositivo para llenar el formulario la próxima vez.</small>
+            </span>
+          </label>
+          <p class="saved-data-note" id="savedDataNote">✓ Llenamos el formulario con tus datos guardados.<button type="button" onclick="forgetSavedData()">Borrar mis datos</button></p>
+        </div>
+        <div class="form-full">
           <label class="field-label">Tipo de Servicio *</label>
           <select class="field-input" id="fServicio">
             <option value="">— Selecciona un servicio —</option>
@@ -807,7 +869,7 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
         <div class="form-full">
           <label class="field-label">Imágenes de referencia (Opcional)</label>
           <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin:0 auto 6px;display:block"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-navy)" stroke-width="1.5" style="margin:0 auto 6px;display:block"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
             <p class="upload-hint">Toca para subir imágenes de referencia</p>
             <p class="upload-sub">JPG, PNG, WEBP · Máx 5 MB por imagen</p>
           </div>
@@ -879,10 +941,10 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
       <p class="success-sub">Hemos enviado la confirmación a tu correo y por SMS.<br>¡Te esperamos con muchas ganas!</p>
       <div class="confirm-card" id="confirmCard"></div>
       <div class="receipt-actions">
-        <button class="cta-btn outline-navy" onclick="downloadPDF()">⬇ Descargar comprobante PDF</button>
-        <button class="cta-btn outline-navy" onclick="simulateSMS()">📱 Reenviar por SMS</button>
-        <button class="cta-btn secondary" onclick="simulateEmail()" style="margin-bottom:0">✉ Reenviar por correo</button>
-        <button class="cta-btn secondary" onclick="resetAll()" style="margin-bottom:0">+ Reservar otra cita</button>
+        <button class="cta-btn" onclick="downloadPDF()">⬇ Descargar comprobante PDF</button>
+        <button class="cta-btn" onclick="simulateSMS()">📱 Reenviar por SMS</button>
+        <button class="cta-btn" onclick="simulateEmail()">✉ Reenviar por correo</button>
+        <button class="cta-btn" onclick="resetAll()">+ Reservar otra cita</button>
       </div>
       <p id="successActionMsg" style="font-family:'Fredoka One',cursive;font-size:13px;color:var(--success);text-align:center;min-height:20px;margin-top:4px"></p>
     </div>
@@ -1138,6 +1200,7 @@ function toStep4(){
   if(!ok){gErr.textContent='Por favor corrige los campos marcados.';gErr.classList.add('show');return;}
   if(!selDate||!selSlot){gErr.textContent='La fecha y horario ya no están disponibles. Regresa al paso 1.';gErr.classList.add('show');return;}
   gErr.classList.remove('show');
+  persistClientData(nombre,apellido,email,document.getElementById('fPrefix').value,tel);
   booking.nombre=nombre;booking.apellido=apellido;
   booking.email=email;
   booking.tel=document.getElementById('fPrefix').value+' '+tel;
@@ -1382,6 +1445,48 @@ function initManiDrag(){
   outer.addEventListener('dragstart',e=>e.preventDefault());
 }
 
+// ═══════════════ DATOS GUARDADOS DE LA CLIENTA ═══════════════
+/**
+ * Guarda Nombre, Apellido, Correo y Celular en localStorage del navegador
+ * (solo en este dispositivo) cuando la clienta marca la casilla del paso 3.
+ * Todo va en try/catch: en modo incógnito o con almacenamiento bloqueado
+ * el formulario sigue funcionando, solo que sin recordar los datos.
+ */
+const SAVED_CLIENT_KEY='ccs_datos_clienta';
+
+/** loadSavedData — Llena el formulario si hay datos guardados */
+function loadSavedData(){
+  let d=null;
+  try{const raw=localStorage.getItem(SAVED_CLIENT_KEY);if(raw)d=JSON.parse(raw);}catch(e){d=null;}
+  if(!d)return;
+  document.getElementById('fNombre').value=d.nombre||'';
+  document.getElementById('fApellido').value=d.apellido||'';
+  document.getElementById('fEmail').value=d.email||'';
+  document.getElementById('fTel').value=d.tel||'';
+  const pre=document.getElementById('fPrefix');
+  if(d.prefix&&[...pre.options].some(o=>o.value===d.prefix))pre.value=d.prefix;
+  document.getElementById('fGuardar').checked=true;
+  document.getElementById('savedDataNote').classList.add('show');
+}
+
+/** persistClientData — Guarda o borra los datos según la casilla */
+function persistClientData(nombre,apellido,email,prefix,tel){
+  const keep=document.getElementById('fGuardar').checked;
+  try{
+    if(keep)localStorage.setItem(SAVED_CLIENT_KEY,JSON.stringify({nombre,apellido,email,prefix,tel}));
+    else localStorage.removeItem(SAVED_CLIENT_KEY);
+  }catch(e){/* almacenamiento no disponible */}
+}
+
+/** forgetSavedData — Borra los datos guardados y limpia los campos */
+function forgetSavedData(){
+  try{localStorage.removeItem(SAVED_CLIENT_KEY);}catch(e){}
+  ['fNombre','fApellido','fEmail','fTel'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('fPrefix').value='+52';
+  document.getElementById('fGuardar').checked=false;
+  document.getElementById('savedDataNote').classList.remove('show');
+}
+
 // ═══════════════ VALIDACIONES ═══════════════
 function setFieldErr(inputId,errId,show){
   const inp=document.getElementById(inputId);const err=document.getElementById(errId);
@@ -1466,66 +1571,152 @@ function confirmBooking(){
 }
 
 // ═══════════════ PDF ═══════════════
-function downloadPDF(){
+/**
+ * pdfText — Limpia texto para el PDF.
+ * Las fuentes estándar de jsPDF (Helvetica) solo cubren Latin-1: emojis,
+ * ✓, ⚡, ™ o guiones largos salen como caracteres basura. Aquí se
+ * convierten a equivalentes seguros o se eliminan.
+ */
+function pdfText(v){
+  return String(v==null?'':v)
+    .replace(/[–—]/g,'-')
+    .replace(/[“”]/g,'"').replace(/[‘’]/g,"'")
+    .replace(/…/g,'...')
+    .replace(/\r\n?/g,'\n')
+    .replace(/[^\x20-\x7E -ÿ\n]/g,'')   // fuera de Latin-1 (emojis, ✓, ⚡, ™…)
+    .replace(/[ \t]{2,}/g,' ')
+    .replace(/ *\n */g,'\n')
+    .trim();
+}
+
+/**
+ * imageForPDF — Prepara una imagen subida para el PDF.
+ * Se dibuja en un <canvas> (respeta la orientación de la foto) y se exporta
+ * como JPEG de alta calidad. Así PNG y WEBP también funcionan y se conserva
+ * la proporción original. Lado mayor máx. 2000 px (~300 dpi en A5).
+ */
+function imageForPDF(file){
+  return new Promise(res=>{
+    const url=URL.createObjectURL(file);
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=2000;
+      let w=img.naturalWidth,h=img.naturalHeight;
+      const s=Math.min(1,MAX/Math.max(w,h));
+      w=Math.max(1,Math.round(w*s));h=Math.max(1,Math.round(h*s));
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      const cx=c.getContext('2d');
+      cx.fillStyle='#ffffff';cx.fillRect(0,0,w,h); // fondo blanco para PNG con transparencia
+      cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high';
+      cx.drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      res({data:c.toDataURL('image/jpeg',0.92),w,h,name:file.name});
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);res(null);};
+    img.src=url;
+  });
+}
+
+/** Constantes de página A5 (mm) */
+const PDF_W=148,PDF_H=210,PDF_FOOT_Y=188,PDF_MAX_Y=182;
+
+/** pdfPageBg — Fondo crema + banda superior para páginas nuevas */
+function pdfPageBg(doc,title){
+  doc.setFillColor(255,248,220);doc.rect(0,0,PDF_W,PDF_H,'F');
+  doc.setFillColor(200,17,26);doc.rect(0,0,PDF_W,16,'F');
+  doc.setTextColor(255,215,0);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text(pdfText(title),PDF_W/2,10.5,{align:'center'});
+}
+
+async function downloadPDF(){
   if(!paymentDone){alert('El comprobante solo está disponible después del pago exitoso.');return;}
+  if(!window.jspdf){alert('No se pudo cargar el generador de PDF. Revisa tu conexión e intenta de nuevo.');return;}
   try{
-    const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a5'});
-    doc.setFillColor(255,248,220);doc.rect(0,0,148,210,'F');
-    doc.setFillColor(200,17,26);doc.rect(0,0,148,22,'F');
+    showActionMsg('Generando comprobante...');
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({unit:'mm',format:'a5',compress:true});
+
+    // ─── Página 1: encabezado ───
+    doc.setFillColor(255,248,220);doc.rect(0,0,PDF_W,PDF_H,'F');
+    doc.setFillColor(200,17,26);doc.rect(0,0,PDF_W,22,'F');
     doc.setTextColor(255,215,0);doc.setFontSize(14);doc.setFont('helvetica','bold');
-    doc.text("Chucky's Charm Studio™",74,13,{align:'center'});
-    doc.setFillColor(255,215,0);doc.rect(0,22,148,8,'F');
+    const brand="Chucky's Charm Studio";
+    doc.text(brand,PDF_W/2,13,{align:'center'});
+    doc.setFontSize(6);doc.text('TM',PDF_W/2+doc.getTextWidth(brand)*14/6/2+0.8,10); // superíndice ™ sin caracteres especiales
+    doc.setFillColor(255,215,0);doc.rect(0,22,PDF_W,8,'F');
     doc.setTextColor(139,0,0);doc.setFontSize(8);doc.setFont('helvetica','normal');
-    doc.text('COMPROBANTE DE CITA · HOME STUDIO · PERSONALIZE YOUR NAILS',74,27,{align:'center'});
+    doc.text('COMPROBANTE DE CITA · HOME STUDIO · PERSONALIZE YOUR NAILS',PDF_W/2,27,{align:'center'});
     doc.setTextColor(200,17,26);doc.setFontSize(16);doc.setFont('helvetica','bold');
-    doc.text('Cita Confirmada',74,44,{align:'center'});
+    doc.text('Cita Confirmada',PDF_W/2,44,{align:'center'});
     doc.setFillColor(200,17,26);doc.roundedRect(44,48,60,10,2,2,'F');
     doc.setTextColor(255,215,0);doc.setFontSize(9);
-    doc.text('Folio: '+booking.folio,74,55,{align:'center'});
+    doc.text(pdfText('Folio: '+booking.folio),PDF_W/2,54.6,{align:'center'});
+
+    // ─── Tabla de datos (cada valor puede ocupar varias líneas) ───
     const rows=[
       ['Clienta',booking.nombre+' '+booking.apellido],
-      ['Artista',booking.manicurista?booking.manicurista.name:'—'],
+      ['Artista',booking.manicurista?booking.manicurista.name:'-'],
       ['Servicio',booking.servicioLabel||'N/D'],
       ['Fecha',DNAMES[booking.date.getDay()]+' '+booking.date.getDate()+' de '+MONTHS[booking.date.getMonth()]+' '+booking.date.getFullYear()],
       ['Horario',booking.slot.label],
       ['Correo',booking.email],
       ['Teléfono',booking.tel],
-      ['Anticipo','$100 MXN — PAGADO ✓'],
-      ['Notas',booking.notas||'Sin notas adicionales']
+      ['Anticipo','$100 MXN - PAGADO'],
+      ['Notas',booking.notas||'Sin notas adicionales'],
+      ['Imágenes',uploadedFiles.length?uploadedFiles.length+' imagen(es) de referencia en las páginas siguientes':'Sin imágenes de referencia']
     ];
-    let y=68;
+    const LH=4.2,PAD=3.6,VAL_X=52,VAL_W=PDF_W-10-VAL_X-4;
+    let y=64;
+    doc.setFontSize(8);
     rows.forEach(([k,v],i)=>{
-      doc.setFillColor(i%2===0?255:245,i%2===0?248:245,i%2===0?220:240);doc.rect(10,y-5,128,8,'F');
-      doc.setTextColor(139,0,0);doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(k+':',14,y);
+      doc.setFont('helvetica','normal');
+      const lines=doc.splitTextToSize(pdfText(v)||'-',VAL_W);
+      const h=Math.max(8,lines.length*LH+PAD);
+      if(y+h>PDF_MAX_Y){doc.addPage();pdfPageBg(doc,'Comprobante de cita · '+booking.folio);y=24;}
+      if(i%2===0)doc.setFillColor(255,248,220);else doc.setFillColor(245,240,225);
+      doc.rect(10,y,PDF_W-20,h,'F');
+      doc.setTextColor(139,0,0);doc.setFont('helvetica','bold');
+      doc.text(pdfText(k)+':',14,y+5.3);
       doc.setTextColor(26,26,26);doc.setFont('helvetica','normal');
-      doc.text(doc.splitTextToSize(String(v),80)[0],55,y);y+=10;
+      doc.text(lines,VAL_X,y+5.3,{lineHeightFactor:1.5});
+      y+=h;
     });
+
+    // ─── Imágenes: cada una en su propia página, tamaño completo ───
     if(uploadedFiles.length>0){
-      if(y>160){doc.addPage();doc.setFillColor(255,248,220);doc.rect(0,0,148,210,'F');y=20;}else{y+=4;}
-      doc.setFillColor(200,17,26);doc.rect(10,y-4,128,8,'F');
-      doc.setTextColor(255,215,0);doc.setFontSize(8);doc.setFont('helvetica','bold');
-      doc.text('IMÁGENES DE REFERENCIA',74,y+1,{align:'center'});y+=12;
-      const tw=36,th=28,gap=4,sx=10;
-      Promise.all(uploadedFiles.map(f=>new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=()=>res(null);r.readAsDataURL(f);}))).then(urls=>{
-        let col=0,ry=y;
-        urls.forEach((u,idx)=>{
-          if(!u)return;const x=sx+col*(tw+gap);
-          try{doc.setFillColor(255,255,255);doc.rect(x,ry,tw,th,'F');doc.setDrawColor(200,17,26);doc.rect(x,ry,tw,th,'S');doc.addImage(u,'JPEG',x+1,ry+1,tw-2,th-2,'','FAST');}
-          catch(e){doc.setFillColor(240,240,240);doc.rect(x,ry,tw,th,'F');doc.setTextColor(150,150,150);doc.setFontSize(7);doc.text('IMG '+(idx+1),x+tw/2,ry+th/2,{align:'center'});}
-          col++;if(col>=3){col=0;ry+=th+gap;}
-        });
-        addPDFFooter(doc);doc.save('comprobante_'+booking.folio+'.pdf');showActionMsg('¡Comprobante descargado!');
-      }).catch(()=>{addPDFFooter(doc);doc.save('comprobante_'+booking.folio+'.pdf');showActionMsg('¡Comprobante descargado!');});
-    }else{addPDFFooter(doc);doc.save('comprobante_'+booking.folio+'.pdf');showActionMsg('¡Comprobante descargado!');}
-  }catch(e){alert('No se pudo generar el PDF. Intenta de nuevo.');}
+      const imgs=(await Promise.all(uploadedFiles.map(imageForPDF))).filter(Boolean);
+      const BOX_X=10,BOX_Y=24,BOX_W=PDF_W-20,BOX_H=PDF_MAX_Y-BOX_Y-8; // deja espacio para el pie de foto
+      imgs.forEach((im,idx)=>{
+        doc.addPage();
+        pdfPageBg(doc,'Imagen de referencia '+(idx+1)+' de '+imgs.length+' · '+booking.folio);
+        const r=Math.min(BOX_W/im.w,BOX_H/im.h);
+        const w=im.w*r,h=im.h*r;
+        const x=BOX_X+(BOX_W-w)/2,iy=BOX_Y+(BOX_H-h)/2;
+        doc.setFillColor(255,255,255);doc.rect(x-1.5,iy-1.5,w+3,h+3,'F');
+        doc.setDrawColor(200,17,26);doc.setLineWidth(0.4);doc.rect(x-1.5,iy-1.5,w+3,h+3,'S');
+        doc.addImage(im.data,'JPEG',x,iy,w,h,'ref'+idx,'NONE');
+        doc.setTextColor(102,102,102);doc.setFont('helvetica','normal');doc.setFontSize(7);
+        const cap=doc.splitTextToSize(pdfText(im.name)||('imagen '+(idx+1)),BOX_W)[0];
+        doc.text(cap,PDF_W/2,iy+h+6,{align:'center'});
+      });
+      if(imgs.length<uploadedFiles.length){
+        showActionMsg('Algunas imágenes no se pudieron leer y se omitieron.');
+      }
+    }
+
+    addPDFFooter(doc);
+    doc.save('comprobante_'+booking.folio+'.pdf');
+    showActionMsg('¡Comprobante descargado!');
+  }catch(e){console.error(e);alert('No se pudo generar el PDF. Intenta de nuevo.');}
 }
 function addPDFFooter(doc){
   const total=doc.internal.getNumberOfPages();
   for(let pg=1;pg<=total;pg++){
-    doc.setPage(pg);doc.setFillColor(200,17,26);doc.rect(0,188,148,22,'F');
+    doc.setPage(pg);doc.setFillColor(200,17,26);doc.rect(0,PDF_FOOT_Y,PDF_W,PDF_H-PDF_FOOT_Y,'F');
     doc.setTextColor(255,215,0);doc.setFontSize(7);doc.setFont('helvetica','normal');
-    doc.text('Av. Clavería 180-2nd, Clavería, Azcapotzalco, CDMX · (+52) 2298602148',74,196,{align:'center'});
-    doc.text('IG @chuckyscharm.nails · TikTok @chuckyscharm_nails · ⚡ BATTERIES INCLUDED ⚡',74,203,{align:'center'});
+    doc.text(pdfText('Av. Clavería 180-2nd, Clavería, Azcapotzalco, CDMX · (+52) 2298602148'),PDF_W/2,196,{align:'center'});
+    doc.text(pdfText('IG @chuckyscharm.nails · TikTok @chuckyscharm_nails · BATTERIES INCLUDED'),PDF_W/2,201.5,{align:'center'});
+    doc.setFontSize(6);doc.text('Página '+pg+' de '+total,PDF_W/2,206.5,{align:'center'});
   }
 }
 
@@ -1550,6 +1741,9 @@ function resetAll(){
   document.querySelectorAll('.error-field').forEach(e=>e.classList.remove('error-field'));
   document.getElementById('formGlobalErr').classList.remove('show');
   document.getElementById('payGlobalErr').classList.remove('show');
+  document.getElementById('fGuardar').checked=false;
+  document.getElementById('savedDataNote').classList.remove('show');
+  loadSavedData(); // si guardó sus datos, la siguiente reserva ya viene llena
   goStep(1);renderCal();
 }
 
@@ -1756,6 +1950,7 @@ function goToPolicy(idx){const track=document.getElementById('polTrack');if(!tra
 
 // ═══════════════ INIT ═══════════════
 renderCal();
+loadSavedData();
 </script>
 </body>
 </html>
