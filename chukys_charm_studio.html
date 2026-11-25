@@ -208,15 +208,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 /* ─── SERVICES (cards originales) ─────────────────────────────── */
 .card{position:relative;display:flex;align-items:center;justify-content:center;width:clamp(260px,70vw,380px);height:clamp(300px,45vh,480px);flex-shrink:0;scroll-snap-align:center;padding:2px;border-radius:clamp(20px,4vw,32px);overflow:hidden;transition:all 0.48s cubic-bezier(0.23,1,0.32,1)}
 .card::after{content:"";position:absolute;bottom:10px;right:10px;top:auto;width:clamp(40px,10vw,70px);height:clamp(40px,10vw,70px);background-image:url("Chucky.png");background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(0.6) rotate(10deg);transition:all 0.3s ease;z-index:3;pointer-events:none}
-.card:hover::after,.card:active::after{opacity:1;transform:scale(1) rotate(0deg)}
+.card:hover::after,.card:active::after,.card.is-active::after{opacity:1;transform:scale(1) rotate(0deg)}
 .card-container .card::after{display:none}
 .content{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:clamp(10px,2vh,16px);padding:clamp(16px,6%,32px);border-radius:inherit;color:#ffffff;background:#C8111A;width:100%;height:100%;overflow:hidden;transition:all 0.48s cubic-bezier(0.23,1,0.32,1)}
 .content .heading{font-weight:700;font-size:clamp(18px,4.5vw,30px);line-height:1.1;z-index:1}
 .content .para{z-index:1;opacity:0.8;font-size:clamp(13px,3.2vw,16px);line-height:1.5}
 .card::before{content:"";position:absolute;height:160%;width:160%;border-radius:inherit;background:linear-gradient(to right,#C8111A,#C8111A);transform-origin:center;animation:moving 4.8s linear infinite paused;transition:all 0.88s cubic-bezier(0.23,1,0.32,1)}
-.card:hover::before{animation-play-state:running;z-index:-1;width:20%}
-.card:hover .content .heading,.card:hover .content .para{color:#000000}
-.card:hover .content{background:#ffffff}
+.card:hover::before,.card.is-active::before{animation-play-state:running;z-index:-1;width:20%}
+.card:hover .content .heading,.card:hover .content .para,.card.is-active .content .heading,.card.is-active .content .para{color:#000000}
+.card:hover .content,.card.is-active .content{background:#ffffff}
 @media(max-width:768px){.card{width:clamp(240px,85vw,320px);height:clamp(280px,50vh,420px)}.content{align-items:center;text-align:center}}
 @keyframes moving{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
@@ -281,19 +281,20 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
    de .card (tarjetas de Servicios con sticker de Chucky en hover). */
 .social-card{width:fit-content;height:fit-content;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;gap:20px;margin-top:22px}
 /* for all social containers*/
-.socialContainer{width:52px;height:52px;border-radius:50%;background-color:rgb(44,44,44);display:flex;align-items:center;justify-content:center;overflow:hidden;transition-duration:.3s;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.socialContainer{width:52px;height:52px;border-radius:50%;background-color:var(--accent-navy);display:flex;align-items:center;justify-content:center;overflow:hidden;transition-duration:.3s;text-decoration:none;-webkit-tap-highlight-color:transparent}
 /* instagram*/
-.containerOne:hover{background-color:#d62976;transition-duration:.3s}
+.socialContainer.containerOne:hover,.socialContainer.containerOne:active,.socialContainer.containerOne:focus-visible{background-color:#d62976;transition-duration:.3s}
 /* tiktok*/
-.containerTwo:hover{background-color:#000000;transition-duration:.3s}
+.socialContainer.containerTwo:hover,.socialContainer.containerTwo:active,.socialContainer.containerTwo:focus-visible{background-color:#000000;transition-duration:.3s}
 /* ubicación*/
-.containerThree:hover{background-color:#C8111A;transition-duration:.3s}
+.socialContainer.containerThree:hover,.socialContainer.containerThree:active,.socialContainer.containerThree:focus-visible{background-color:#C8111A;transition-duration:.3s}
 /* whatsapp*/
-.containerFour:hover{background-color:#128C7E;transition-duration:.3s}
+.socialContainer.containerFour:hover,.socialContainer.containerFour:active,.socialContainer.containerFour:focus-visible{background-color:#128C7E;transition-duration:.3s}
 .socialContainer:active{transform:scale(0.9);transition-duration:.3s}
 .socialSvg{width:17px}
 .socialSvg path{fill:rgb(255,255,255)}
-.socialContainer:hover .socialSvg{animation:slide-in-top 0.3s both}
+.socialContainer:hover .socialSvg,.socialContainer:focus-visible .socialSvg{animation:slide-in-top 0.3s both}
+.socialContainer:focus-visible{outline:3px solid var(--accent-navy);outline-offset:3px}
 @keyframes slide-in-top{0%{transform:translateY(-50px);opacity:0}100%{transform:translateY(0);opacity:1}}
 
 .lp-hero-img-wrap{flex:0 0 auto;position:relative;display:flex;align-items:center;justify-content:center}
@@ -352,19 +353,14 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
 .pc-card{position:relative;display:flex;align-items:center;justify-content:center;width:320px;padding:36px;border-radius:24px;overflow:hidden;line-height:1.6;border:1px solid #999999;background:#ffffff;transition:background 0.48s cubic-bezier(0.23,1,0.32,1),border-color 0.48s cubic-bezier(0.23,1,0.32,1),box-shadow 0.48s cubic-bezier(0.23,1,0.32,1),scale 0.48s cubic-bezier(0.23,1,0.32,1);flex-shrink:0;scroll-snap-align:center;will-change:transform}
 .pc-card::before{content:"";position:absolute;right:-5.2rem;top:-5.2rem;width:10.4rem;height:10.4rem;background:#C8111A;z-index:0;opacity:0;border-radius:50%;transition:all 0.48s cubic-bezier(0.23,1,0.32,1)}
 .pc-card::after{content:"";position:absolute;left:-5.2rem;bottom:-5.2rem;width:10.4rem;height:10.4rem;background:#C8111A;z-index:0;opacity:0;border-radius:50%;transition:all 0.48s cubic-bezier(0.23,1,0.32,1)}
-.pc-card:hover::before{scale:7;opacity:1}
-.pc-card:hover::after{scale:7;opacity:1}
-.pc-card:hover{background:#C8111A;box-shadow:0rem 6px 13px rgba(0,0,0,0.1),0rem 24px 24px rgba(0,0,0,0.09),0rem 55px 33px rgba(0,0,0,0.05),0rem 97px 39px rgba(0,0,0,0.01),0rem 152px 43px rgba(0,0,0,0);border-color:#C8111A;scale:1.05}
+.pc-card:hover::before,.pc-card.is-active::before{scale:7;opacity:1}
+.pc-card:hover::after,.pc-card.is-active::after{scale:7;opacity:1}
+.pc-card:hover,.pc-card.is-active{background:#C8111A;box-shadow:0rem 6px 13px rgba(0,0,0,0.1),0rem 24px 24px rgba(0,0,0,0.09),0rem 55px 33px rgba(0,0,0,0.05),0rem 97px 39px rgba(0,0,0,0.01),0rem 152px 43px rgba(0,0,0,0);border-color:#C8111A;scale:1.05}
 .pc-content{display:flex;flex-direction:column;align-items:flex-start;gap:24px;color:#000000;transition:all 0.48s cubic-bezier(0.23,1,0.32,1);position:relative;z-index:1}
 .pc-content .pc-heading{font-weight:700;font-size:36px;line-height:1.3;z-index:1;transition:all 0.48s cubic-bezier(0.23,1,0.32,1)}
 .pc-content .pc-para{z-index:1;opacity:0.8;font-size:18px;transition:all 0.48s cubic-bezier(0.23,1,0.32,1)}
-.pc-card:hover .pc-content .pc-heading{color:#ffffff}
-.pc-card:hover .pc-content .pc-para{color:#ffffff}
-.pc-card.touched::before{scale:7;opacity:1}
-.pc-card.touched::after{scale:7;opacity:1}
-.pc-card.touched{background:#C8111A;border-color:#C8111A;box-shadow:0rem 6px 13px rgba(0,0,0,.1),0rem 24px 24px rgba(0,0,0,.09);scale:1.02}
-.pc-card.touched .pc-content .pc-heading{color:#ffffff}
-.pc-card.touched .pc-content .pc-para{color:#ffffff}
+.pc-card:hover .pc-content .pc-heading,.pc-card.is-active .pc-content .pc-heading{color:#ffffff}
+.pc-card:hover .pc-content .pc-para,.pc-card.is-active .pc-content .pc-para{color:#ffffff}
 @media(max-width:520px){.pc-card{width:clamp(260px,88vw,310px);padding:28px}.pc-content .pc-heading{font-size:clamp(24px,7vw,32px)}.pc-content .pc-para{font-size:clamp(14px,4vw,17px)}}
 
 /* ═══════════════════════════════════════════════════════════════
@@ -859,12 +855,14 @@ video.chucky-runner.is-source{opacity:.01!important;animation:none!important}
             <option value="gel_extension">Gel + Extensión — Combo gel sobre extensión acrílica</option>
             <option value="retiro">Retiro — Eliminación de cualquier material aplicado</option>
             <option value="retiro_mas_nuevo">Retiro + Servicio Nuevo — Retiro e inmediata aplicación</option>
+            <option value="otro">Otro — Descríbelo en las notas</option>
           </select>
           <p class="field-error" id="errServicio">Selecciona un tipo de servicio</p>
         </div>
         <div class="form-full">
-          <label class="field-label">Notas para la manicurista (Opcional)</label>
+          <label class="field-label" id="lblNotas">Notas para la manicurista (Opcional)</label>
           <textarea class="field-input field-textarea" id="fNotas" placeholder="Describe el diseño que deseas, longitud, acabado..."></textarea>
+          <p class="field-error" id="errNotas">Cuéntanos qué servicio deseas</p>
         </div>
         <div class="form-full">
           <label class="field-label">Imágenes de referencia (Opcional)</label>
@@ -1012,7 +1010,8 @@ const SERVICIOS_LABELS={
   extension_acrilica:'✨ Extensión Acrílica',
   gel_extension:'🌟 Gel + Extensión',
   retiro:'🧹 Retiro',
-  retiro_mas_nuevo:'♻️ Retiro + Servicio Nuevo'
+  retiro_mas_nuevo:'♻️ Retiro + Servicio Nuevo',
+  otro:'📝 Otro'
 };
 
 // ═══════════════ ESTRUCTURA ESCALABLE DE MANICURISTAS ═══════════════
@@ -1197,6 +1196,9 @@ function toStep4(){
   setFieldErr('fEmail','errEmail',!validEmail(email));if(!validEmail(email))ok=false;
   setFieldErr('fTel','errTel',!validPhone(tel));     if(!validPhone(tel))  ok=false;
   setFieldErr('fServicio','errServicio',!servicio);  if(!servicio)         ok=false;
+  // Con "Otro" las notas son obligatorias: la manicurista necesita saber qué servicio es
+  const notasFalta=servicio==='otro'&&!document.getElementById('fNotas').value.trim();
+  setFieldErr('fNotas','errNotas',notasFalta);       if(notasFalta)        ok=false;
   if(!ok){gErr.textContent='Por favor corrige los campos marcados.';gErr.classList.add('show');return;}
   if(!selDate||!selSlot){gErr.textContent='La fecha y horario ya no están disponibles. Regresa al paso 1.';gErr.classList.add('show');return;}
   gErr.classList.remove('show');
@@ -1487,6 +1489,15 @@ function forgetSavedData(){
   document.getElementById('savedDataNote').classList.remove('show');
 }
 
+/** syncNotasField — Con "Otro" las notas pasan a ser obligatorias */
+function syncNotasField(){
+  const otro=document.getElementById('fServicio').value==='otro';
+  document.getElementById('lblNotas').textContent=otro?'Describe el servicio que deseas *':'Notas para la manicurista (Opcional)';
+  document.getElementById('fNotas').placeholder=otro?'Ej: Pedicure, reparación de una uña, diseño especial...':'Describe el diseño que deseas, longitud, acabado...';
+  if(!otro)setFieldErr('fNotas','errNotas',false);
+}
+document.getElementById('fServicio').addEventListener('change',syncNotasField);
+
 // ═══════════════ VALIDACIONES ═══════════════
 function setFieldErr(inputId,errId,show){
   const inp=document.getElementById(inputId);const err=document.getElementById(errId);
@@ -1732,6 +1743,7 @@ function resetAll(){
   ['fNombre','fApellido','fEmail','fTel','fNotas','cardNum','cardName','cardExp','cardCvv']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const fs=document.getElementById('fServicio');if(fs)fs.value='';
+  syncNotasField();
   document.getElementById('imgPreviewGrid').innerHTML='';
   document.getElementById('btnToStep2').style.display='none';
   document.getElementById('slotSelectedMsg').style.display='none';
@@ -1936,17 +1948,63 @@ function goToPolicy(idx){const track=document.getElementById('polTrack');if(!tra
   syncDots();
 })();
 
-/** initPcTouch — Tap-to-hover en .pc-card para móvil (distingue tap de swipe) */
-(function initPcTouch(){
-  document.querySelectorAll('.pc-card').forEach(card=>{
+/**
+ * initAutoActive — Activa automáticamente el "hover" de la card sobre la
+ * que está la usuaria, en Servicios y en Políticas del Negocio.
+ * ─ Celular/tablet: la card más cercana al centro del carrusel queda activa
+ *   (se actualiza al deslizar). Un tap en otra card la centra y la activa.
+ * ─ Mouse: además, la card bajo el cursor se vuelve la activa.
+ * ─ Solo se activa mientras la sección está visible en pantalla, así la
+ *   animación se ve al llegar a la sección.
+ */
+function initAutoActive(trackId,cardSel){
+  const track=document.getElementById(trackId);
+  if(!track)return;
+  const cards=[...track.querySelectorAll(cardSel)];
+  if(!cards.length)return;
+  let visible=false,current=null,raf=false,hoverLock=false;
+
+  function setActive(card){
+    if(card===current)return;
+    if(current)current.classList.remove('is-active');
+    current=card;
+    if(current)current.classList.add('is-active');
+  }
+  function centered(){
+    const rect=track.getBoundingClientRect();
+    const mid=rect.left+rect.width/2;
+    let best=null,min=Infinity;
+    cards.forEach(c=>{const r=c.getBoundingClientRect();const d=Math.abs(r.left+r.width/2-mid);if(d<min){min=d;best=c;}});
+    return best;
+  }
+  function sync(){raf=false;if(!visible||hoverLock)return;setActive(centered());}
+
+  track.addEventListener('scroll',()=>{if(!raf){raf=true;requestAnimationFrame(sync);}},{passive:true});
+  window.addEventListener('resize',()=>{if(!raf){raf=true;requestAnimationFrame(sync);}});
+
+  // Mouse: la card bajo el cursor manda; al salir del carrusel vuelve la del centro
+  if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){
+    cards.forEach(c=>c.addEventListener('mouseenter',()=>{hoverLock=true;setActive(c);}));
+    track.addEventListener('mouseleave',()=>{hoverLock=false;sync();});
+  }
+
+  // Táctil: un tap (no un deslizamiento) centra la card tocada
+  cards.forEach(c=>{
     let tx=0,ty=0;
-    card.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
-    card.addEventListener('touchend',e=>{
-      const dx=Math.abs(e.changedTouches[0].clientX-tx);const dy=Math.abs(e.changedTouches[0].clientY-ty);
-      if(dx<10&&dy<10){const isOpen=card.classList.contains('touched');document.querySelectorAll('.pc-card.touched').forEach(c=>c.classList.remove('touched'));if(!isOpen)card.classList.add('touched');}
+    c.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+    c.addEventListener('touchend',e=>{
+      const dx=Math.abs(e.changedTouches[0].clientX-tx),dy=Math.abs(e.changedTouches[0].clientY-ty);
+      if(dx<10&&dy<10){setActive(c);c.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});}
     },{passive:true});
   });
-})();
+
+  new IntersectionObserver(([entry])=>{
+    visible=entry.isIntersecting;
+    if(visible)sync();else{hoverLock=false;setActive(null);}
+  },{threshold:0.5}).observe(track);
+}
+initAutoActive('srvTrack','.card');
+initAutoActive('polTrack','.pc-card');
 
 // ═══════════════ INIT ═══════════════
 renderCal();
